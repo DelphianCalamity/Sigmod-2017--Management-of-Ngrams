@@ -8,8 +8,10 @@
 void addCommand(char com, char **ngram, int words){
 	Burst *temp;
 
-	if ((temp = malloc(sizeof(Burst))) == NULL)
+	if ((temp = malloc(sizeof(Burst))) == NULL){
 		//perror(printError(1));
+		exit(1);
+	}
 
 	temp->command = com;
 	temp->ngram = ngram;
@@ -26,8 +28,10 @@ void addCommand(char com, char **ngram, int words){
 void addBurst(void){
 	BurstList *temp;
 
-	if ((temp = malloc(sizeof(BurstList))) == NULL)
-		perror(printError(1));
+	if ((temp = malloc(sizeof(BurstList))) == NULL){
+		//perror(printError(1));
+		exit(1);
+	}
 
 	temp->start = NULL;
 	temp->end = NULL;
