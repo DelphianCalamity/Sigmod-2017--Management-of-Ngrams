@@ -1,16 +1,24 @@
 #ifndef __TRIESTRUCTS_H__
 #define __TRIESTRUCTS_H__
 
-typedef struct trieNode{
+typedef struct trieNode TrieNode;
+typedef struct trieRoot TrieRoot;
+
+struct trieNode{
 	char* word;
-	trieNode *parentNode;
-	trieNode **children;
+	TrieNode *parentNode;
+	TrieNode **children;
+    int currentChildren;
+    int maxChildren;
 	char is_final;
-}TrieNode;
+}e;
 
 
-typedef struct trieRoot{
+struct trieRoot{
 	TrieNode *root;
-}TrieRoot;
+};
+
+TrieRoot * rootInit();
+TrieNode * trieNodeInit(char, TrieNode *, char *);
 
 #endif
