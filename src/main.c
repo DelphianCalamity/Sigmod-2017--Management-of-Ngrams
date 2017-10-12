@@ -7,7 +7,7 @@
 #include "trieStructs.h"
 
 int main(void){
-    TrieRoot *trieRoot1;
+	TrieRoot *trieRoot1;
 
-    trieRoot1=rootInit();
+	trieRoot1=rootInit();
 }
