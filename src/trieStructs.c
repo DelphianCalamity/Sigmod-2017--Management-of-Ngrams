@@ -11,60 +11,62 @@ TrieRoot * rootInit() {
 	TrieRoot *trieroot;
 
 	if ((trieroot = malloc(sizeof(TrieRoot))) == NULL) {
-        perror(getError(1));
+		perror(getError(1));
 		exit(1);
 	}
 
-    trieroot->root = trieNodeInit(0, NULL, "");
+	trieroot->root = trieNodeInit(0, NULL, "");
 
-    return trieroot;
+	return trieroot;
 }
 
 TrieNode * trieNodeInit(char final, TrieNode *parent, char *word){
-    TrieNode *newNode;
+	TrieNode *newNode;
 
-    /*Allocate memory for new node*/
-    if ((newNode=malloc(sizeof(TrieNode)))==NULL){
-        perror(getError(1));
-        exit(1);
-    }
+	/*Allocate memory for new node*/
+	if ((newNode=malloc(sizeof(TrieNode)))==NULL){
+		perror(getError(1));
+		exit(1);
+	}
 
-    /*Initilize basic info of node*/
-    newNode->currentChildren = 0;
-    newNode->maxChildren = 0;
-    newNode->is_final = final;
-    newNode->parentNode = parent;
+	/*Initilize basic info of node*/
+	newNode->emptySpace = MINSIZE;
+	newNode->maxChildren = 0;
+	newNode->deletedChildren = 0;
+	newNode->is_final = final;
+	newNode->parentNode = parent;
 
-    /*Initiliaze the word for the new node*/
-    if ((newNode->word = malloc(sizeof(strlen(word))))==NULL){
-        perror(getError(1));
-        exit(1);
-    }
-    strcpy(newNode->word, word);
+	/*Initiliaze the word for the new node*/
+	if ((newNode->word = malloc(sizeof(strlen(word))))==NULL){
+		perror(getError(1));
+		exit(1);
+	}
+	strcpy(newNode->word, word);
 
-    /*Initiliaze new node's children*/
-    if ((newNode->children = malloc(sizeof(TrieNode *)))==NULL){
-        perror(getError(1));
-        exit(1);
-    }
+	/*Initiliaze new node's children*/
+	if ((newNode->children = malloc(MINSIZE*sizeof(TrieNode)))==NULL){
+		perror(getError(1));
+		exit(1);
+	}
 
-    return newNode;
+	return newNode;
 }
 
 void addToChildren(TrieNode *parent, TrieNode *child){
-    TrieNode **newChildren;
+	TrieNode **newChildren;
 
-    /*If the parent node has no more space for new children, allocate extra space*/
-    if (parent->currentChildren == parent->maxChildren){
-        if ((newChildren = realloc(parent->children, (parent->maxChildren*2)*sizeof(TrieNode *)))==NULL){
-        perror(getError(2));
-            exit(2);
-        }
-        parent->children = newChildren;
-        parent->maxChildren = parent->maxChildren*2;
-    }
+	/*If the parent node has no more space for new children, allocate extra space*/
+	if (parent->emptySpace == 0){
+		if ((newChildren = realloc(parent->children, (parent->maxChildren*2)*sizeof(TrieNode)))==NULL){
+		perror(getError(2));
+			exit(2);
+		}
+		parent->children = newChildren;
+		parent->maxChildren = parent->maxChildren*2;
+		parent->emptySpace = parent->maxChildren/2;
+	}
 
-    /*Store the new child and update children count*/
-    parent->children[parent->currentChildren] = child;
-    parent->currentChildren++;
+	/*Store the new child and update children count*/
+	memcpy(parent->children[parent->maxChildren-parent->emptySpace], child, sizeof(TrieNode));
+	parent->emptySpace--;
 }
