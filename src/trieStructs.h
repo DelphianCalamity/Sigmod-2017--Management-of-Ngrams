@@ -11,7 +11,7 @@ struct trieNode{
     int currentChildren;
     int maxChildren;
 	char is_final;
-}e;
+};
 
 
 struct trieRoot{
