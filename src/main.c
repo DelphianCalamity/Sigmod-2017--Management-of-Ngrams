@@ -2,18 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include "trieStructs.h"
-#include "ngram.h"
-
-
-int fpeek(FILE *fp);
-void insert_Ngrams_In_Trie(FILE* fp, TrieRoot* trieRoot);
 
 int main(int argc, char **argv) {
     
     int i;
-    FILE *finit, *fquery;
-    TrieRoot *trieRoot;
-
+    char finit[10], fquery[10];
     
     //Read Main 's arguments
     if(argc < 5){
@@ -24,20 +17,10 @@ int main(int argc, char **argv) {
     for(i=1; i<argc; i=i+2){
         
         if(strcmp(argv[i],"-i") == 0) {
-            
-            finit = fopen(argv[i+1], "r");
-            if (finit == NULL) {
-                printf("Cannot open file %s\n", argv[i+1]);
-                return 1;
-            }
+            strcpy(finit, argv[i+1]);
         }
         else if(strcmp(argv[i],"-q") == 0){
-            
-            fquery = fopen(argv[i+1], "r");
-            if (fquery == NULL) {
-                printf("Cannot open file %s\n", argv[i+1]);
-                return 1;
-            }
+            strcpy(fquery, argv[i+1]);
         }
         else {
             printf("Correct syntax is: %s -i <init_file> -q <query_file>\n", argv[0]);
@@ -45,14 +28,19 @@ int main(int argc, char **argv) {
         }
     }
  
-    //Initializing Trie
-    trieRoot = trieRootInit();
-    //Input & Storing
-    insert_Ngrams_In_Trie(finit, trieRoot);
-        
+    trieRoot = trieRootInit();                  //Initializing Trie
+    //readInputFile(finit);                     //Input & Storing
+    //readQueryFile(fquery);
+    
     return 0;
 }
 
+
+
+
+
+
+/*
 int fpeek(FILE *fp){
     return ungetc(getc(fp),fp);
 }
@@ -70,7 +58,7 @@ void insert_Ngrams_In_Trie(FILE* fp, TrieRoot* trieRoot){
             fscanf(fp, "%s", buffer);
             Ngram_Insert_End(ngram, buffer);
         }
-        getc(fp);                                       //Consume new line character
+        getc(fp);                               //Consume new line character
         
         Ngram_print(ngram);
         Ngram_free(ngram);
@@ -78,3 +66,4 @@ void insert_Ngrams_In_Trie(FILE* fp, TrieRoot* trieRoot){
         trieInsertSort(trieRoot, ngram);
     }
 }
+ */

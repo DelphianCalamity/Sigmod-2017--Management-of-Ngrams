@@ -3,7 +3,7 @@
 #include "trieStructs.h"
 #include <string.h>
 #include "errorMessages.h"
-#include "ngram.h"
+
 
 TrieRoot* trieRootInit() {
 
@@ -43,7 +43,7 @@ TrieNode* trieNodeInit(char isFinal, TrieNode *parent, char *word){
 	strcpy(newNode->word, word);
 
 	/*Initialize new node's children*/
-	if ((newNode->children = malloc(MINSIZE*sizeof(TrieNode)))==NULL){
+	if ((newNode->children = malloc(MINSIZE*sizeof(TrieNode*)))==NULL){
 		perror(getError(1));
 		exit(1);
 	}
@@ -71,11 +71,19 @@ void trieAddToChildren(TrieNode *parent, TrieNode *child){
 }
 
 
-TrieNode* trieSearch(TrieRoot* trieRoot, Ngramptr ngram){
+TrieNode* trieSearch(char** ngram){
     
 }
 
-int trieInsertSort(TrieRoot* trieRoot, Ngramptr ngram){
+int trieInsertSort(char** ngram){
+    
+    TrieNode *root = trieRoot->root;
+    
     
     return 0;
+}
+
+
+void trieFree(){
+ 
 }
