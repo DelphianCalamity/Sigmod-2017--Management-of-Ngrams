@@ -10,8 +10,8 @@ typedef struct ngram Ngram;
 typedef Ngram* Ngramptr;
 
 struct ngram {                          //A list of words
-    Ngramptr start;
-    Ngramptr end;
+    Wordptr start;
+    Wordptr end;
     int size;
 };
 
@@ -22,8 +22,8 @@ struct word {                           //node of list - a word
 };
 
 Ngramptr Ngram_create(void);
-Ngramptr Ngram_Insert_End(Ngramptr, char*);
+Wordptr Ngram_Insert_End(Ngramptr, char*);
 void Ngram_print(Ngramptr);
-void Ngram_destroy(Ngramptr);
+void Ngram_free(Ngramptr);
 
 #endif

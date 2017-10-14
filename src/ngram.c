@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "ngram.h"
 
 /*** Functions ***/
@@ -60,17 +61,19 @@ void Ngram_print(Ngramptr list) {
     if(Ngram_empty(list))
         return;
     
-    Ngramptr ptr = list->start;
+    Wordptr ptr = list->start;
     while (ptr != NULL) {
-        printf("%s ", ptr->word)
+        printf("%s ", ptr->word);
         ptr = ptr->next;
     }
+    printf("\n");
 }
 
-void Ngram_destroy(Ngramptr list){
+
+void Ngram_free(Ngramptr list){
     
-    Ngramptr node = list->start;
-    Ngramptr ptr = list->start;
+    Wordptr node = list->start;
+    Wordptr ptr = list->start;
 
     while(ptr!=NULL){
         ptr = ptr->next;
