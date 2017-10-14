@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
 }
 
 int fpeek(FILE *fp){
-    ungetc(getc(fp),fp);
+    return ungetc(getc(fp),fp);
 }
 
 void insert_Ngrams_In_Trie(FILE* fp, TrieRoot* trieRoot){
