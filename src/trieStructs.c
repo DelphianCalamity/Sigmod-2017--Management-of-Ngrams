@@ -31,7 +31,7 @@ TrieNode* trieNodeInit(char isFinal, TrieNode *parent, char *word){
 
 	/*Initialize basic info of node*/
 	newNode->emptySpace = MINSIZE;
-	newNode->maxChildren = 0;
+	newNode->maxChildren = MINSIZE;
 	newNode->deletedChildren = 0;
 	newNode->is_final = isFinal;
 	newNode->parentNode = parent;
@@ -43,8 +43,8 @@ TrieNode* trieNodeInit(char isFinal, TrieNode *parent, char *word){
 	}
 	strcpy(newNode->word, word);
 
-	/*Initialize new node's children*/
-	if ((newNode->children = malloc(MINSIZE*sizeof(TrieNode*)))==NULL){
+	/*Initiliaze new node's children*/
+	if ((newNode->children = malloc(MINSIZE*sizeof(TrieNode)))==NULL){
 		perror(getError(1));
 		exit(1);
 	}
@@ -55,6 +55,8 @@ TrieNode* trieNodeInit(char isFinal, TrieNode *parent, char *word){
 void trieAddToChildren(TrieNode *parent, TrieNode *child){
 	TrieNode **newChildren;
 
+    /*Run binary search*/
+
 	/*If the parent node has no more space for new children, allocate extra space*/
 	if (parent->emptySpace == 0){
 		if ((newChildren = realloc(parent->children, (parent->maxChildren*2)*sizeof(TrieNode)))==NULL){
@@ -62,12 +64,12 @@ void trieAddToChildren(TrieNode *parent, TrieNode *child){
 			exit(2);
 		}
 		parent->children = newChildren;
-		parent->maxChildren = parent->maxChildren*2;
+        parent->emptySpace += parent->maxChildren;
 		parent->emptySpace = parent->maxChildren/2;
 	}
 
 	/*Store the new child and update children count*/
-	memcpy(parent->children[parent->maxChildren-parent->emptySpace], child, sizeof(TrieNode));
+	//memcpy(parent->children[parent->maxChildren-parent->emptySpace], child, sizeof(TrieNode));
 	parent->emptySpace--;
 }
 
@@ -88,6 +90,9 @@ void trieDeleteNgram(NgramVector *ngram){
 
 }
 
+BinaryResult binarySearch(TrieNode **children, char * word){
+
+}
 
 void trieFree(){
  
