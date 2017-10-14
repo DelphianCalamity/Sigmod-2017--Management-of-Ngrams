@@ -3,7 +3,6 @@
 #include "trieStructs.h"
 
 int main(int argc, int **argv){
-    //
     
     TrieRoot *trieRoot = trieRootInit();
     
