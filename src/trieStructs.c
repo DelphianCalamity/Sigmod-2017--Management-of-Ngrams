@@ -3,6 +3,7 @@
 #include "trieStructs.h"
 #include <string.h>
 #include "errorMessages.h"
+#include "ngram.h"
 
 
 TrieRoot* trieRootInit() {
@@ -71,16 +72,20 @@ void trieAddToChildren(TrieNode *parent, TrieNode *child){
 }
 
 
-TrieNode* trieSearch(char** ngram){
+TrieNode* trieSearch(NgramVector *ngramVector){
     
 }
 
-int trieInsertSort(char** ngram){
+int trieInsertSort(NgramVector *ngramVector){
     
     TrieNode *root = trieRoot->root;
     
     
     return 0;
+}
+
+void trieDeleteNgram(NgramVector *ngram){
+
 }
 
 

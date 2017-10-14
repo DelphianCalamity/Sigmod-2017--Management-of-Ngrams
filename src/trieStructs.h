@@ -1,6 +1,8 @@
 #ifndef __TRIESTRUCTS_H__
 #define __TRIESTRUCTS_H__
 
+#include "ngram.h"
+
 #define MINSIZE 100
 
 typedef struct trieNode TrieNode;
@@ -26,6 +28,7 @@ TrieRoot* trieRootInit();
 TrieNode* trieNodeInit(char, TrieNode *, char *);
 TrieNode* trieSearch(char**);
 int trieInsertSort(char**);
+void trieDeleteNgram(NgramVector*);
 void trieFree();
 
 #endif

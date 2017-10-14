@@ -1,6 +1,8 @@
 #ifndef __BURSTS_H__
 #define __BURSTS_H__
 
+#include "ngram.h"
+
 typedef struct burstList BurstList;
 typedef struct burst Burst;
 
@@ -14,8 +16,7 @@ struct burstList{
 
 struct burst{
 	char command;           // Q, A or D, depends on the command
-	char **ngram;
-	int words;
+	NgramVector *ngram;
 	Burst *next;            // next command
 };
 

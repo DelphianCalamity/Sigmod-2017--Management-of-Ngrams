@@ -3,9 +3,11 @@
 #include <string.h>
 
 #include "bursts.h"
+#include "ngram.h"
+#include "trieStructs.h"
 
 // adds a command at the end of the currently last burst
-void addCommand(char com, char **ngram, int words){
+void addCommand(char com, NgramVector *ngram){
 	Burst *temp;
 
 	if ((temp = malloc(sizeof(Burst))) == NULL){
@@ -15,7 +17,6 @@ void addCommand(char com, char **ngram, int words){
 
 	temp->command = com;
 	temp->ngram = ngram;
-	temp->words = words;
 	temp->next = NULL;
 	if (burstListEnd->start == NULL)			// first command in this burst
 		burstListEnd->start = temp;
@@ -50,15 +51,18 @@ void executeBurstCommands(BurstList *burst){
 	while (burst->start != NULL){
 		temp=burst->start;
 		if (temp->command == 'A'){
-			// Call Insert
+			trieInsertSort(ngram);
 		}
 		else if (temp->command == 'D'){
-			// Call Delete
+			trieDeleteNgram(ngram);
+			deleteWords(ngram);
 		}
 		else{
-			// Call Search
+			trieSearch(ngram);
+			deleteWords(ngram);
 		}
 		burst->start = burst->start->next;
+		deleteNgram(temp->ngram);
 		free(temp);
 	}
 }
