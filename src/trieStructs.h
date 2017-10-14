@@ -32,8 +32,8 @@ TrieRoot *trieRoot;                                 //Global Variable
 
 TrieRoot* trieRootInit();
 TrieNode* trieNodeInit(char, TrieNode *, char *);
-TrieNode* trieSearch(char**);
-int trieInsertSort(char**);
+TrieNode* trieSearch(NgramVector *);
+int trieInsertSort(NgramVector *);
 void trieDeleteNgram(NgramVector*);
 void trieFree();
 
