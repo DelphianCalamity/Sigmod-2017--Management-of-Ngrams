@@ -7,21 +7,20 @@ typedef struct trieNode TrieNode;
 typedef struct trieRoot TrieRoot;
 
 struct trieNode{
-	char* word;
-	TrieNode *parentNode;
-	TrieNode **children;
+    char* word;
+    TrieNode *parentNode;
+    TrieNode **children;
     int emptySpace;
     int maxChildren;
     int deletedChildren;
-	char is_final;
+    char is_final;
 };
-
 
 struct trieRoot{
-	TrieNode *root;
+    TrieNode *root;
 };
 
-TrieRoot * rootInit();
-TrieNode * trieNodeInit(char, TrieNode *, char *);
+TrieRoot* trieRootInit();
+TrieNode* trieNodeInit(char, TrieNode *, char *);
 
 #endif

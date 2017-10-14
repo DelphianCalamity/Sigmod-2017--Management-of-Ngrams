@@ -1,14 +1,12 @@
-//
-// Created by Stathis on 10/11/2017.
-//
 #include <stdio.h>
 #include <stdlib.h>
 #include "trieStructs.h"
 #include <string.h>
 #include "errorMessages.h"
 
-TrieRoot * rootInit() {
-	TrieRoot *trieroot;
+TrieRoot* trieRootInit() {
+
+    TrieRoot *trieroot;
 
 	if ((trieroot = malloc(sizeof(TrieRoot))) == NULL) {
 		perror(getError(1));
@@ -20,7 +18,7 @@ TrieRoot * rootInit() {
 	return trieroot;
 }
 
-TrieNode * trieNodeInit(char final, TrieNode *parent, char *word){
+TrieNode* trieNodeInit(char isFinal, TrieNode *parent, char *word){
 	TrieNode *newNode;
 
 	/*Allocate memory for new node*/
@@ -29,21 +27,21 @@ TrieNode * trieNodeInit(char final, TrieNode *parent, char *word){
 		exit(1);
 	}
 
-	/*Initilize basic info of node*/
+	/*Initialize basic info of node*/
 	newNode->emptySpace = MINSIZE;
 	newNode->maxChildren = 0;
 	newNode->deletedChildren = 0;
-	newNode->is_final = final;
+	newNode->is_final = isFinal;
 	newNode->parentNode = parent;
 
-	/*Initiliaze the word for the new node*/
+	/*Initialize the word for the new node*/
 	if ((newNode->word = malloc(sizeof(strlen(word))))==NULL){
 		perror(getError(1));
 		exit(1);
 	}
 	strcpy(newNode->word, word);
 
-	/*Initiliaze new node's children*/
+	/*Initialize new node's children*/
 	if ((newNode->children = malloc(MINSIZE*sizeof(TrieNode)))==NULL){
 		perror(getError(1));
 		exit(1);
@@ -52,7 +50,7 @@ TrieNode * trieNodeInit(char final, TrieNode *parent, char *word){
 	return newNode;
 }
 
-void addToChildren(TrieNode *parent, TrieNode *child){
+void trieAddToChildren(TrieNode *parent, TrieNode *child){
 	TrieNode **newChildren;
 
 	/*If the parent node has no more space for new children, allocate extra space*/
