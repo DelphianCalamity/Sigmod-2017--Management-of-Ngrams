@@ -29,8 +29,8 @@ int main(int argc, char **argv) {
     }
  
     trieRoot = trieRootInit();                  //Initializing Trie
-    //readInputFile(finit);                     //Input & Storing
-    //readQueryFile(fquery);
+    readInputFile(finit);                     //Input & Storing
+    readQueryFile(fquery);
     
     return 0;
 }
