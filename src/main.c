@@ -28,42 +28,9 @@ int main(int argc, char **argv) {
         }
     }
  
-    trieRoot = trieRootInit();                  //Initializing Trie
+    trieRoot = trieRootInit();                //Initializing Trie
     readInputFile(finit);                     //Input & Storing
     readQueryFile(fquery);
     
     return 0;
 }
-
-
-
-
-
-
-/*
-int fpeek(FILE *fp){
-    return ungetc(getc(fp),fp);
-}
-
-void insert_Ngrams_In_Trie(FILE* fp, TrieRoot* trieRoot){
-    
-    char buffer[WORD_SIZE];
-    Ngramptr ngram;
-    
-    while(fpeek(fp) != EOF){
-        
-        ngram = Ngram_create();
-        
-        while(fpeek(fp) != '\n'){
-            fscanf(fp, "%s", buffer);
-            Ngram_Insert_End(ngram, buffer);
-        }
-        getc(fp);                               //Consume new line character
-        
-        Ngram_print(ngram);
-        Ngram_free(ngram);
-
-        trieInsertSort(trieRoot, ngram);
-    }
-}
- */

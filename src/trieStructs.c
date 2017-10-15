@@ -73,6 +73,42 @@ void trieAddToChildren(TrieNode *parent, TrieNode *child){
 	parent->emptySpace--;
 }
 
+BinaryResult binarySearch(TrieNode *children, char * word){
+
+    TrieNode *root = trieRoot->root;
+    BinaryResult br;
+    br.found = 0;
+    
+    int size = root->maxChildren - root->emptySpace;        //Size of occupied array
+    int fst = 0, lst = size-1;
+    int middle = (fst + lst)/2;
+    
+    while(fst <= lst) {
+        
+        if(strcmp(children[middle].word, word) < 0)
+            fst = middle + 1;
+     
+        else if(strcmp(children[middle].word, word) == 0){
+            br.position = middle;
+            br.found = 1;
+            return br;
+        }
+        
+        else lst = middle - 1;
+        
+        middle = (fst + lst)/2;
+    }
+    
+    if(fst > size-1)
+        br.position = lst;
+    else br.position = fst;
+
+    return br;
+}
+
+
+
+
 
 TrieNode* trieSearch(NgramVector *ngramVector){
     
@@ -90,9 +126,7 @@ void trieDeleteNgram(NgramVector *ngram){
 
 }
 
-BinaryResult binarySearch(TrieNode **children, char * word){
 
-}
 
 void trieFree(){
  

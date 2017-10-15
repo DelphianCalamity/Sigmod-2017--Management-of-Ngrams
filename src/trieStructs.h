@@ -24,7 +24,7 @@ struct trieRoot{
 };
 
 struct binaryResult{
-    TrieNode * parent;
+    int position;
     char found;
 };
 
