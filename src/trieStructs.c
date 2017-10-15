@@ -12,7 +12,7 @@ void trieRootInit() {
         perror(getError(1));
         exit(1);
     }
-    if ((trieRoot->root=malloc(sizeof(TrieNode)))==NULL){
+    if ((trieRoot->root = malloc(sizeof(TrieNode))) == NULL) {
         perror(getError(1));
         exit(1);
     }
@@ -30,7 +30,6 @@ void trieNodeInit(char isFinal, TrieNode *parent, char *word, TrieNode *child) {
     child->parentNode = parent;
     child->deleted = 0;
 
-    free(child->word);
     /*Initialize the word for the new node*/
     if ((child->word = malloc(sizeof(strlen(word)))) == NULL) {
         perror(getError(1));
@@ -93,7 +92,7 @@ void trieBinarySearch(BinaryResult* br, TrieNode *parent, char *word) {
 
     if (lst < 0) {                                                //Empty array
         br->position = 0;
-        return br;
+     //   return br;
     }
 
     while (fst <= lst) {
@@ -115,7 +114,7 @@ void trieBinarySearch(BinaryResult* br, TrieNode *parent, char *word) {
     else
         br->position = fst;
 
-    return;
+    //return;
 }
 
 
@@ -124,48 +123,51 @@ TrieNode *trieSearch(NgramVector *ngramVector) {
 }
 
 int trieInsertSort(NgramVector *ngramVector) {
-    int i, final=0;
+    int i, flag = 1;
     TrieNode *parent;
     TrieNode *newChildren;
     BinaryResult result;
-    char *word;
+    char *word, final = 0;
 
-    parent=trieRoot->root;
+    parent = trieRoot->root;
 
-    for (i = 0; i <ngramVector->words ; i++) {
+    for (i = 0; i < ngramVector->words; i++) {
         word = ngramVector->ngram[i];
 
         /*Run binary search*/
-        result = trieBinarySearch(parent, word);
+        if (flag)
+            trieBinarySearch(parent, word, &result);
 
-        if (result.found = 0) {
-            if (parent->children[result.position - 1].deleted) {
+        if (result.found == 0) {
+            if (parent->children[result.position].deleted) {
                 parent->children[result.position].deleted = 0;
                 parent->deletedChildren -= 1;
+                free( parent->children[result.position].word);
+                //free( parent->children[result.position].children);
             } else {
                 /*If the parent node has no more space for new children, allocate extra space*/
                 if (parent->emptySpace == 0) {
-                    if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) == NULL) {
+                    if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) ==
+                        NULL) {
                         perror(getError(2));
                         exit(2);
                     }
                     parent->children = newChildren;
                     parent->emptySpace += parent->maxChildren;
                     parent->maxChildren *= 2;
-                } else {
-                    memcpy(&parent->children[result.position + 1], &parent->children[result.position],
-                           (parent->maxChildren - parent->emptySpace - result.position) * sizeof(TrieNode));
                 }
+                 memcpy(&parent->children[result.position + 1], &parent->children[result.position],
+                           (parent->maxChildren - parent->emptySpace - result.position) * sizeof(TrieNode));
             }
-            if (i==ngramVector->words)
-                final =1;
+            if (i == ngramVector->words)
+                final = 1;
             /*Store the new child and update children count*/
             trieNodeInit(final, parent, word, &parent->children[result.position]);
+            flag = 0;
         }
         parent = &parent->children[result.position];
 
     }
-
 
 
     return 0;
