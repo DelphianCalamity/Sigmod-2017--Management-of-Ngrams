@@ -1,6 +1,6 @@
 CC = gcc
-SRCS = bursts.c errorMessages.c main.c ngrams.c parcing.c trieStructs.c
-HDRS = bursts.h errorMessages.h main.h ngrams.h parcing.h trieStructs.h
+SRCS = bursts.c errorMessages.c main.c ngram.c parsing.c trieStructs.c
+HDRS = bursts.h errorMessages.h ngram.h parsing.h trieStructs.h
 PROG = ngrams
 FLAGS = -Wall -g
 OBJS = $(SRCS:.c=.o)

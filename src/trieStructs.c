@@ -86,13 +86,13 @@ void trieBinarySearch(BinaryResult* br, TrieNode *parent, char *word) {
 
     br->found = 0;
 
-    int size = parent->maxChildren - parent->emptySpace;        //Size of occupied array
+    int size = parent->maxChildren - parent->emptySpace;            //Size of occupied array
     int fst = 0, lst = size - 1;
     int middle = (fst + lst) / 2;
 
-    if (lst < 0) {                                                //Empty array
+    if (lst < 0) {                                                  //Empty array
         br->position = 0;
-     //   return br;
+        return;
     }
 
     while (fst <= lst) {
@@ -113,8 +113,6 @@ void trieBinarySearch(BinaryResult* br, TrieNode *parent, char *word) {
         br->position = lst;
     else
         br->position = fst;
-
-    //return;
 }
 
 
