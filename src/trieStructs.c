@@ -136,30 +136,44 @@ int trieInsertSort(NgramVector *ngramVector) {
             trieBinarySearch(&result, parent, word);
 
         if (result.found == 0) {
-            if (parent->children[result.position].deleted) {
-                //printf("mpike se deleted\n");
-                parent->children[result.position].deleted = 0;
-                parent->deletedChildren -= 1;
-                free( parent->children[result.position].word);
-                //free( parent->children[result.position].children);
-            } else {
-                /*If the parent node has no more space for new children, allocate extra space*/
-                if (parent->emptySpace == 0) {
-                    printf("mpike na megalosei\n");
-                    if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) ==
-                        NULL) {
+            printf("current size is %d and position is %d\n", parent->maxChildren, result.position);
+            if (result.position < parent->maxChildren){
+                if (parent->children[result.position].deleted ) {
+                    //printf("mpike se deleted\n");
+                    parent->children[result.position].deleted = 0;
+                    parent->deletedChildren -= 1;
+                    free( parent->children[result.position].word);
+                    //free( parent->children[result.position].children);
+                } else {
+                    /*If the parent node has no more space for new children, allocate extra space*/
+                    if (parent->emptySpace == 0) {
+                        printf("mpike na megalosei\n");
+                        if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) ==
+                            NULL) {
+                            getError(2);
+                            exit(2);
+                        }
+                        parent->children = newChildren;
+                        parent->emptySpace += parent->maxChildren;
+                        parent->maxChildren *= 2;
+                    }
+                    if (result.position <= parent->maxChildren - parent->emptySpace ){
+                        printf("current size is %d and position has %s and position is %d\n", parent->maxChildren, parent->children[result.position].word, result.position);
+                        memcpy(&parent->children[result.position + 1], &parent->children[result.position],
+                               (parent->maxChildren - parent->emptySpace - result.position) * sizeof(TrieNode));
+                    }
+                }
+            }
+            else{
+                    printf("mpike na megalosei xoris realloc\n");
+                    if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) == NULL) {
                         getError(2);
                         exit(2);
                     }
                     parent->children = newChildren;
                     parent->emptySpace += parent->maxChildren;
                     parent->maxChildren *= 2;
-                }
-                if (result.position <= parent->maxChildren - parent->emptySpace ){
-                    printf("current size is %d and position has %s and position is %d\n", parent->maxChildren, parent->children[result.position].word, result.position);
-                    memcpy(&parent->children[result.position + 1], &parent->children[result.position],
-                           (parent->maxChildren - parent->emptySpace - result.position) * sizeof(TrieNode));
-                       }
+
             }
             if (i == ngramVector->words)
                 final = 1;
