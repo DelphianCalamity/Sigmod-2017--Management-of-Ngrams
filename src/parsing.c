@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "bursts.h"
+#include "errorMessages.h"
 #include "ngram.h"
 #include "parsing.h"
 #include "trieStructs.h"
@@ -15,7 +16,7 @@ void readInputFile(char *inputFile){
 
 
 	if ((fp = fopen(inputFile, "r")) == NULL){				// open graph file
-		//perror(printError(2));
+		perror(printError(3));
 		exit(2);
 	}
 
@@ -24,7 +25,7 @@ void readInputFile(char *inputFile){
 		i = strlen(buffer);
 		if (buffer[i-1] == '\n'){							// remove \n for easier handling
 			buffer[i-1] = '\0';
-		}															
+		}
 		createNgram(ngram, buffer);
 		trieInsertSort(ngram);					// or any other insertion function for the initial trie
 	}
@@ -42,7 +43,7 @@ void readQueryFile(char *queryFile){
 
 
 	if ((fp = fopen(queryFile, "r")) == NULL){				// open graph file
-		//perror(printError(2));
+		perror(printError(3));
 		exit(2);
 	}
 

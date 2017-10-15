@@ -8,7 +8,7 @@ char * getError(int code){
 
         case 2:  return("Error in memory reallocation");
 
-        case 3:  return("");
+        case 3:  return("Error in file opening");
 
         case 4:  return("") ;
 

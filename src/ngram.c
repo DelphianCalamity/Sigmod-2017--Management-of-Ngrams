@@ -9,12 +9,12 @@ NgramVector * initNgram(void){										// creates and initializes the ngram str
 	NgramVector *ngramVector;
 
 	if ((ngramVector = malloc(sizeof(NgramVector))) == NULL){
-		//perror(printError(1));
+		perror(printError(1));
 		exit(1);
 	}
 
 	if ((ngramVector->ngram = malloc(INIT_SIZE*sizeof(char *))) == NULL){
-		//perror(printError(1));
+		perror(printError(1));
 		exit(1);
 	}
 	ngramVector->capacity = INIT_SIZE;
@@ -32,7 +32,7 @@ void createNgram(NgramVector *ngramVector, char *buffer){			// creates an ngram 
 	while ((token = strtok(NULL, " ")) != NULL){					// while there are still some words
 		if (ngramVector->words == ngramVector->capacity){
 			if ((ngramVector->ngram = realloc(ngramVector->ngram, 2*ngramVector->capacity)) == NULL){			// not enough space in vector, double it
-				//perror(printError(1));
+				perror(printError(2));
 				exit(1);
 			}
 			ngramVector->capacity *= 2;
