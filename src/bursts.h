@@ -20,7 +20,7 @@ struct burst{
 	Burst *next;            // next command
 };
 
-void addCommand(char, char **, int);
+void addCommand(char, NgramVector*);
 void addBurst(void);
 void executeBurstCommands(BurstList *);
 void processBursts(void);

@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "ngram.h"
-#include "errorMEssages.h"
+#include "errorMessages.h"
 
 NgramVector * initNgram(void){										// creates and initializes the ngram struct
 	NgramVector *ngramVector;
@@ -45,7 +45,7 @@ void createNgram(NgramVector *ngramVector, char *buffer){			// creates an ngram 
 
 void deleteNgram(NgramVector *ngramVector){							// deletes the ngram struct, does not touch the words of the ngram
 	free(ngramVector->ngram);
-	free(ngram);
+	free(ngramVector);
 }
 
 

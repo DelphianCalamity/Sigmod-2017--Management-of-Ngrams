@@ -37,7 +37,7 @@ void readInputFile(char *inputFile){
 void readQueryFile(char *queryFile){
 	int i;
 	char buffer[1024], stop=0, command, burstFlag=1;
-	NgramVector ngram;
+	NgramVector *ngram;
 	FILE *fp;
 
 
