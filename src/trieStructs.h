@@ -32,7 +32,7 @@ TrieRoot *trieRoot;                                 //Global Variable
 
 TrieRoot* trieRootInit();
 TrieNode* trieNodeInit(char, TrieNode *, char *);
-BinaryResult binarySearch(TrieNode *, char *);
+BinaryResult binarySearch(TrieNode *, TrieNode *, char *);
 TrieNode* trieSearch(NgramVector *);
 int trieInsertSort(NgramVector *);
 void trieDeleteNgram(NgramVector*);

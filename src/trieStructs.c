@@ -77,13 +77,12 @@ void trieAddToChildren(TrieNode *parent, TrieNode *child){
 //If found is 1, element exists and 'position' holds its actual position
 //Otherwise, 'position' holds the position inside the array where element should be.
 
-BinaryResult binarySearch(TrieNode *children, char * word){
+BinaryResult binarySearch(TrieNode* parent ,TrieNode *children, char * word){
 
-    TrieNode *root = trieRoot->root;
     BinaryResult br;
     br.found = 0;
     
-    int size = root->maxChildren - root->emptySpace;        //Size of occupied array
+    int size = parent->maxChildren - parent->emptySpace;        //Size of occupied array
     int fst = 0, lst = size-1;
     int middle = (fst + lst)/2;
     
