@@ -9,11 +9,11 @@
 /*Initialization of trie root*/
 void trieRootInit() {
     if ((trieRoot = malloc(sizeof(TrieRoot))) == NULL) {
-        perror(getError(1));
+        getError(1);
         exit(1);
     }
     if ((trieRoot->root = malloc(sizeof(TrieNode))) == NULL) {
-        perror(getError(1));
+        getError(1);
         exit(1);
     }
     trieNodeInit(0, NULL, "", trieRoot->root);
@@ -32,49 +32,49 @@ void trieNodeInit(char isFinal, TrieNode *parent, char *word, TrieNode *child) {
 
     /*Initialize the word for the new node*/
     if ((child->word = malloc(sizeof(strlen(word)))) == NULL) {
-        perror(getError(1));
+        getError(1);
         exit(1);
     }
     strcpy(child->word, word);
 
     /*Initiliaze new node's children*/
     if ((child->children = malloc(MINSIZE * sizeof(TrieNode))) == NULL) {
-        perror(getError(1));
+        getError(1);
         exit(1);
     }
 
 }
 
-void trieAddToChildren(TrieNode *parent, char *word) {
-    TrieNode *newChildren;
-    BinaryResult result;
-
-    /*Run binary search*/
-    result = trieBinarySearch(parent, word);
-    if (result.found = 0) {
-        if (parent->children[result.position - 1].deleted) {
-            parent->children[result.position].deleted = 0;
-            parent->deletedChildren -= 1;
-        } else {
-            /*If the parent node has no more space for new children, allocate extra space*/
-            if (parent->emptySpace == 0) {
-                if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) == NULL) {
-                    perror(getError(2));
-                    exit(2);
-                }
-                parent->children = newChildren;
-                parent->emptySpace += parent->maxChildren;
-                parent->maxChildren *= 2;
-            } else {
-                memcpy(&parent->children[result.position + 1], &parent->children[result.position],
-                       (parent->maxChildren - parent->emptySpace - result.position) * sizeof(TrieNode));
-            }
-        }
-        /*Store the new child and update children count*/
-
-    }
-    return;
-}
+// void trieAddToChildren(TrieNode *parent, char *word) {
+//     TrieNode *newChildren;
+//     BinaryResult result;
+//
+//     /*Run binary search*/
+//     result = trieBinarySearch(parent, word);
+//     if (result.found = 0) {
+//         if (parent->children[result.position - 1].deleted) {
+//             parent->children[result.position].deleted = 0;
+//             parent->deletedChildren -= 1;
+//         } else {
+//             /*If the parent node has no more space for new children, allocate extra space*/
+//             if (parent->emptySpace == 0) {
+//                 if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) == NULL) {
+//                     getError(2);
+//                     exit(2);
+//                 }
+//                 parent->children = newChildren;
+//                 parent->emptySpace += parent->maxChildren;
+//                 parent->maxChildren *= 2;
+//             } else {
+//                 memcpy(&parent->children[result.position + 1], &parent->children[result.position],
+//                        (parent->maxChildren - parent->emptySpace - result.position) * sizeof(TrieNode));
+//             }
+//         }
+//         /*Store the new child and update children count*/
+//
+//     }
+//     return;
+// }
 
 
 //If found is 1, element exists and 'position' holds its actual position
@@ -92,7 +92,7 @@ void trieBinarySearch(BinaryResult* br, TrieNode *parent, char *word) {
 
     if (lst < 0) {                                                //Empty array
         br->position = 0;
-     //   return br;
+        return ;//br;
     }
 
     while (fst <= lst) {
@@ -119,7 +119,7 @@ void trieBinarySearch(BinaryResult* br, TrieNode *parent, char *word) {
 
 
 TrieNode *trieSearch(NgramVector *ngramVector) {
-
+    return NULL;
 }
 
 int trieInsertSort(NgramVector *ngramVector) {
@@ -129,6 +129,8 @@ int trieInsertSort(NgramVector *ngramVector) {
     BinaryResult result;
     char *word, final = 0;
 
+
+    printf("mpike\n");
     parent = trieRoot->root;
 
     for (i = 0; i < ngramVector->words; i++) {
@@ -136,10 +138,11 @@ int trieInsertSort(NgramVector *ngramVector) {
 
         /*Run binary search*/
         if (flag)
-            trieBinarySearch(parent, word, &result);
+            trieBinarySearch(&result, parent, word);
 
         if (result.found == 0) {
             if (parent->children[result.position].deleted) {
+                //printf("mpike se deleted\n");
                 parent->children[result.position].deleted = 0;
                 parent->deletedChildren -= 1;
                 free( parent->children[result.position].word);
@@ -147,15 +150,17 @@ int trieInsertSort(NgramVector *ngramVector) {
             } else {
                 /*If the parent node has no more space for new children, allocate extra space*/
                 if (parent->emptySpace == 0) {
+                    printf("mpike na megalosei\n");
                     if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) ==
                         NULL) {
-                        perror(getError(2));
+                        getError(2);
                         exit(2);
                     }
                     parent->children = newChildren;
                     parent->emptySpace += parent->maxChildren;
                     parent->maxChildren *= 2;
                 }
+                printf("current size is %d and position has %s and position is %d", parent->maxChildren, parent->children[result.position], result.position);
                  memcpy(&parent->children[result.position + 1], &parent->children[result.position],
                            (parent->maxChildren - parent->emptySpace - result.position) * sizeof(TrieNode));
             }
@@ -163,6 +168,7 @@ int trieInsertSort(NgramVector *ngramVector) {
                 final = 1;
             /*Store the new child and update children count*/
             trieNodeInit(final, parent, word, &parent->children[result.position]);
+            parent->emptySpace--;
             flag = 0;
         }
         parent = &parent->children[result.position];

@@ -1,6 +1,6 @@
 CC = gcc
-SRCS = bursts.c errorMessages.c main.c ngrams.c parcing.c trieStructs.c
-HDRS = bursts.h errorMessages.h main.h ngrams.h parcing.h trieStructs.h
+SRCS = bursts.c errorMessages.c main.c ngram.c parsing.c trieStructs.c
+HDRS = bursts.h errorMessages.h ngram.h parsing.h trieStructs.h
 PROG = ngrams
 FLAGS = -Wall -g
 OBJS = $(SRCS:.c=.o)
@@ -12,12 +12,12 @@ main.o : main.c $(HDRS)
 	$(CC) main.c -c $(FLAGS)
 errorMessages.o : errorMessages.c $(HDRS)
 	$(CC) errorMessages.c -c $(FLAGS)
-Bursts.o : Bursts.c $(HDRS)
-	$(CC) Bursts.c -c $(FLAGS)
-ngrams.o : ngrams.c $(HDRS)
-	$(CC) ngrams.c -c $(FLAGS)
-parcing.o : parcing.c $(HDRS)
-	$(CC) parcing.c -c $(FLAGS)
+bursts.o : bursts.c $(HDRS)
+	$(CC) bursts.c -c $(FLAGS)
+ngram.o : ngram.c $(HDRS)
+	$(CC) ngram.c -c $(FLAGS)
+parsing.o : parsing.c $(HDRS)
+	$(CC) parsing.c -c $(FLAGS)
 trieStructs.o : trieStructs.c $(HDRS)
 	$(CC) trieStructs.c -c $(FLAGS)
 clean :

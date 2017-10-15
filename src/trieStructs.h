@@ -3,7 +3,7 @@
 
 #include "ngram.h"
 
-#define MINSIZE 100
+#define MINSIZE 1
 
 typedef struct trieNode TrieNode;
 typedef struct trieRoot TrieRoot;

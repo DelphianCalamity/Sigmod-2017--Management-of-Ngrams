@@ -6,28 +6,28 @@
 #include "errorMessages.h"
 
 int main(int argc, char **argv) {
-    
+
     int i;
     char *finit, *fquery;
-    
+
     //Read Main 's arguments
     if(argc < 5){
         printf("Correct syntax is: %s -i <init_file> -q <query_file>\n", argv[0]);
         return 1;
     }
-    
+
     for(i=1; i<argc; i=i+2){
-        
+
         if(strcmp(argv[i],"-i") == 0) {
             if ((finit=malloc(strlen(argv[i+1])*sizeof(char)))==NULL){
-                perror(getError(1));
+                getError(1);
                 exit(1);
             }
             strcpy(finit, argv[i+1]);
         }
         else if(strcmp(argv[i],"-q") == 0){
             if ((fquery=malloc(strlen(argv[i+1])*sizeof(char)))==NULL){
-                perror(getError(1));
+                getError(1);
                 exit(1);
             }
             strcpy(fquery, argv[i+1]);
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 
     trieRootInit();                //Initializing Trie
     readInputFile(finit);                     //Input & Storing
-    readQueryFile(fquery);
-    readInputFile(finit);
+    //readQueryFile(fquery);
+    //readInputFile(finit);
     return 0;
 }

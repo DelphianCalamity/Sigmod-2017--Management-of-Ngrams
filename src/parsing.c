@@ -16,8 +16,8 @@ void readInputFile(char *inputFile){
 
 
 	if ((fp = fopen(inputFile, "r")) == NULL){				// open graph file
-		perror(printError(3));
-		exit(2);
+		getError(3);
+		exit(3);
 	}
 
 	ngram = initNgram();
@@ -43,7 +43,7 @@ void readQueryFile(char *queryFile){
 
 
 	if ((fp = fopen(queryFile, "r")) == NULL){				// open graph file
-		perror(printError(3));
+		getError(3);
 		exit(2);
 	}
 
@@ -61,7 +61,7 @@ void readQueryFile(char *queryFile){
 			if (buffer[i-1] == '\n'){							// remove \n for easier handling
 				buffer[i-1] = '\0';
 			}
-			
+
 			command = buffer[0];
 			ngram = initNgram();
 			createNgram(ngram, &buffer[2]);

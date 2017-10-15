@@ -1,18 +1,16 @@
 //
 // Created by Stathis on 10/12/2017.
 //
+#include <stdio.h>
 
-char * getError(int code){
+void getError(int code){
     switch (code) {
-        case 1:  return("Error in memory allocation") ;
+        case 1:  perror("Error in memory allocation") ; break;
 
-        case 2:  return("Error in memory reallocation");
+        case 2:  perror("Error in memory reallocation");break;
 
-        case 3:  return("Error in file opening");
-
-        case 4:  return("") ;
-
-        case 5:  return("") ;
+        case 3:  perror("Error in file opening");break;
 
     }
+    return;
 }

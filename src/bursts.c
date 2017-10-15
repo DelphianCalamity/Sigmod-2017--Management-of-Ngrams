@@ -12,7 +12,7 @@ void addCommand(char com, NgramVector *ngram){
 	Burst *temp;
 
 	if ((temp = malloc(sizeof(Burst))) == NULL){
-		perror(printError(1));
+		getError(1);
 		exit(1);
 	}
 
@@ -31,7 +31,7 @@ void addBurst(void){
 	BurstList *temp;
 
 	if ((temp = malloc(sizeof(BurstList))) == NULL){
-		perror(printError(1));
+		getError(1);
 		exit(1);
 	}
 
