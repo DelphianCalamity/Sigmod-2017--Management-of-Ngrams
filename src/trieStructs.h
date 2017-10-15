@@ -17,6 +17,7 @@ struct trieNode{
     int maxChildren;
     int deletedChildren;
     char is_final;
+    char deleted;
 };
 
 struct trieRoot{
@@ -30,8 +31,8 @@ struct binaryResult{
 
 TrieRoot *trieRoot;                                 //Global Variable
 
-TrieRoot* trieRootInit();
-TrieNode* trieNodeInit(char, TrieNode *, char *);
+void trieRootInit();
+void trieNodeInit(char, TrieNode *, char *, TrieNode *);
 BinaryResult trieBinarySearch(TrieNode *, char *);
 TrieNode* trieSearch(NgramVector *);
 int trieInsertSort(NgramVector *);
