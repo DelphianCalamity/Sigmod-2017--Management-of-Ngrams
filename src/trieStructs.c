@@ -160,7 +160,7 @@ int trieInsertSort(NgramVector *ngramVector) {
                     parent->maxChildren *= 2;
                 }
                 if (result.position <= parent->maxChildren - parent->emptySpace ){
-                    printf("current size is %d and position has %s and position is %d", parent->maxChildren, parent->children[result.position].word, result.position);
+                    printf("current size is %d and position has %s and position is %d\n", parent->maxChildren, parent->children[result.position].word, result.position);
                     memcpy(&parent->children[result.position + 1], &parent->children[result.position],
                            (parent->maxChildren - parent->emptySpace - result.position) * sizeof(TrieNode));
                        }
