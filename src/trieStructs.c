@@ -80,7 +80,7 @@ void trieNodeInit(char isFinal, TrieNode *parent, char *word, TrieNode *child) {
 //If found is 1, element exists and 'position' holds its actual position
 //Otherwise, 'position' holds the position inside the array where element should be.
 
-void trieBinarySearch(BinaryResult* br, TrieNode *parent, char *word) {
+void trieBinarySearch(BinaryResult *br, TrieNode *parent, char *word) {
 
     TrieNode *children = parent->children;
 
@@ -92,8 +92,7 @@ void trieBinarySearch(BinaryResult* br, TrieNode *parent, char *word) {
 
     if (lst < 0) {                                                  //Empty array
         br->position = 0;
-        return ;//br;
-
+        return;
     }
 
     while (fst <= lst) {
@@ -110,10 +109,7 @@ void trieBinarySearch(BinaryResult* br, TrieNode *parent, char *word) {
         middle = (fst + lst) / 2;
     }
 
-    if (fst > size - 1)
-        br->position = lst;
-    else
-        br->position = fst;
+    br->position = fst;
 }
 
 
