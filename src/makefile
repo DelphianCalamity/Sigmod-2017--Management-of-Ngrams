@@ -1,25 +1,26 @@
-all: ngrams
+CC = gcc
+SRCS = bursts.c errorMessages.c main.c ngrams.c parcing.c trieStructs.c
+HDRS = bursts.h errorMessages.h main.h ngrams.h parcing.h trieStructs.h
+PROG = ngrams
+FLAGS = -Wall -g
+OBJS = $(SRCS:.c=.o)
 
-ngrams: bursts.o errorMessages.o main.o ngrams.o parsing.o trieStructs.o
-	gcc bursts.o errorMessages.o main.o ngrams.o parsing.o trieStructs.o  -o ngrams
+$(PROG) :  $(OBJS)
+	$(CC) $(OBJS) -o $(PROG)
 
-bursts.o: bursts.c
-	gcc -c bursts.c
-
-errorMessages.o: errorMessages.c
-	gcc -c errorMessages.c
-
-main.o: main.c
-	gcc -c main.c
-
-ngrams.o: ngrams.c
-    gcc -c ngrams.c
-
-parsing.o: parsing.c
-	gcc -c parsing.c
-
-trieStructs.o: trieStructs.c
-	gcc -c trieStructs.c
-
-clean: 
-	rm *o
+main.o : main.c $(HDRS)
+	$(CC) main.c -c $(FLAGS)
+errorMessages.o : errorMessages.c $(HDRS)
+	$(CC) errorMessages.c -c $(FLAGS)
+Bursts.o : Bursts.c $(HDRS)
+	$(CC) Bursts.c -c $(FLAGS)
+ngrams.o : ngrams.c $(HDRS)
+	$(CC) ngrams.c -c $(FLAGS)
+parcing.o : parcing.c $(HDRS)
+	$(CC) parcing.c -c $(FLAGS)
+trieStructs.o : trieStructs.c $(HDRS)
+	$(CC) trieStructs.c -c $(FLAGS)
+clean :
+	rm -f core $(PROG) $(OBJS)
+TAGS : $(SRCS) $(HDRS)
+	etags -t $(SRCS) $(HDRS)
