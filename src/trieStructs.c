@@ -92,11 +92,8 @@ void trieBinarySearch(BinaryResult* br, TrieNode *parent, char *word) {
 
     if (lst < 0) {                                                  //Empty array
         br->position = 0;
-<<<<<<< HEAD
         return ;//br;
-=======
-        return;
->>>>>>> 6878b2d1c7c2c94fff31346c103bac348c359763
+
     }
 
     while (fst <= lst) {
@@ -162,9 +159,11 @@ int trieInsertSort(NgramVector *ngramVector) {
                     parent->emptySpace += parent->maxChildren;
                     parent->maxChildren *= 2;
                 }
-                printf("current size is %d and position has %s and position is %d", parent->maxChildren, parent->children[result.position], result.position);
-                 memcpy(&parent->children[result.position + 1], &parent->children[result.position],
+                if (result.position <= parent->maxChildren - parent->emptySpace ){
+                    printf("current size is %d and position has %s and position is %d", parent->maxChildren, parent->children[result.position].word, result.position);
+                    memcpy(&parent->children[result.position + 1], &parent->children[result.position],
                            (parent->maxChildren - parent->emptySpace - result.position) * sizeof(TrieNode));
+                       }
             }
             if (i == ngramVector->words)
                 final = 1;
