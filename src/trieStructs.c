@@ -73,6 +73,10 @@ void trieAddToChildren(TrieNode *parent, TrieNode *child){
 	parent->emptySpace--;
 }
 
+
+//If found is 1, element exists and 'position' holds its actual position
+//Otherwise, 'position' holds the position inside the array where element should be.
+
 BinaryResult binarySearch(TrieNode *children, char * word){
 
     TrieNode *root = trieRoot->root;
