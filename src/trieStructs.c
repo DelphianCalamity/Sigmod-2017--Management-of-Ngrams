@@ -52,7 +52,6 @@ void trieAddToChildren(TrieNode *parent, char *word) {
 
     /*Run binary search*/
     result = trieBinarySearch(parent, word);
-
     if (result.found = 0) {
         if (parent->children[result.position - 1].deleted) {
             parent->children[result.position].deleted = 0;
