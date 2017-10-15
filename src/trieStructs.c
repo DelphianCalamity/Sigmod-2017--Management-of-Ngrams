@@ -53,7 +53,7 @@ TrieNode* trieNodeInit(char isFinal, TrieNode *parent, char *word){
 }
 
 void trieAddToChildren(TrieNode *parent, TrieNode *child){
-	TrieNode **newChildren;
+	TrieNode *newChildren;
 
     /*Run binary search*/
 
@@ -88,6 +88,11 @@ BinaryResult trieBinarySearch(TrieNode* parent, char * word){
     int fst = 0, lst = size-1;
     int middle = (fst + lst)/2;
     
+    if(lst < 0){                                                //Empty array
+        br.position=0;
+        return br;
+    }
+        
     while(fst <= lst) {
         
         if(strcmp(children[middle].word, word) < 0)
