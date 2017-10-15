@@ -92,7 +92,7 @@ BinaryResult trieBinarySearch(TrieNode* parent, char * word){
         br.position=0;
         return br;
     }
-        
+
     while(fst <= lst) {
         
         if(strcmp(children[middle].word, word) < 0)
@@ -109,9 +109,7 @@ BinaryResult trieBinarySearch(TrieNode* parent, char * word){
         middle = (fst + lst)/2;
     }
     
-    if(fst > size-1)
-        br.position = lst;
-    else br.position = fst;
+    br.position = fst;
 
     return br;
 }
