@@ -193,6 +193,8 @@ int trieInsertSort(NgramVector *ngramVector) {
             parent->emptySpace--;
 
         }
+        if (i == ngramVector->words)
+            parent->children[result.position].is_final = 1;
         parent = &parent->children[result.position];
 
     }
