@@ -42,6 +42,7 @@ void trieNodeInit(char isFinal, TrieNode *parent, char *word, TrieNode *child) {
         getError(1);
         exit(1);
     }
+    //memset(child->children, 0, MINSIZE * sizeof(TrieNode));
 
 }
 
@@ -135,52 +136,62 @@ int trieInsertSort(NgramVector *ngramVector) {
         if (flag)
             trieBinarySearch(&result, parent, word);
 
-        if (result.found == 0) {
-            printf("current size is %d and position is %d\n", parent->maxChildren, result.position);
+        if (result.found==0){
+            /*If it's within the borders of the chidlren array*/
             if (result.position < parent->maxChildren){
-                if (parent->children[result.position].deleted ) {
-                    //printf("mpike se deleted\n");
+                /*If there is already available space*/
+                if (parent->children[result.position].deleted ==1) {
+                    // for (i=0; i<parent->maxChildren-parent->emptySpace; i++){
+                    //     printf ("word is %s\n", parent->children[i].deleted);
+                    // }
+                    printf("edo den prepei na mpeis pote %d, me position %d kai paidia %d\n", parent->children[result.position].deleted, result.position, parent->maxChildren-parent->emptySpace);
+                    getchar();
                     parent->children[result.position].deleted = 0;
                     parent->deletedChildren -= 1;
                     free( parent->children[result.position].word);
-                    //free( parent->children[result.position].children);
-                } else {
-                    /*If the parent node has no more space for new children, allocate extra space*/
-                    if (parent->emptySpace == 0) {
-                        printf("mpike na megalosei\n");
-                        if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) ==
-                            NULL) {
-                            getError(2);
-                            exit(2);
+
+                }
+                else{
+                    /*In between the other children*/
+                    if (result.position < parent->maxChildren-parent->emptySpace){
+                        if (parent->emptySpace == 0){
+                            if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) ==
+                                NULL) {
+                                getError(2);
+                                exit(2);
+                            }
+                            parent->children = newChildren;
+                            parent->emptySpace += parent->maxChildren;
+                            parent->maxChildren *= 2;
                         }
-                        parent->children = newChildren;
-                        parent->emptySpace += parent->maxChildren;
-                        parent->maxChildren *= 2;
-                    }
-                    if (result.position <= parent->maxChildren - parent->emptySpace ){
-                        printf("current size is %d and position has %s and position is %d\n", parent->maxChildren, parent->children[result.position].word, result.position);
-                        memcpy(&parent->children[result.position + 1], &parent->children[result.position],
+                        memmove(&parent->children[result.position + 1], &parent->children[result.position],
                                (parent->maxChildren - parent->emptySpace - result.position) * sizeof(TrieNode));
+                        //free( parent->children[result.position].word);
                     }
+                    // /*At the end of the children, there is enough space*/
+                    // else{
+                    //
+                    // }
                 }
             }
+            /*If ngrams needs to go at the end of the children array, but there is no space*/
             else{
-                    printf("mpike na megalosei xoris realloc\n");
-                    if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) == NULL) {
-                        getError(2);
-                        exit(2);
-                    }
-                    parent->children = newChildren;
-                    parent->emptySpace += parent->maxChildren;
-                    parent->maxChildren *= 2;
-
+                if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) ==
+                    NULL) {
+                    getError(2);
+                    exit(2);
+                }
+                parent->children = newChildren;
+                parent->emptySpace += parent->maxChildren;
+                parent->maxChildren *= 2;
             }
+
             if (i == ngramVector->words)
                 final = 1;
             /*Store the new child and update children count*/
             trieNodeInit(final, parent, word, &parent->children[result.position]);
             parent->emptySpace--;
-            flag = 0;
+
         }
         parent = &parent->children[result.position];
 
