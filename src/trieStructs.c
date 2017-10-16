@@ -120,24 +120,22 @@ void trieBinarySearch(BinaryResult *br, TrieNode *parent, char *word) {
 char* trieSearch(NgramVector *ngramVector) {
 
     int i;
-    //int num_of_children;
     TrieNode* root = trieRoot->root;
     char* buffer = malloc(BUFFER_SIZE*sizeof(char));
     int capacity = BUFFER_SIZE;
     buffer[0] = '\0';
 
-    //num_of_children = root->maxChildren - (root->emptySpace + root->deletedChildren);
-
     for(i=0; i<ngramVector->words; i++){                                    //For all root's children
-        trieSearch_Ngram(root, i, ngramVector, buffer, &capacity);
+        //printf("root : i=%d, wd=%s\n", i, ngramVector->ngram[i]);
+        trieSearch_Ngram(root, i, i, ngramVector, buffer, &capacity);
     }
     return buffer;
 }
 
 //Recursive
-void trieSearch_Ngram(TrieNode* node, int i, NgramVector *ngramVector, char* buffer, int* capacity) {
+void trieSearch_Ngram(TrieNode* node, int round, int i, NgramVector *ngramVector, char* buffer, int* capacity) {
 
-    int len, space, j;
+    int len, space;
     BinaryResult br;
 
     if(node == NULL || i == ngramVector->words)                             //No more nodes or words
@@ -145,14 +143,17 @@ void trieSearch_Ngram(TrieNode* node, int i, NgramVector *ngramVector, char* buf
 
     trieBinarySearch(&br, node, ngramVector->ngram[i]);
 
+    //printf("word = %s, found = %d, position = %d\n", ngramVector->ngram[i], br.found, br.position);
+
     if(br.found == 0 || node->children[br.position].deleted == 1)          //If word not found or deleted
         return;
 
     //An ngram is found
     if(node->children[br.position].is_final == 1){
+        //printf("word %s is final\n", node->children[br.position].word);
 
         len = (int)strlen(buffer);
-        space = neededSpace(i, ngramVector);
+        space = neededSpace(round, i, ngramVector);
         while(*capacity - len <= space){
 
             if ((buffer = realloc(buffer, 2*(*capacity))) == NULL) {       //Re-allocate space
@@ -162,25 +163,25 @@ void trieSearch_Ngram(TrieNode* node, int i, NgramVector *ngramVector, char* buf
             *capacity *= 2;
         }
 
-        for(j=0; j < i; j++) {                                              //Avoiding wrapping the small repetitive code into a function for more efficiency
-            strcpy(buffer+len, ngramVector->ngram[j]);
-            len += (int)strlen(ngramVector->ngram[j]);
+        for(; round < i; round++) {                                              //Avoiding wrapping the small repetitive code into a function for more efficiency
+            strcpy(buffer+len, ngramVector->ngram[round]);
+            len += (int)strlen(ngramVector->ngram[round]);
             strcpy(buffer+len, " ");    len++;
         }
-        strcpy(buffer+len, ngramVector->ngram[j]);
-        len += (int)strlen(ngramVector->ngram[j]);
+        strcpy(buffer+len, ngramVector->ngram[round]);
+        len += (int)strlen(ngramVector->ngram[round]);
         strcpy(buffer+len, "|");    len++;
     }
 
-    trieSearch_Ngram(&node->children[br.position], ++i, ngramVector, buffer, capacity);     //Recursive call
+    trieSearch_Ngram(&node->children[br.position], round, ++i, ngramVector, buffer, capacity);     //Recursive call
 }
 
 
-int neededSpace(int i, NgramVector* ngramVector){
+int neededSpace(int round, int i, NgramVector* ngramVector){
 
-    int j, space = 0;
-    for(j=0; j <= i; j++)
-        space += strlen(ngramVector->ngram[j]) + 1;                         //+ whitespace
+    int space = 0;
+    for(; round <= i; round++)
+        space += strlen(ngramVector->ngram[round]) + 1;                         //+ whitespace
 
     return space;
 }
@@ -255,14 +256,14 @@ int trieInsertSort(NgramVector *ngramVector) {
                 parent->maxChildren *= 2;
             }
 
-            if (i == ngramVector->words)
+            if ( i == ngramVector->words -1)
                 final = 1;
             /*Store the new child and update children count*/
             trieNodeInit(final, parent, word, &parent->children[result.position]);
             parent->emptySpace--;
 
         }
-        if (i == ngramVector->words)
+        if ( i == ngramVector->words -1)
             parent->children[result.position].is_final = 1;
         parent = &parent->children[result.position];
 
