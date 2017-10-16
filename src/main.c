@@ -38,7 +38,9 @@ int main(int argc, char **argv) {
         }
     }
 
+
     /*
+    //some testing of binary search
     BinaryResult br;
     TrieNode node;
     trieNodeInit(0, NULL, "boo", &node);
@@ -46,12 +48,17 @@ int main(int argc, char **argv) {
     trieNodeInit(0, NULL, "aa", &node.children[0]);
     node.emptySpace--;
 
-    trieBinarySearch(&br, &node, "a");
+
+    trieNodeInit(0, NULL, "ab", &node.children[1]);
+    node.emptySpace--;
+
+    trieBinarySearch(&br, &node, "b");
 
     printf("found=%d\nposition=%d\n", br.found, br.position);
     */
-    trieRootInit();               //Initializing Trie
-    readInputFile(finit);         //Input & Storing
-    readQueryFile(fquery);
+
+    trieRootInit();                 //Initializing Trie
+    readInputFile(finit);           //Input & Storing
+    //readQueryFile(fquery);
     return 0;
 }

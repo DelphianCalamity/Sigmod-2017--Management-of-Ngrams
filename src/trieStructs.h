@@ -4,6 +4,7 @@
 #include "ngram.h"
 
 #define MINSIZE 1
+#define BUFFER_SIZE 10
 
 typedef struct trieNode TrieNode;
 typedef struct trieRoot TrieRoot;
@@ -34,7 +35,9 @@ TrieRoot *trieRoot;                                 //Global Variable
 void trieRootInit();
 void trieNodeInit(char, TrieNode *, char *, TrieNode *);
 void trieBinarySearch(BinaryResult*, TrieNode *, char *);
-TrieNode* trieSearch(NgramVector *);
+char* trieSearch(NgramVector *);
+void trieSearch_Ngram(TrieNode*, int, NgramVector *, char*, int*);
+int neededSpace(int i, NgramVector* ngramVector);
 int trieInsertSort(NgramVector *);
 void trieDeleteNgram(NgramVector*);
 void trieFree();

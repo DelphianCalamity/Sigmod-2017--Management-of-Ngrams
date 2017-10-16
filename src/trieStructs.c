@@ -100,12 +100,14 @@ void trieBinarySearch(BinaryResult *br, TrieNode *parent, char *word) {
 
         if (strcmp(children[middle].word, word) < 0)
             fst = middle + 1;
+
         else if (strcmp(children[middle].word, word) == 0) {
             br->position = middle;
             br->found = 1;
             return;
-        } else
-            lst = middle - 1;
+        }
+
+        else lst = middle - 1;
 
         middle = (fst + lst) / 2;
     }
@@ -113,10 +115,77 @@ void trieBinarySearch(BinaryResult *br, TrieNode *parent, char *word) {
     br->position = fst;
 }
 
+/****************************************************************************/
 
-TrieNode *trieSearch(NgramVector *ngramVector) {
-    return NULL;
+char* trieSearch(NgramVector *ngramVector) {
+
+    int i;
+    //int num_of_children;
+    TrieNode* root = trieRoot->root;
+    char* buffer = malloc(BUFFER_SIZE*sizeof(char));
+    int capacity = BUFFER_SIZE;
+    buffer[0] = '\0';
+
+    //num_of_children = root->maxChildren - (root->emptySpace + root->deletedChildren);
+
+    for(i=0; i<ngramVector->words; i++){                                    //For all root's children
+        trieSearch_Ngram(root, i, ngramVector, buffer, &capacity);
+    }
+    return buffer;
 }
+
+//Recursive
+void trieSearch_Ngram(TrieNode* node, int i, NgramVector *ngramVector, char* buffer, int* capacity) {
+
+    int len, space, j;
+    BinaryResult br;
+
+    if(node == NULL || i == ngramVector->words)                             //No more nodes or words
+        return;
+
+    trieBinarySearch(&br, node, ngramVector->ngram[i]);
+
+    if(br.found == 0 || node->children[br.position].deleted == 1)          //If word not found or deleted
+        return;
+
+    //An ngram is found
+    if(node->children[br.position].is_final == 1){
+
+        len = (int)strlen(buffer);
+        space = neededSpace(i, ngramVector);
+        while(*capacity - len <= space){
+
+            if ((buffer = realloc(buffer, 2*(*capacity))) == NULL) {       //Re-allocate space
+                getError(2);
+                exit(1);
+            }
+            *capacity *= 2;
+        }
+
+        for(j=0; j < i; j++) {                                              //Avoiding wrapping the small repetitive code into a function for more efficiency
+            strcpy(buffer+len, ngramVector->ngram[j]);
+            len += (int)strlen(ngramVector->ngram[j]);
+            strcpy(buffer+len, " ");    len++;
+        }
+        strcpy(buffer+len, ngramVector->ngram[j]);
+        len += (int)strlen(ngramVector->ngram[j]);
+        strcpy(buffer+len, "|");    len++;
+    }
+
+    trieSearch_Ngram(&node->children[br.position], ++i, ngramVector, buffer, capacity);     //Recursive call
+}
+
+
+int neededSpace(int i, NgramVector* ngramVector){
+
+    int j, space = 0;
+    for(j=0; j <= i; j++)
+        space += strlen(ngramVector->ngram[j]) + 1;                         //+ whitespace
+
+    return space;
+}
+
+/****************************************************************************/
 
 int trieInsertSort(NgramVector *ngramVector) {
     int i, flag = 1;
