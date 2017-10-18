@@ -206,11 +206,11 @@ int trieInsertSort(NgramVector *ngramVector) {
         if (flag)
             trieBinarySearch(&result, parent, word);
 
-        if (result.found==0){
+        if (result.found==0 || (result.found==1 && parent->children[result.position].deleted == 1)){
             /*If it's within the borders of the chidlren array*/
             if (result.position < parent->maxChildren){
                 /*If there is already available space*/
-                if (parent->children[result.position].deleted ==1) {
+                if (parent->children[result.position].deleted == 1) {
                     // for (i=0; i<parent->maxChildren-parent->emptySpace; i++){
                     //     printf ("word is %s\n", parent->children[i].deleted);
                     // }
