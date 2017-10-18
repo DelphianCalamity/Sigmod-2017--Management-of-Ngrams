@@ -192,8 +192,8 @@ int trieInsertSort(NgramVector *ngramVector) {
     TrieNode *parent;
     TrieNode *newChildren;
     BinaryResult result;
-    char *word, final = 0;
 
+    char *word;
     printf("mpike\n");
     parent = trieRoot->root;
 
@@ -276,8 +276,7 @@ void trieDeleteNgram(NgramVector *ngram) {
 
 void trieFree() {
 
-    int i;
-    TrieNode node = trieRoot->root;
+    TrieNode* node = trieRoot->root;
     trieRecursiveFree(node);
 
     free(trieRoot);
@@ -285,11 +284,12 @@ void trieFree() {
 
 void trieRecursiveFree(TrieNode* node){
 
-    for(i=0; i<node.maxChildren-node.emptySpace; i++){
+    int i;
+    for(i=0; i<node->maxChildren-node->emptySpace; i++){
 
         free(node->word);
 
-        if(node.deleted == 1)
+        if(node->deleted == 1)
             continue;
 
         trieRecursiveFree(&node->children[i]);
