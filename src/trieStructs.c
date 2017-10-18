@@ -148,8 +148,7 @@ void trieSearch_Ngram(TrieNode* node, int round, int i, NgramVector *ngramVector
     if(br.found == 0 || node->children[br.position].deleted == 1)          //If word not found or deleted
         return;
 
-    //An ngram is found
-    if(node->children[br.position].is_final == 1){
+    if(node->children[br.position].is_final == 1){                          //An ngram is found
         //printf("word %s is final\n", node->children[br.position].word);
 
         len = (int)strlen(buffer);
@@ -163,7 +162,7 @@ void trieSearch_Ngram(TrieNode* node, int round, int i, NgramVector *ngramVector
             *capacity *= 2;
         }
 
-        for(; round < i; round++) {                                              //Avoiding wrapping the small repetitive code into a function for more efficiency
+        for(; round < i; round++) {                                        //Avoiding wrapping the small repetitive code into a function for more efficiency
             strcpy(buffer+len, ngramVector->ngram[round]);
             len += (int)strlen(ngramVector->ngram[round]);
             strcpy(buffer+len, " ");    len++;
@@ -189,12 +188,11 @@ int neededSpace(int round, int i, NgramVector* ngramVector){
 /****************************************************************************/
 
 int trieInsertSort(NgramVector *ngramVector) {
-    int i, flag = 1;
+    int i;
     TrieNode *parent;
     TrieNode *newChildren;
     BinaryResult result;
     char *word, final = 0;
-
 
     printf("mpike\n");
     parent = trieRoot->root;
@@ -203,8 +201,7 @@ int trieInsertSort(NgramVector *ngramVector) {
         word = ngramVector->ngram[i];
 
         /*Run binary search*/
-        if (flag)
-            trieBinarySearch(&result, parent, word);
+        trieBinarySearch(&result, parent, word);
 
         if (result.found==0 || (result.found==1 && parent->children[result.position].deleted == 1)){
             /*If it's within the borders of the chidlren array*/
@@ -218,15 +215,13 @@ int trieInsertSort(NgramVector *ngramVector) {
                     getchar();
                     parent->children[result.position].deleted = 0;
                     parent->deletedChildren -= 1;
-                    free( parent->children[result.position].word);
-
+                    free(parent->children[result.position].word);
                 }
                 else{
                     /*In between the other children*/
                     if (result.position < parent->maxChildren-parent->emptySpace){
                         if (parent->emptySpace == 0){
-                            if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) ==
-                                NULL) {
+                            if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) == NULL) {
                                 getError(2);
                                 exit(2);
                             }
@@ -246,8 +241,7 @@ int trieInsertSort(NgramVector *ngramVector) {
             }
             /*If ngrams needs to go at the end of the children array, but there is no space*/
             else{
-                if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) ==
-                    NULL) {
+                if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) == NULL) {
                     getError(2);
                     exit(2);
                 }
@@ -282,4 +276,25 @@ void trieDeleteNgram(NgramVector *ngram) {
 
 void trieFree() {
 
+    int i;
+    TrieNode node = trieRoot->root;
+    trieRecursiveFree(node);
+
+    free(trieRoot);
+}
+
+void trieRecursiveFree(TrieNode* node){
+
+    for(i=0; i<node.maxChildren-node.emptySpace; i++){
+
+        free(node->word);
+
+        if(node.deleted == 1)
+            continue;
+
+        trieRecursiveFree(&node->children[i]);
+    }
+
+    free(node->children);
+    free(node);
 }

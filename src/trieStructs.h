@@ -40,6 +40,7 @@ void trieSearch_Ngram(TrieNode*, int, int, NgramVector *, char*, int*);
 int neededSpace(int, int, NgramVector*);
 int trieInsertSort(NgramVector *);
 void trieDeleteNgram(NgramVector*);
+void trieRecursiveFree(TrieNode*);
 void trieFree();
 
 #endif
