@@ -16,17 +16,17 @@ void trieRootInit() {
         getError(1);
         exit(1);
     }
-    trieNodeInit(0, NULL, "", trieRoot->root);
+    trieNodeInit(NULL, "", trieRoot->root);
 }
 
 /*Initialization of a new trienode*/
-void trieNodeInit(char isFinal, TrieNode *parent, char *word, TrieNode *child) {
+void trieNodeInit(TrieNode *parent, char *word, TrieNode *child) {
 
     /*Initialize basic info of node*/
     child->emptySpace = MINSIZE;
     child->maxChildren = MINSIZE;
     child->deletedChildren = 0;
-    child->is_final = isFinal;
+    child->is_final = 0;
     child->parentNode = parent;
     child->deleted = 0;
 
@@ -256,18 +256,21 @@ int trieInsertSort(NgramVector *ngramVector) {
                 parent->maxChildren *= 2;
             }
 
-            if ( i == ngramVector->words -1)
-                final = 1;
+//            if ( i == ngramVector->words -1)
+//                final = 1;
             /*Store the new child and update children count*/
-            trieNodeInit(final, parent, word, &parent->children[result.position]);
+            trieNodeInit(parent, word, &parent->children[result.position]);
             parent->emptySpace--;
 
         }
-        if ( i == ngramVector->words -1)
-            parent->children[result.position].is_final = 1;
+//        if ( i == ngramVector->words -1)
+//            parent->children[result.position].is_final = 1;
         parent = &parent->children[result.position];
 
     }
+    //if (parent->is_final == 0){
+        parent->is_final = 1;
+    //}
 
 
     return 0;

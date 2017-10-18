@@ -33,7 +33,7 @@ struct binaryResult{
 TrieRoot *trieRoot;                                 //Global Variable
 
 void trieRootInit();
-void trieNodeInit(char, TrieNode *, char *, TrieNode *);
+void trieNodeInit(TrieNode *, char *, TrieNode *);
 void trieBinarySearch(BinaryResult*, TrieNode *, char *);
 char* trieSearch(NgramVector *);
 void trieSearch_Ngram(TrieNode*, int, int, NgramVector *, char*, int*);
