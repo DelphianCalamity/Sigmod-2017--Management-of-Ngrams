@@ -60,11 +60,12 @@ int main(int argc, char **argv) {
     */
 
     trieRootInit();                     //Initializing Trie
-    //readInputFile(finit);             //Input & Storing
+    readInputFile(finit);             //Input & Storing
     //readQueryFile(fquery);
 
     //NgramVector* ngram = read("search.txt");
 
+    /*
     NgramVector ngram1;
     ngram1.ngram = malloc(4*sizeof(char*));
     ngram1.ngram[0] = "this";
@@ -144,7 +145,7 @@ int main(int argc, char **argv) {
 
     free(buffer);
     trieFree();
-
+*/
     return 0;
 }
 
