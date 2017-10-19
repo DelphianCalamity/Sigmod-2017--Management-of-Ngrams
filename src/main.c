@@ -64,15 +64,20 @@ int main(int argc, char **argv) {
     trieRootInit();                     //Initializing Trie
     readInputFile(finit);             //Input & Storing
     readQueryFile(fquery);
-    Burst *temp = burstListStart->start;
-    while(temp != NULL){
-        printf("%c ", temp->command);
-        for (i=0; i<temp->ngram->words; i++)
-            printf("%s ", temp->ngram->ngram[i]);
-        printf("\n");
-        temp = temp->next;
-    }
-    //executeBurstCommands(burstListStart);
+    // Burst *temp = burstListStart->start;
+    // //getchar();
+    // while(temp != NULL){
+    //     //printf("%s     %c ",temp->next->ngram->ngram[1], temp->command);
+    //     getchar();
+    //     for (i=0; i<temp->ngram->words-1; i++){
+    //                     getchar();
+    //         printf("%s ", temp->ngram->ngram[i]);
+
+    //     }
+    //     printf("\n");
+    //     temp = temp->next;
+    // }
+    executeBurstCommands(burstListStart);
     //readQueryFile(fquery);
 
     //NgramVector* ngram = read("search.txt");

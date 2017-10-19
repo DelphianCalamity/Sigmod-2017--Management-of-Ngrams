@@ -31,18 +31,19 @@ void trieNodeInit(TrieNode *parent, char *word, TrieNode *child) {
     child->deleted = 0;
 
     /*Initialize the word for the new node*/
-    if ((child->word = malloc(sizeof(strlen(word)))) == NULL) {
-        getError(1);
-        exit(1);
-    }
-    strcpy(child->word, word);
+    // if ((child->word = malloc(sizeof(strlen(word)))) == NULL) {
+    //     getError(1);
+    //     exit(1);
+    // }
+    // strcpy(child->word, word);
+    child->word = word;
 
     /*Initiliaze new node's children*/
     if ((child->children = malloc(MINSIZE * sizeof(TrieNode))) == NULL) {
         getError(1);
         exit(1);
     }
-    //memset(child->children, 0, MINSIZE * sizeof(TrieNode));
+    memset(child->children, 0, MINSIZE * sizeof(TrieNode));
 
 }
 
@@ -211,9 +212,9 @@ int trieInsertSort(NgramVector *ngramVector) {
                     // for (i=0; i<parent->maxChildren-parent->emptySpace; i++){
                     //     printf ("word is %s\n", parent->children[i].deleted);
                     // }
-                    printf("edo den prepei na mpeis pote %d, me position %d kai paidia %d\n", parent->children[result.position].deleted, result.position, parent->maxChildren-parent->emptySpace);
+                    printf("edo den prepei na mpeis pote %d, me position %d kai paidia %d\n", parent->children[result.position].deleted, result.position, parent->maxChildren);
                     getchar();
-                    parent->children[result.position].deleted = 0;
+                    //parent->children[result.position].deleted = 0;
                     parent->deletedChildren -= 1;
                     free(parent->children[result.position].word);
                 }
@@ -275,19 +276,19 @@ void trieDeleteNgram(NgramVector *ngram) {
     BinaryResult br;
     TrieNode *node = trieRoot->root;
     for (i=0; i<ngram->words; i++){
-        printf("Searching %s...\n", ngram->ngram[i]);
+        //printf("Searching %s...\n", ngram->ngram[i]);
         trieBinarySearch(&br, node, ngram->ngram[i]);
         if (!br.found || node->children[br.position].deleted)
             return;
-        printf("FOUND IT\n");
+        //printf("FOUND IT\n");
         node = &(node->children[br.position]);
     }
-    printf("final: %d\n", node->is_final);
+    //printf("final: %d\n", node->is_final);
     if (!node->is_final)
         return;
 
     node->is_final = 0;
-    printf("space left: %d | max: %d\n", node->emptySpace+node->deletedChildren, node->maxChildren);
+    //printf("space left: %d | max: %d\n", node->emptySpace+node->deletedChildren, node->maxChildren);
     if (node->emptySpace + node->deletedChildren < node->maxChildren)           // there still are active children
         return;
 
@@ -301,10 +302,10 @@ void trieDeleteNgram(NgramVector *ngram) {
 
     //for the rest of the ngram
     while(node != trieRoot->root){
-        printf("\nfinal: %d\n", node->is_final);
+        //printf("\nfinal: %d\n", node->is_final);
         if (node->is_final)                 // end of another ngram, return
             return;
-        printf("space left: %d | max: %d\n", node->emptySpace+node->deletedChildren, node->maxChildren);
+        //printf("space left: %d | max: %d\n", node->emptySpace+node->deletedChildren, node->maxChildren);
         if (node->emptySpace + node->deletedChildren < node->maxChildren)           // there still are active children
             return;
 

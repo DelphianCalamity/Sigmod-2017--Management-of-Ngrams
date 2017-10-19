@@ -23,9 +23,9 @@ void readInputFile(char *inputFile){
 	ngram = initNgram();
 	while (fgets(buffer, 1024, fp) != NULL){				// while there are still uninserted n-grams
 		i = strlen(buffer);
-		if (buffer[i-1] == '\n'){							// remove \n for easier handling
-			buffer[i-1] = '\0';
-		}
+		// if (buffer[i-1] == '\n'){							// remove \n for easier handling
+		// 	buffer[i-1] = '\0';
+		// }
 		createNgram(ngram, buffer);
 		trieInsertSort(ngram);					// or any other insertion function for the initial trie
 	}
@@ -58,15 +58,15 @@ void readQueryFile(char *queryFile){
 		}
 		else {
 			i = strlen(buffer);
-			if (buffer[i-1] == '\n'){							// remove \n for easier handling
-				buffer[i-1] = '\0';
-			}
+			// if (buffer[i-1] == '\n'){							// remove \n for easier handling
+			// 	buffer[i-1] = '\0';
+			// }
 			printf("%s\n", buffer);
 			command = buffer[0];
 			ngram = initNgram();
 			createNgram(ngram, &buffer[2]);
-			for (i=0; i<ngram->words; i++)
-				printf("%s ", ngram->ngram[i]);
+			// for (i=0; i<ngram->words; i++)
+			// 	printf("%s ", ngram->ngram[i]);
 			addCommand(command, ngram);
 			printf("\n\n");
 		}

@@ -16,23 +16,23 @@ void addCommand(char com, NgramVector *ngram){
 		getError(1);
 		exit(1);
 	}
-	printf("\n");
-	for (i=0; i<ngram->words; i++)
-		printf("%s ", ngram->ngram[i]);
+	// printf("\n");
+	// for (i=0; i<ngram->words; i++)
+	// 	printf("%s ", ngram->ngram[i]);
 	temp->command = com;
 	temp->ngram = ngram;
-	printf("\nFrom Bursts: \n");
-	for (i=0; i<temp->ngram->words; i++)
-		printf("%s ", temp->ngram->ngram[i]);
+	// printf("\nFrom Bursts: \n");
+	// for (i=0; i<temp->ngram->words; i++)
+	// 	printf("%s ", temp->ngram->ngram[i]);
 	temp->next = NULL;
 	if (burstListEnd->start == NULL)			// first command in this burst
 		burstListEnd->start = temp;
 	else
 		burstListEnd->end->next = temp;			// add command at the end of the burst
 	burstListEnd->end = temp;
-	printf("\nFrom List:\n");
-	for (i=0; i<burstListEnd->end->ngram->words; i++)
-		printf("%s ", burstListEnd->end->ngram->ngram[i]);
+	// printf("\nFrom List:\n");
+	// for (i=0; i<burstListEnd->end->ngram->words; i++)
+	// 	printf("%s ", burstListEnd->end->ngram->ngram[i]);
 }
 
 // adds a burst at the end of BurstList
@@ -61,9 +61,6 @@ void executeBurstCommands(BurstList *burst){
 
 	while (burst->start != NULL){
 		temp=burst->start;
-		printf("%c ", temp->command);
-		for (i=0; i<temp->ngram->words; i++)
-			printf("%s ", temp->ngram->ngram[i]);
 		if (temp->command == 'A'){
 			trieInsertSort(temp->ngram);
 		}
