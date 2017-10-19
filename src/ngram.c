@@ -32,7 +32,7 @@ void createNgram(NgramVector *ngramVector, char *buffer){			// creates an ngram 
 	e = 0;
 	ngramVector->words = 0;
 	for (i=0; i<(strlen(buffer)); i++){
-		if (buffer[i] != ' ' && buffer[i] != '\n')
+		if (buffer[i] != ' ' && buffer[i] != '\n' && buffer[i] != '\0')
 			e++;
 		else{
 			ngramVector->ngram[ngramVector->words] = malloc((e-s+1)*sizeof(char));
@@ -40,6 +40,7 @@ void createNgram(NgramVector *ngramVector, char *buffer){			// creates an ngram 
 			ngramVector->ngram[ngramVector->words][e-s]='\0';
 			ngramVector->words++;
 			s = e+1;
+			e++;
 		}
 	}
 	// ngramVector->ngram[ngramVector->words] = malloc(e-s+1);

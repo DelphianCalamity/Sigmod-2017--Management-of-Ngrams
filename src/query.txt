@@ -4,7 +4,7 @@ D this is a
 S this is a test
 D this is a test
 S this is a test
-Α this is a test
+A this is a test
 D boo boo
 A boo boo
 F

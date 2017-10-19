@@ -201,6 +201,7 @@ int trieInsertSort(NgramVector *ngramVector) {
     for (i = 0; i < ngramVector->words; i++) {
         word = ngramVector->ngram[i];
 
+        printf("tsekaro tin leksi %s\n", word);
         /*Run binary search*/
         trieBinarySearch(&result, parent, word);
 
@@ -222,6 +223,7 @@ int trieInsertSort(NgramVector *ngramVector) {
                     /*In between the other children*/
                     if (result.position < parent->maxChildren-parent->emptySpace){
                         if (parent->emptySpace == 0){
+                            printf("mpikame na megalosoumeeee gia to %s\n", parent->word);
                             if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) == NULL) {
                                 getError(2);
                                 exit(2);
@@ -242,6 +244,7 @@ int trieInsertSort(NgramVector *ngramVector) {
             }
             /*If ngrams needs to go at the end of the children array, but there is no space*/
             else{
+                printf("mpikame na megalosoumeeee gia to %s\n", parent->word);
                 if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) == NULL) {
                     getError(2);
                     exit(2);
