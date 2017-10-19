@@ -271,7 +271,50 @@ int trieInsertSort(NgramVector *ngramVector) {
 }
 
 void trieDeleteNgram(NgramVector *ngram) {
+    int i;
+    BinaryResult br;
+    TrieNode *node = trieRoot->root;
+    for (i=0; i<ngram->words; i++){
+        printf("Searching %s...\n", ngram->ngram[i]);
+        trieBinarySearch(&br, node, ngram->ngram[i]);
+        if (!br.found || node->children[br.position].deleted)
+            return;
+        printf("FOUND IT\n");
+        node = &(node->children[br.position]);
+    }
+    printf("final: %d\n", node->is_final);
+    if (!node->is_final)
+        return;
 
+    node->is_final = 0;
+    printf("space left: %d | max: %d\n", node->emptySpace+node->deletedChildren, node->maxChildren);
+    if (node->emptySpace + node->deletedChildren < node->maxChildren)           // there still are active children
+        return;
+
+    // no active children, delete 'em all
+    for (i=0; i<node->deletedChildren; i++)                                 // delete the words of inactive children
+        free(node->children[i].word);
+    free(node->children);                                                   // delete the array
+    node->deleted = 1;
+    node = node->parentNode;
+
+
+    //for the rest of the ngram
+    while(node != trieRoot->root){
+        printf("\nfinal: %d\n", node->is_final);
+        if (node->is_final)                 // end of another ngram, return
+            return;
+        printf("space left: %d | max: %d\n", node->emptySpace+node->deletedChildren, node->maxChildren);
+        if (node->emptySpace + node->deletedChildren < node->maxChildren)           // there still are active children
+            return;
+
+        // no active children, delete 'em all
+        for (i=0; i<node->deletedChildren; i++)                                 // delete the words of inactive children
+            free(node->children[i].word);
+        free(node->children);                                                   // delete the array
+        node->deleted = 1;
+        node = node->parentNode;
+    }
 }
 
 void trieFree() {

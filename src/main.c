@@ -4,8 +4,10 @@
 #include "trieStructs.h"
 #include "parsing.h"
 #include "errorMessages.h"
+#include "bursts.h"
+#include <unistd.h>
 
-NgramVector* read(char *inputFile);
+//NgramVector* read(char *inputFile);
 
 int main(int argc, char **argv) {
 
@@ -21,14 +23,14 @@ int main(int argc, char **argv) {
     for(i=1; i<argc; i=i+2){
 
         if(strcmp(argv[i],"-i") == 0) {
-            if ((finit=malloc(strlen(argv[i+1])*sizeof(char)))==NULL){
+            if ((finit=malloc((strlen(argv[i+1])+1)*sizeof(char)))==NULL){
                 getError(1);
                 exit(1);
             }
             strcpy(finit, argv[i+1]);
         }
         else if(strcmp(argv[i],"-q") == 0){
-            if ((fquery=malloc(strlen(argv[i+1])*sizeof(char)))==NULL){
+            if ((fquery=malloc((strlen(argv[i+1])+1)*sizeof(char)))==NULL){
                 getError(1);
                 exit(1);
             }
@@ -61,12 +63,22 @@ int main(int argc, char **argv) {
 
     trieRootInit();                     //Initializing Trie
     readInputFile(finit);             //Input & Storing
+    readQueryFile(fquery);
+    Burst *temp = burstListStart->start;
+    while(temp != NULL){
+        printf("%c ", temp->command);
+        for (i=0; i<temp->ngram->words; i++)
+            printf("%s ", temp->ngram->ngram[i]);
+        printf("\n");
+        temp = temp->next;
+    }
+    //executeBurstCommands(burstListStart);
     //readQueryFile(fquery);
 
     //NgramVector* ngram = read("search.txt");
 
-    /*
-    NgramVector ngram1;
+    
+    /*NgramVector ngram1;
     ngram1.ngram = malloc(4*sizeof(char*));
     ngram1.ngram[0] = "this";
     ngram1.ngram[1] = "is";
@@ -140,12 +152,17 @@ int main(int argc, char **argv) {
     ngram.words=11;
 
     char* buffer = trieSearch(&ngram);
-
+    fflush(stdout);
     printf("%s\n", buffer);
 
-    free(buffer);
-    trieFree();
-*/
+    trieDeleteNgram(&ngram6);
+    trieDeleteNgram(&ngram5);
+
+    buffer = trieSearch(&ngram);
+    printf("%s\n", buffer);
+    free(buffer);*/
+    //trieFree();
+
     return 0;
 }
 

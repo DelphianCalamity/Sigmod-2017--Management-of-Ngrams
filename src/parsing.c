@@ -10,7 +10,7 @@
 
 void readInputFile(char *inputFile){
 	int i;
-	char buffer[1024], stop=0;
+	char buffer[1024];
 	NgramVector *ngram;
 	FILE *fp;
 
@@ -37,7 +37,7 @@ void readInputFile(char *inputFile){
 
 void readQueryFile(char *queryFile){
 	int i;
-	char buffer[1024], stop=0, command, burstFlag=1;
+	char buffer[1024], command, burstFlag=1;
 	NgramVector *ngram;
 	FILE *fp;
 
@@ -61,11 +61,14 @@ void readQueryFile(char *queryFile){
 			if (buffer[i-1] == '\n'){							// remove \n for easier handling
 				buffer[i-1] = '\0';
 			}
-
+			printf("%s\n", buffer);
 			command = buffer[0];
 			ngram = initNgram();
 			createNgram(ngram, &buffer[2]);
+			for (i=0; i<ngram->words; i++)
+				printf("%s ", ngram->ngram[i]);
 			addCommand(command, ngram);
+			printf("\n\n");
 		}
 	}
 	fclose(fp);
