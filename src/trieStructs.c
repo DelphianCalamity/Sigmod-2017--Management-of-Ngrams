@@ -315,8 +315,16 @@ void trieDeleteNgram(NgramVector *ngram) {
 
     node->is_final = 0;
     //printf("space left: %d | max: %d\n", node->emptySpace+node->deletedChildren, node->maxChildren);
-    if (node->emptySpace + node->deletedChildren < node->maxChildren)           // there still are active children
+    if (node->emptySpace + node->deletedChildren < node->maxChildren){           // there still are active children
+        i = node->maxChildren-node->emptySpace-1;
+    	while (node->children[i].deleted){				// free all deleted children after the last active one
+			free(node->children[i].word);
+			node->deletedChildren--;
+			node->emptySpace++;
+			i--;
+    	}
         return;
+    }
 
     // no active children, delete 'em all
     for (i = 0; i < node->deletedChildren; i++)                                 // delete the words of inactive children
@@ -332,12 +340,19 @@ void trieDeleteNgram(NgramVector *ngram) {
         if (node->is_final)                 // end of another ngram, return
             return;
         //printf("space left: %d | max: %d\n", node->emptySpace+node->deletedChildren, node->maxChildren);
-        if (node->emptySpace + node->deletedChildren < node->maxChildren)           // there still are active children
+        if (node->emptySpace + node->deletedChildren < node->maxChildren){           // there still are active children
+        	i = node->maxChildren-node->emptySpace-1;
+        	while (node->children[i].deleted){				// free all deleted children after the last active one
+    			free(node->children[i].word);
+    			node->deletedChildren--;
+    			node->emptySpace++;
+    			i--;
+        	}
             return;
+        }
 
         // no active children, delete 'em all
-        for (i = 0;
-             i < node->deletedChildren; i++)                                 // delete the words of inactive children
+        for (i = 0; i < node->deletedChildren; i++)                                 // delete the words of inactive children
             free(node->children[i].word);
         free(node->children);                                                   // delete the array
         node->deleted = 1;
