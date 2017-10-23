@@ -65,8 +65,8 @@ void readQueryFile(char *queryFile){
 			command = buffer[0];
 			ngram = initNgram();
 			createNgram(ngram, &buffer[2]);
-			// for (i=0; i<ngram->words; i++)
-			// 	printf("%s ", ngram->ngram[i]);
+			 for (i=0; i<ngram->words; i++)
+			 	printf("%s ", ngram->ngram[i]);
 			addCommand(command, ngram);
 			printf("\n\n");
 		}

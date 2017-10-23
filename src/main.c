@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
     // while(temp != NULL){
     //     //printf("%s     %c ",temp->next->ngram->ngram[1], temp->command);
     //     getchar();
-    //     for (i=0; i<temp->ngram->words-1; i++){
+    //     for (i=0; i<temp->ngram->words; i++){
     //                     getchar();
     //         printf("%s ", temp->ngram->ngram[i]);
 
@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
     //     printf("\n");
     //     temp = temp->next;
     // }
-    executeBurstCommands(burstListStart);
+    //executeBurstCommands(burstListStart);
     //readQueryFile(fquery);
 
     //NgramVector* ngram = read("search.txt");

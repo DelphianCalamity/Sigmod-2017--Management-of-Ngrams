@@ -76,6 +76,7 @@ void executeBurstCommands(BurstList *burst){
 		deleteNgram(temp->ngram);
 		free(temp);
 	}
+	
 }
 
 // goes through all bursts
