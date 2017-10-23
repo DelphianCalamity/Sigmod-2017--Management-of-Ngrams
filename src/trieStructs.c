@@ -116,75 +116,48 @@ void trieBinarySearch(BinaryResult *br, TrieNode *parent, char *word) {
 
 /****************************************************************************/
 
-char *trieSearch(NgramVector *ngramVector) {
+void trieSearch(NgramVector *ngramVector) {
 
     int i;
-    TrieNode *root = trieRoot->root;
-    char *buffer = malloc(BUFFER_SIZE * sizeof(char));
-    int capacity = BUFFER_SIZE;
-    buffer[0] = '\0';
+    int check=0;
 
-    for (i = 0; i < ngramVector->words; i++) {                                    //For all root's children
-        //printf("root : i=%d, wd=%s\n", i, ngramVector->ngram[i]);
-        trieSearch_Ngram(root, i, i, ngramVector, buffer, &capacity);
-    }
-    return buffer;
+    TrieNode *root = trieRoot->root;
+
+    printf("SEARCH: \n");
+    for (i = 0; i < ngramVector->words; i++)                                       //For all root's children
+        trieSearch_Ngram(root, i, i, ngramVector, &check);
+
+    if(check > 0)
+        printf("\b \n");
+    else printf("-1\n");
+
 }
 
-//Recursive
-void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector, char *buffer, int *capacity) {
+void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector, int* check) {
 
-    int len, space;
+    int j;
     BinaryResult br;
 
-    if (node == NULL || i == ngramVector->words)                             //No more nodes or words
-        return;
+    for (; i < ngramVector->words; i++) {
+        if (node == NULL)                                                           //No more nodes
+            return;
 
-    trieBinarySearch(&br, node, ngramVector->ngram[i]);
+        trieBinarySearch(&br, node, ngramVector->ngram[i]);
 
-    //printf("word = %s, found = %d, position = %d\n", ngramVector->ngram[i], br.found, br.position);
+        if (br.found == 0 || node->children[br.position].deleted == 1)              //If word not found or deleted
+            return;
 
-    if (br.found == 0 || node->children[br.position].deleted == 1)          //If word not found or deleted
-        return;
+        if (node->children[br.position].is_final == 1) {                            //An ngram is found
 
-    if (node->children[br.position].is_final == 1) {                          //An ngram is found
-        //printf("word %s is final\n", node->children[br.position].word);
-
-        len = (int) strlen(buffer);
-        space = neededSpace(round, i, ngramVector);
-        while (*capacity - len <= space) {
-
-            if ((buffer = realloc(buffer, 2 * (*capacity))) == NULL) {       //Re-allocate space
-                getError(2);
-                exit(1);
+            (*check)++;
+            for(j=round; j<i; j++){
+                printf("%s ", ngramVector->ngram[j]);
             }
-            *capacity *= 2;
+            printf("%s|", ngramVector->ngram[j]);
         }
 
-        for (; round <
-               i; round++) {                                        //Avoiding wrapping the small repetitive code into a function for more efficiency
-            strcpy(buffer + len, ngramVector->ngram[round]);
-            len += (int) strlen(ngramVector->ngram[round]);
-            strcpy(buffer + len, " ");
-            len++;
-        }
-        strcpy(buffer + len, ngramVector->ngram[round]);
-        len += (int) strlen(ngramVector->ngram[round]);
-        strcpy(buffer + len, "|");
-        len++;
+        node = &node->children[br.position];
     }
-
-    trieSearch_Ngram(&node->children[br.position], round, ++i, ngramVector, buffer, capacity);     //Recursive call
-}
-
-
-int neededSpace(int round, int i, NgramVector *ngramVector) {
-
-    int space = 0;
-    for (; round <= i; round++)
-        space += strlen(ngramVector->ngram[round]) + 1;                         //+ whitespace
-
-    return space;
 }
 
 /****************************************************************************/
@@ -196,13 +169,13 @@ int trieInsertSort(NgramVector *ngramVector) {
     BinaryResult result;
 
     char *word;
-    printf("mpike\n");
+    //printf("mpike\n");
     parent = trieRoot->root;
 
     for (i = 0; i < ngramVector->words; i++) {
         word = ngramVector->ngram[i];
 
-        printf("tsekaro tin leksi %s\n", word);
+        //printf("tsekaro tin leksi %s\n", word);
         /*Run binary search*/
         trieBinarySearch(&result, parent, word);
 
@@ -214,8 +187,8 @@ int trieInsertSort(NgramVector *ngramVector) {
                     // for (i=0; i<parent->maxChildren-parent->emptySpace; i++){
                     //     printf ("word is %s\n", parent->children[i].deleted);
                     // }
-                    printf("edo den prepei na mpeis pote %d, me position %d kai paidia %d\n",
-                           parent->children[result.position].deleted, result.position, parent->maxChildren);
+                    //printf("edo den prepei na mpeis pote %d, me position %d kai paidia %d\n",
+                           //parent->children[result.position].deleted, result.position, parent->maxChildren);
                     getchar();
                     //parent->children[result.position].deleted = 0;
                     parent->deletedChildren -= 1;
@@ -245,7 +218,7 @@ int trieInsertSort(NgramVector *ngramVector) {
                         }
 
                         if (parent->emptySpace == 0) {
-                            printf("mpikame na megalosoumeeee gia to %s\n", parent->word);
+                            //printf("mpikame na megalosoumeeee gia to %s\n", parent->word);
                             if ((newChildren = realloc(parent->children,
                                                        (parent->maxChildren * 2) * sizeof(TrieNode))) == NULL) {
                                 getError(2);
@@ -267,7 +240,7 @@ int trieInsertSort(NgramVector *ngramVector) {
             }
                 /*If ngrams needs to go at the end of the children array, but there is no space*/
             else {
-                printf("mpikame na megalosoumeeee gia to %s\n", parent->word);
+                //printf("mpikame na megalosoumeeee gia to %s\n", parent->word);
                 if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) == NULL) {
                     getError(2);
                     exit(2);

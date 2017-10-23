@@ -61,7 +61,7 @@ void readQueryFile(char *queryFile){
 			// if (buffer[i-1] == '\n'){							// remove \n for easier handling
 			// 	buffer[i-1] = '\0';
 			// }
-			printf("%s\n", buffer);
+			printf("%s", buffer);
 			command = buffer[0];
 			ngram = initNgram();
 			createNgram(ngram, &buffer[2]);

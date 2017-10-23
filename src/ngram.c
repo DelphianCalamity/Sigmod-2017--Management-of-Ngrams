@@ -43,6 +43,7 @@ void createNgram(NgramVector *ngramVector, char *buffer){			// creates an ngram 
 			e++;
 		}
 	}
+	printf("\n\n");
 	// ngramVector->ngram[ngramVector->words] = malloc(e-s+1);
 	// memcpy(ngramVector->ngram[ngramVector->words], &buffer[s], e-s);
 	// ngramVector->ngram[ngramVector->words][e-s]='\0';
