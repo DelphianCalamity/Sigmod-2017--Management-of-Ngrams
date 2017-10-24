@@ -189,7 +189,7 @@ int trieInsertSort(NgramVector *ngramVector) {
                     // }
                     //printf("edo den prepei na mpeis pote %d, me position %d kai paidia %d\n",
                            //parent->children[result.position].deleted, result.position, parent->maxChildren);
-                    getchar();
+                    //getchar();
                     //parent->children[result.position].deleted = 0;
                     parent->deletedChildren -= 1;
                     free(parent->children[result.position].word);

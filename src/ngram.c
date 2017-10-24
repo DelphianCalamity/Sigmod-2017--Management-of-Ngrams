@@ -35,15 +35,16 @@ void createNgram(NgramVector *ngramVector, char *buffer){			// creates an ngram 
 		if (buffer[i] != ' ' && buffer[i] != '\n' && buffer[i] != '\0')
 			e++;
 		else{
-			ngramVector->ngram[ngramVector->words] = malloc((e-s+1)*sizeof(char));
-			memcpy(ngramVector->ngram[ngramVector->words], &buffer[s], e-s);
-			ngramVector->ngram[ngramVector->words][e-s]='\0';
-			ngramVector->words++;
-			s = e+1;
+			if (s != e){
+				ngramVector->ngram[ngramVector->words] = malloc((e-s+1)*sizeof(char));
+				memcpy(ngramVector->ngram[ngramVector->words], &buffer[s], e-s);
+				ngramVector->ngram[ngramVector->words][e-s]='\0';
+				ngramVector->words++;
+			}
 			e++;
+			s = e;
 		}
 	}
-	printf("\n\n");
 	// ngramVector->ngram[ngramVector->words] = malloc(e-s+1);
 	// memcpy(ngramVector->ngram[ngramVector->words], &buffer[s], e-s);
 	// ngramVector->ngram[ngramVector->words][e-s]='\0';
