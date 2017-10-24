@@ -17,6 +17,7 @@ void trieRootInit() {
         exit(1);
     }
     trieNodeInit(NULL, "", trieRoot->root);
+    trieRoot->lastQuery=1;
 }
 
 /*Initialization of a new trienode*/
@@ -29,6 +30,7 @@ void trieNodeInit(TrieNode *parent, char *word, TrieNode *child) {
     child->is_final = 0;
     child->parentNode = parent;
     child->deleted = 0;
+    child->visited = 0;
 
     /*Initialize the word for the new node*/
     // if ((child->word = malloc(sizeof(strlen(word)))) == NULL) {
@@ -123,12 +125,14 @@ void trieSearch(NgramVector *ngramVector) {
 
     TrieNode *root = trieRoot->root;
 
-    printf("SEARCH: \n");
-    for (i = 0; i < ngramVector->words; i++)                                       //For all root's children
+    printf("SEARCH: ");
+    for (i = 0; i < ngramVector->words; i++)                                         //For all root's children
         trieSearch_Ngram(root, i, i, ngramVector, &check);
 
-    if(check > 0)
+    if(check > 0) {
+        trieRoot->lastQuery++;
         printf("\b \n");
+    }
     else printf("-1\n");
 
 }
@@ -147,9 +151,10 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
         if (br.found == 0 || node->children[br.position].deleted == 1)              //If word not found or deleted
             return;
 
-        if (node->children[br.position].is_final == 1) {                            //An ngram is found
+        if (node->children[br.position].is_final == 1 && node->children[br.position].visited < trieRoot->lastQuery) {      //An ngram is found and is not already 'printed'
 
             (*check)++;
+            node->children[br.position].visited = trieRoot->lastQuery;
             for(j=round; j<i; j++){
                 printf("%s ", ngramVector->ngram[j]);
             }

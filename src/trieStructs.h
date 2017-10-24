@@ -18,10 +18,12 @@ struct trieNode{
     int deletedChildren;
     char is_final;
     char deleted;
+    int visited;
 };
 
 struct trieRoot{
     TrieNode *root;
+    int lastQuery;
 };
 
 struct binaryResult{

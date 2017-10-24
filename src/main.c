@@ -44,98 +44,21 @@ int main(int argc, char **argv) {
     readInputFile(finit);             //Input & Storing
     readQueryFile(fquery);
 
-    // Burst *temp = burstListStart->start;
-    // //getchar();
-    // while(temp != NULL){
-    //     //printf("%s     %c ",temp->next->ngram->ngram[1], temp->command);
-    //     getchar();
-    //     for (i=0; i<temp->ngram->words; i++){
-    //                     getchar();
-    //         printf("%s ", temp->ngram->ngram[i]);
-
-    //     }
-    //     printf("\n");
-    //     temp = temp->next;
-    // }
+//     Burst *temp = burstListStart->start;
+//     //getchar();
+//     while(temp != NULL){
+//         //printf("%s     %c ",temp->next->ngram->ngram[1], temp->command);
+//         getchar();
+//         for (i=0; i<temp->ngram->words; i++){
+//                         getchar();
+//             printf("%s ", temp->ngram->ngram[i]);
+//
+//         }
+//         printf("\n");
+//         temp = temp->next;
+//     }
 
     executeBurstCommands(burstListStart);
-
-
-//
-//    NgramVector ngram1;
-//    ngram1.ngram = malloc(4*sizeof(char*));
-//    ngram1.ngram[0] = "this";
-//    ngram1.ngram[1] = "is";
-//    ngram1.ngram[2] = "a";
-//    ngram1.ngram[3] = "dog";
-//    ngram1.words=4;
-//    trieInsertSort(&ngram1);
-//
-//
-//    NgramVector ngram2;
-//    ngram2.ngram = malloc(4*sizeof(char*));
-//    ngram2.ngram[0] = "this";
-//    ngram2.ngram[1] = "is";
-//    ngram2.ngram[2] = "a";
-//    ngram2.ngram[3] = "cat";
-//    ngram2.words=4;
-//    trieInsertSort(&ngram2);
-//
-//    NgramVector ngram3;
-//    ngram3.ngram = malloc(4*sizeof(char*));
-//    ngram3.ngram[0] = "the";
-//    ngram3.ngram[1] = "fox";
-//    ngram3.ngram[2] = "is";
-//    ngram3.ngram[3] = "bad";
-//    ngram3.words=4;
-//    trieInsertSort(&ngram3);
-//
-//    NgramVector ngram4;
-//    ngram4.ngram = malloc(4*sizeof(char*));
-//    ngram4.ngram[0] = "the";
-//    ngram4.ngram[1] = "car";
-//    ngram4.ngram[2] = "is";
-//    ngram4.ngram[3] = "red";
-//    ngram4.words=4;
-//    trieInsertSort(&ngram4);
-//
-//
-//    NgramVector ngram5;
-//    ngram5.ngram = malloc(4*sizeof(char*));
-//    ngram5.ngram[0] = "this";
-//    ngram5.ngram[1] = "is";
-//    ngram5.ngram[2] = "the";
-//    ngram5.ngram[3] = "test";
-//    ngram5.words=4;
-//    trieInsertSort(&ngram5);
-//
-//    NgramVector ngram6;
-//    ngram6.ngram = malloc(3*sizeof(char*));
-//    ngram6.ngram[0] = "this";
-//    ngram6.ngram[1] = "is";
-//    ngram6.ngram[2] = "a";
-//    ngram6.words=3;
-//    trieInsertSort(&ngram6);
-//
-//
-//
-//    NgramVector ngram;
-//    ngram.ngram = malloc(11*sizeof(char*));
-//    ngram.ngram[0] = "the";
-//    ngram.ngram[1] = "car";
-//    ngram.ngram[2] = "is";
-//    ngram.ngram[3] = "red";
-//    ngram.ngram[4] = "and";
-//    ngram.ngram[5] = "blue";
-//    ngram.ngram[6] = "and";
-//    ngram.ngram[7] = "this";
-//    ngram.ngram[8] = "is";
-//    ngram.ngram[9] = "the";
-//    ngram.ngram[10] = "test";
-//
-//    ngram.words=11;
-//
-//    trieSearch(&ngram);
 
     return 0;
 }
