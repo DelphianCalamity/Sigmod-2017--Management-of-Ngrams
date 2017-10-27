@@ -15,19 +15,19 @@ void readInputFile(char *inputFile){
 	FILE *fp;
 
 
-	if ((fp = fopen(inputFile, "r")) == NULL){				// open graph file
+	if ((fp = fopen(inputFile, "r")) == NULL){                  // open init file
 		getError(3);
 		exit(3);
 	}
 
 	ngram = initNgram();
-	while (fgets(buffer, 1024, fp) != NULL){				// while there are still uninserted n-grams
+	while (fgets(buffer, 1024, fp) != NULL){                    // while there are still uninserted n-grams
 		i = strlen(buffer);
 		// if (buffer[i-1] == '\n'){							// remove \n for easier handling
 		// 	buffer[i-1] = '\0';
 		// }
 		createNgram(ngram, buffer);
-		trieInsertSort(ngram);					// or any other insertion function for the initial trie
+		trieInsertSort(ngram);                                  // or any other insertion function for the initial trie
 	}
 	deleteNgram(ngram);
 	fclose(fp);
@@ -37,17 +37,16 @@ void readInputFile(char *inputFile){
 
 void readQueryFile(char *queryFile){
 	int i;
-	char buffer[1024], command, burstFlag=1;
+	char buffer[100000], command, burstFlag=1;
 	NgramVector *ngram;
 	FILE *fp;
 
-
-	if ((fp = fopen(queryFile, "r")) == NULL){				// open graph file
+	if ((fp = fopen(queryFile, "r")) == NULL){                  // open query file
 		getError(3);
 		exit(2);
 	}
 
-	while (fgets(buffer, 1024, fp) != NULL){
+	while (fgets(buffer, 100000, fp) != NULL){
 		if (burstFlag){
 			addBurst();
 			burstFlag = 0;
@@ -58,11 +57,11 @@ void readQueryFile(char *queryFile){
 		}
 		else {
 			i = strlen(buffer);
-			// if (buffer[i-1] == '\n'){							// remove \n for easier handling
+			// if (buffer[i-1] == '\n'){                        // remove \n for easier handling
 			// 	buffer[i-1] = '\0';
 			// }
 			//printf("%s", buffer);
-			command = buffer[0];
+            command = buffer[0];
 			ngram = initNgram();
 			createNgram(ngram, &buffer[2]);
 			//for (i=0; i<ngram->words; i++)
