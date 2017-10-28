@@ -1,9 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "trieStructs.h"
 #include <string.h>
+#include <stdbool.h>
+
 #include "errorMessages.h"
+#include "stack.h"
 #include "ngram.h"
+#include "trieStructs.h"
 
 
 /*Initialization of trie root*/
@@ -278,18 +281,26 @@ int trieInsertSort(NgramVector *ngramVector) {
 void trieDeleteNgram(NgramVector *ngram) {
     int i;
     BinaryResult br;
+    Stack s;
     TrieNode *node = trieRoot->root;
+
+    initStack(&s);
     for (i = 0; i < ngram->words; i++) {
         //printf("Searching %s...\n", ngram->ngram[i]);
         trieBinarySearch(&br, node, ngram->ngram[i]);
-        if (!br.found || node->children[br.position].deleted)
+        if (!br.found || node->children[br.position].deleted){
+            deleteStack(&s);
             return;
+        }
         //printf("FOUND IT\n");
+        push(&s, node);
         node = &(node->children[br.position]);
     }
     //printf("final: %d\n", node->is_final);
-    if (!node->is_final)
+    if (!node->is_final){
+        deleteStack(&s);
         return;
+    }
 
     node->is_final = 0;
     //printf("space left: %d | max: %d\n", node->emptySpace+node->deletedChildren, node->maxChildren);
@@ -301,6 +312,7 @@ void trieDeleteNgram(NgramVector *ngram) {
 			node->emptySpace++;
 			i--;
     	}
+        deleteStack(&s);
         return;
     }
 
@@ -309,14 +321,18 @@ void trieDeleteNgram(NgramVector *ngram) {
         free(node->children[i].word);
     free(node->children);                                                   // delete the array
     node->deleted = 1;
-    node = node->parentNode;
+    node = pop(&s);
+    //node = node->parentNode;
 
 
     //for the rest of the ngram
-    while (node != trieRoot->root) {
+    while (notEmpty(&s)){
+    //while (node != trieRoot->root) {
         //printf("\nfinal: %d\n", node->is_final);
-        if (node->is_final)                 // end of another ngram, return
+        if (node->is_final){                 // end of another ngram, return
+            deleteStack(&s);
             return;
+        }
         //printf("space left: %d | max: %d\n", node->emptySpace+node->deletedChildren, node->maxChildren);
         if (node->emptySpace + node->deletedChildren < node->maxChildren){           // there still are active children
         	i = node->maxChildren-node->emptySpace-1;
@@ -326,6 +342,7 @@ void trieDeleteNgram(NgramVector *ngram) {
     			node->emptySpace++;
     			i--;
         	}
+            deleteStack(&s);
             return;
         }
 
@@ -334,8 +351,10 @@ void trieDeleteNgram(NgramVector *ngram) {
             free(node->children[i].word);
         free(node->children);                                                   // delete the array
         node->deleted = 1;
-        node = node->parentNode;
+        node = pop(&s);
+        //node = node->parentNode;
     }
+    deleteStack(&s);
 }
 
 void trieFree() {

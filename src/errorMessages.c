@@ -11,6 +11,8 @@ void getError(int code){
 
         case 3:  perror("Error in file opening");break;
 
+        case 4:  perror("Error in popping stack");break;
+
     }
     return;
 }
