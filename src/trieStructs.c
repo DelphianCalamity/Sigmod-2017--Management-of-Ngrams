@@ -19,7 +19,7 @@ void trieRootInit() {
         getError(1);
         exit(1);
     }
-    trieNodeInit("", trieRoot->root);
+    trieNodeInit(NULL, trieRoot->root);
     trieRoot->lastQuery=1;
 }
 
@@ -41,6 +41,7 @@ void trieNodeInit(char *word, TrieNode *child) {
         getError(1);
         exit(1);
     }
+
     memset(child->children, 0, MINSIZE * sizeof(TrieNode));
 }
 
@@ -144,7 +145,7 @@ int trieInsertSort(NgramVector *ngramVector) {
         /*Run binary search*/
         trieBinarySearch(&result, parent, word);
 
-        if (result.found == 0 || (result.found == 1 && parent->children[result.position].deleted == 1)) {
+        if (result.found == 0 || parent->children[result.position].deleted == 1) {
             /*If it's within the borders of the children array*/
             if (result.position < parent->maxChildren) {
                 /*If there is already available space*/
@@ -152,17 +153,21 @@ int trieInsertSort(NgramVector *ngramVector) {
                     
                     parent->deletedChildren -= 1;
                     free(parent->children[result.position].word);
+                    
                 } else {
                     /*In between the other children*/
                     if (result.position < parent->maxChildren - parent->emptySpace) {
-                        /*Creating space from deleted nodes*/
+                        /*Creating space from deleted nodes*/                               //IF LOAD FACTOR IS BIG ENOUGH
                         if (parent->emptySpace == 0 && parent->deletedChildren > 0) {
                             i = 0;
                             while (i < (parent->maxChildren - parent->emptySpace)) {
+                                
                                 if (parent->children[i].deleted == 1) {
+                                    free(parent->children[i].word);
+                                    
                                     int end = i + 1;
-                                    while (parent->children[end].deleted == 1 &&
-                                           end < parent->maxChildren - parent->emptySpace) {
+                                    while (parent->children[end].deleted == 1 && end < parent->maxChildren - parent->emptySpace) {
+                                        free(parent->children[end].word);
                                         end++;
                                     }
                                     memmove(&parent->children[i], &parent->children[end],
@@ -177,23 +182,22 @@ int trieInsertSort(NgramVector *ngramVector) {
                         }
 
                         if (parent->emptySpace == 0) {
-                            if ((newChildren = realloc(parent->children,
-                                                       (parent->maxChildren * 2) * sizeof(TrieNode))) == NULL) {
+                            if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) == NULL) {
                                 getError(2);
                                 exit(2);
                             }
+                                            
                             parent->children = newChildren;
                             parent->emptySpace += parent->maxChildren;
                             parent->maxChildren *= 2;
+                        
+                            memset(&newChildren[parent->maxChildren - parent->emptySpace], 0,
+                                   (parent->maxChildren - parent->emptySpace) * sizeof(TrieNode));
                         }
+                        
                         memmove(&parent->children[result.position + 1], &parent->children[result.position],
                                 (parent->maxChildren - parent->emptySpace - result.position) * sizeof(TrieNode));
-                        //free( parent->children[result.position].word);
                     }
-                    // /*At the end of the children, there is enough space*/
-                    // else{
-                    //
-                    // }
                 }
             }
                 /*If ngrams needs to go at the end of the children array, but there is no space*/
@@ -205,6 +209,9 @@ int trieInsertSort(NgramVector *ngramVector) {
                 parent->children = newChildren;
                 parent->emptySpace += parent->maxChildren;
                 parent->maxChildren *= 2;
+
+                memset(&newChildren[parent->maxChildren - parent->emptySpace], 0,
+                        (parent->maxChildren - parent->emptySpace) * sizeof(TrieNode));
             }
 
             /*Store the new child and update children count*/
