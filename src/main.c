@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
 //         temp = temp->next;
 //     }
 
-    executeBurstCommands(burstListStart);
+    //executeBurstCommands(burstListStart);
 
     return 0;
 }

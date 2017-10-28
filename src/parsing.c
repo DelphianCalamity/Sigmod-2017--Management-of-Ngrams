@@ -12,7 +12,6 @@ void readInputFile(char *inputFile){
 	int i;
 	size_t size=0;
 	char *buffer=NULL;
-	//char buffer[1024];
 	NgramVector *ngram;
 	FILE *fp;
 
@@ -24,7 +23,6 @@ void readInputFile(char *inputFile){
 
 	ngram = initNgram();
 	
-	//while (fgets(buffer, 1024, fp) != NULL){                    // while there are still uninserted n-grams
 	while (getline(&buffer, &size, fp) != -1){
 		i = strlen(buffer);
 		// if (buffer[i-1] == '\n'){							// remove \n for easier handling
@@ -34,6 +32,7 @@ void readInputFile(char *inputFile){
 		trieInsertSort(ngram);                                  // or any other insertion function for the initial trie
 	}
 	deleteNgram(ngram);
+    free(buffer);
 	fclose(fp);
 }
 
@@ -43,7 +42,7 @@ void readQueryFile(char *queryFile){
 	int i;
 	size_t size=0;
 	char *buffer=NULL;
-	char /*buffer[100000],*/ command, burstFlag=1;
+	char command, burstFlag=1;
 	NgramVector *ngram;
 	FILE *fp;
 
@@ -74,7 +73,13 @@ void readQueryFile(char *queryFile){
 			//	printf("%s ", ngram->ngram[i]);
 			addCommand(command, ngram);
 			//printf("\n\n");
+            
+            executeBurstCommands(burstListStart);
+            //getchar();
+
 		}
 	}
+
+    free(buffer);
 	fclose(fp);
 }

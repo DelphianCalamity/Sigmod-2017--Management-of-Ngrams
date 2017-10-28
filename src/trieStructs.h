@@ -11,7 +11,6 @@ typedef struct binaryResult BinaryResult;
 
 struct trieNode{
     char* word;
-    TrieNode *parentNode;
     TrieNode *children;
     int emptySpace;
     int maxChildren;
@@ -34,7 +33,7 @@ struct binaryResult{
 TrieRoot *trieRoot;                                 //Global Variable
 
 void trieRootInit();
-void trieNodeInit(TrieNode *, char *, TrieNode *);
+void trieNodeInit(char *, TrieNode *);
 void trieBinarySearch(BinaryResult*, TrieNode *, char *);
 void trieSearch(NgramVector *);
 void trieSearch_Ngram(TrieNode*, int, int, NgramVector *, int *);
