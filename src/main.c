@@ -44,20 +44,6 @@ int main(int argc, char **argv) {
     readInputFile(finit);             //Input & Storing
     readQueryFile(fquery);
 
-//     Burst *temp = burstListStart->start;
-//     //getchar();
-//     while(temp != NULL){
-//         //printf("%s     %c ",temp->next->ngram->ngram[1], temp->command);
-//         getchar();
-//         for (i=0; i<temp->ngram->words; i++){
-//                         getchar();
-//             printf("%s ", temp->ngram->ngram[i]);
-//
-//         }
-//         printf("\n");
-//         temp = temp->next;
-//     }
-
     //executeBurstCommands(burstListStart);
 
     return 0;
