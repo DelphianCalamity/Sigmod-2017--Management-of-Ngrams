@@ -32,7 +32,9 @@ void readInputFile(char *inputFile){
 		trieInsertSort(ngram);                                  // or any other insertion function for the initial trie
 	}
 	deleteNgram(ngram);
-    free(buffer);
+    
+    if(buffer != NULL)
+        free(buffer);
 	fclose(fp);
 }
 
@@ -52,34 +54,47 @@ void readQueryFile(char *queryFile){
 	}
 
 	while (getline(&buffer, &size, fp) != -1){
-		if (burstFlag){
-			addBurst();
-			burstFlag = 0;
-		}
-
+		
+//      if (burstFlag){
+//			addBurst();
+//			burstFlag = 0;
+//		}
+        
 		if (buffer[0] == 'F'){
-			burstFlag = 1;
-		}
-		else {
+            //processBursts();
+            //burstFlag = 1;
+        }
+		else {                                                  //Ignoring burst list for the first part
+            
 			i = strlen(buffer);
-			// if (buffer[i-1] == '\n'){                        // remove \n for easier handling
-			// 	buffer[i-1] = '\0';
-			// }
-			//printf("%s", buffer);
+            
             command = buffer[0];
 			ngram = initNgram();
 			createNgram(ngram, &buffer[2]);
-			//for (i=0; i<ngram->words; i++)
-			//	printf("%s ", ngram->ngram[i]);
-			addCommand(command, ngram);
-			//printf("\n\n");
             
-            executeBurstCommands(burstListStart);
-            //getchar();
+            if (command == 'A'){
+                trieInsertSort(ngram);
+            }
+            else if (command == 'D'){
+                trieDeleteNgram(ngram);
+                deleteWords(ngram);
+            }
+            else if (command == 'Q'){
+                trieSearch(ngram);
+                deleteWords(ngram);
+            }
+            else {
+                printf("Wrong query\n");
+                exit(1);
+            }
 
+            deleteNgram(ngram);
+                    
+			//addCommand(command, ngram);//
 		}
 	}
 
-    free(buffer);
+    if(buffer != NULL)
+        free(buffer);
 	fclose(fp);
 }
