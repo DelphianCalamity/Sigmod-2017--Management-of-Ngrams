@@ -227,83 +227,137 @@ int trieInsertSort(NgramVector *ngramVector) {
     return 0;
 }
 
+
 void trieDeleteNgram(NgramVector *ngram) {
     int i;
-    BinaryResult br;
     Stack s;
+    BinaryResult br;
     TrieNode *node = trieRoot->root;
 
     initStack(&s);
     for (i = 0; i < ngram->words; i++) {
-        //printf("Searching %s...\n", ngram->ngram[i]);
+
         trieBinarySearch(&br, node, ngram->ngram[i]);
         if (!br.found || node->children[br.position].deleted){
             deleteStack(&s);
             return;
         }
-        //printf("FOUND IT\n");
         push(&s, node);
         node = &(node->children[br.position]);
     }
-    //printf("final: %d\n", node->is_final);
+
     if (!node->is_final){
         deleteStack(&s);
         return;
     }
 
     node->is_final = 0;
-    //printf("space left: %d | max: %d\n", node->emptySpace+node->deletedChildren, node->maxChildren);
-    if (node->emptySpace + node->deletedChildren < node->maxChildren){           // there still are active children
-        i = node->maxChildren-node->emptySpace-1;
-    	while (node->children[i].deleted){				// free all deleted children after the last active one
-			free(node->children[i].word);
-            node->children[i].deleted = 0;
-			node->deletedChildren--;
-			node->emptySpace++;
-			i--;
-    	}
-        deleteStack(&s);
-        return;
-    }
 
-    // no active children, delete 'em all
-    for (i = 0; i < node->deletedChildren; i++)                                 // delete the words of inactive children
-        free(node->children[i].word);
-    free(node->children);                                                       // delete the array
-    node->deleted = 1;
-    node = pop(&s);
-
-
-    //for the rest of the ngram
-    while (notEmpty(&s)){
-        //printf("\nfinal: %d\n", node->is_final);
-        if (node->is_final){                                                    // end of another ngram, return
-            deleteStack(&s);
-            return;
-        }
-        //printf("space left: %d | max: %d\n", node->emptySpace+node->deletedChildren, node->maxChildren);
-        if (node->emptySpace + node->deletedChildren < node->maxChildren){           // there still are active children
-        	i = node->maxChildren-node->emptySpace-1;
-        	while (node->children[i].deleted){                                  // free all deleted children after the last active one
-    			free(node->children[i].word);
-    			node->children[i].deleted = 0;
+    while (notEmpty(&s)) {
+        
+        if((i = node->maxChildren-node->emptySpace-1) >= 0) {                   // maxChildren != emptySpace
+            if(node->children[i].deleted) {                                     // check if node's last child is deleted
+                free(node->children[i].word);
+                node->children[i].deleted = 0;
                 node->deletedChildren--;
-    			node->emptySpace++;
-    			i--;
-        	}
+                node->emptySpace++;
+            }
+        }
+        
+        if (node->is_final || node->emptySpace + node->deletedChildren < node->maxChildren) {   // there still are active children or is final
             deleteStack(&s);
             return;
         }
-
+        
         // no active children, delete 'em all
-        for (i = 0; i < node->deletedChildren; i++)                             // delete the words of inactive children
-            free(node->children[i].word);
-        free(node->children);                                                   // delete the array
+        free(node->children);                                                       // delete the array
         node->deleted = 1;
+
         node = pop(&s);
+        node->deletedChildren++;
     }
+    
     deleteStack(&s);
 }
+
+//void trieDeleteNgram(NgramVector *ngram) {
+//    int i;
+//    BinaryResult br;
+//    Stack s;
+//    TrieNode *node = trieRoot->root;
+//
+//    initStack(&s);
+//    for (i = 0; i < ngram->words; i++) {
+//        //printf("Searching %s...\n", ngram->ngram[i]);
+//        trieBinarySearch(&br, node, ngram->ngram[i]);
+//        if (!br.found || node->children[br.position].deleted){
+//            deleteStack(&s);
+//            return;
+//        }
+//        //printf("FOUND IT\n");
+//        push(&s, node);
+//        node = &(node->children[br.position]);
+//    }
+//    //printf("final: %d\n", node->is_final);
+//    if (!node->is_final){
+//        deleteStack(&s);
+//        return;
+//    }
+//
+//    node->is_final = 0;
+//    //printf("space left: %d | max: %d\n", node->emptySpace+node->deletedChildren, node->maxChildren);
+//    if (node->emptySpace + node->deletedChildren < node->maxChildren){           // there still are active children
+//        i = node->maxChildren-node->emptySpace-1;
+//    	while (node->children[i].deleted){				// free all deleted children after the last active one
+//			free(node->children[i].word);
+//            node->children[i].deleted = 0;
+//			node->deletedChildren--;
+//			node->emptySpace++;
+//			i--;
+//    	}
+//        deleteStack(&s);
+//        return;
+//    }
+//
+//    // no active children, delete 'em all
+//    for (i = 0; i < node->deletedChildren; i++)                                 // delete the words of inactive children
+//        free(node->children[i].word);
+//    free(node->children);                                                       // delete the array
+//    node->deleted = 1;
+//    node = pop(&s);
+//
+//
+//    //for the rest of the ngram
+//    while (notEmpty(&s)){
+//        //printf("\nfinal: %d\n", node->is_final);
+//        if (node->is_final){                                                    // end of another ngram, return
+//            deleteStack(&s);
+//            return;
+//        }
+//        //printf("space left: %d | max: %d\n", node->emptySpace+node->deletedChildren, node->maxChildren);
+//        if (node->emptySpace + node->deletedChildren < node->maxChildren){           // there still are active children
+//        	i = node->maxChildren-node->emptySpace-1;
+//        	while (node->children[i].deleted){                                  // free all deleted children after the last active one
+//    			free(node->children[i].word);
+//    			node->children[i].deleted = 0;
+//                node->deletedChildren--;
+//    			node->emptySpace++;
+//    			i--;
+//        	}
+//            deleteStack(&s);
+//            return;
+//        }
+//
+//        // no active children, delete 'em all
+//        for (i = 0; i < node->deletedChildren; i++)                             // delete the words of inactive children
+//            free(node->children[i].word);
+//        free(node->children);                                                   // delete the array
+//        node->deleted = 1;
+//        node = pop(&s);
+//    }
+//    deleteStack(&s);
+//}
+
 
 
 
