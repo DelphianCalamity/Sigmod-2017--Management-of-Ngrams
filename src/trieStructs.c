@@ -244,6 +244,7 @@ void trieDeleteNgram(NgramVector *ngram) {
     Stack s;
     BinaryResult br;
     TrieNode *node = trieRoot->root;
+    bool stop = false;
 
     initStack(&s);
     for (i = 0; i < ngram->words; i++) {
@@ -286,15 +287,29 @@ void trieDeleteNgram(NgramVector *ngram) {
     node->deleted = 1;
     
     node = pop(&s);
+    node->deletedChildren++;
 
 
     //for the rest of the ngram
     while (notEmpty(&s)){
-        //printf("\nfinal: %d\n", node->is_final);
-        if (node->is_final){                                                    // end of another ngram, return
-            deleteStack(&s);
-            return;
-        }
+
+        /*i=node->maxChildren-node->emptySpace-1;
+        while(i>=0 && !stop){                       // free all deleted children after the last active one (could be all of them)
+            if (node->children[i].deleted){
+                free(node->children[i].word);
+                node->children[i].deleted = 0;
+                node->deletedChildren--;
+                node->emptySpace++;
+                i--;
+            }
+            else{
+                stop = true;
+            }
+        }*/
+
+
+
+
         //printf("space left: %d | max: %d\n", node->emptySpace+node->deletedChildren, node->maxChildren);
         if (node->emptySpace + node->deletedChildren < node->maxChildren){           // there still are active children
         	i = node->maxChildren-node->emptySpace-1;
@@ -305,16 +320,26 @@ void trieDeleteNgram(NgramVector *ngram) {
     			node->emptySpace++;
     			i--;
         	}
+            //deleteStack(&s);
+            //return;
+        }
+        //printf("\nfinal: %d\n", node->is_final);
+        if (node->is_final){                                                    // end of another ngram, return
             deleteStack(&s);
             return;
         }
+            // no active children, delete 'em all
+            for (i = 0; i < node->deletedChildren; i++)                             // delete the words of inactive children
+                free(node->children[i].word);
+            node->emptySpace += node->deletedChildren;
+            memset(node->children, 0, MINSIZE * sizeof(TrieNode));
 
-        // no active children, delete 'em all
-        for (i = 0; i < node->deletedChildren; i++)                             // delete the words of inactive children
-            free(node->children[i].word);
+                
+
         free(node->children);                                                   // delete the array
         node->deleted = 1;
         node = pop(&s);
+        node->deletedChildren++;
     }
     deleteStack(&s);
 }
