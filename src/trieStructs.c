@@ -20,7 +20,7 @@ void trieRootInit() {
         exit(1);
     }
     trieNodeInit(NULL, trieRoot->root);
-    trieRoot->lastQuery=1;
+    trieRoot->lastQuery = 1;
 }
 
 /*Initialization of a new trienode*/
@@ -85,7 +85,7 @@ void trieBinarySearch(BinaryResult *br, TrieNode *parent, char *word) {
 void trieSearch(NgramVector *ngramVector) {
 
     int i;
-    int check=0;
+    int check = 0;
 
     TrieNode *root = trieRoot->root;
 
@@ -93,15 +93,14 @@ void trieSearch(NgramVector *ngramVector) {
     for (i = 0; i < ngramVector->words; i++)                                         //For all root's children
         trieSearch_Ngram(root, i, i, ngramVector, &check);
 
-    if(check > 0) {
+    if (check > 0) {
         trieRoot->lastQuery++;
         printf("\b \n");
-    }
-    else printf("-1\n");
+    } else printf("-1\n");
 
 }
 
-void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector, int* check) {
+void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector, int *check) {
 
     int j;
     BinaryResult br;
@@ -115,11 +114,12 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
         if (br.found == 0 || node->children[br.position].deleted == 1)              //If word not found or deleted
             return;
 
-        if (node->children[br.position].is_final == 1 && node->children[br.position].visited < trieRoot->lastQuery) {      //An ngram is found and is not already 'printed'
+        if (node->children[br.position].is_final == 1 && node->children[br.position].visited <
+                                                         trieRoot->lastQuery) {      //An ngram is found and is not already 'printed'
 
             (*check)++;
             node->children[br.position].visited = trieRoot->lastQuery;
-            for(j=round; j<i; j++){
+            for (j = round; j < i; j++) {
                 printf("%s ", ngramVector->ngram[j]);
             }
             printf("%s|", ngramVector->ngram[j]);
@@ -138,7 +138,7 @@ int trieInsertSort(NgramVector *ngramVector) {
     BinaryResult result;
 
     char *word;
-   
+
     parent = trieRoot->root;
 
     for (i = 0; i < ngramVector->words; i++) {
@@ -156,110 +156,119 @@ int trieInsertSort(NgramVector *ngramVector) {
                     parent->emptySpace++;
                     parent->deletedChildren -= 1;
                     free(parent->children[result.position].word);
-                    
+
                 } else {
                     /*In between the other children*/
                     if (result.position < parent->maxChildren - parent->emptySpace) {
                         /*Creating space from deleted nodes*/                               //IF LOAD FACTOR IS BIG ENOUGH +++ THERE IS A BUG IN HERE
-//                        if (parent->emptySpace == 0 && parent->deletedChildren > 0) {
-//
-//                            i = 0;
-//                            while (i < (parent->maxChildren - parent->emptySpace)) {
-//
-//                                if (parent->children[i].deleted == 1) {
-//                                    free(parent->children[i].word);
-//
-//                                    int end = i + 1;
-//                                    while (parent->children[end].deleted == 1 && end < parent->maxChildren - parent->emptySpace) {
-//                                        free(parent->children[end].word);
-//                                        end++;
-//                                    }
-//                                    memmove(&parent->children[i], &parent->children[end],
-//                                            (parent->maxChildren - parent->emptySpace - end) * sizeof(TrieNode));
-//                                    parent->emptySpace += end - i;
-//                                    parent->deletedChildren -= end - i;
-//                                }
-//                                i++;
-//                            }
-//                            memset(&parent->children[parent->maxChildren - parent->emptySpace], 0,
-//                                   (parent->maxChildren - parent->emptySpace) * sizeof(TrieNode));
-//                        }
+                        if (parent->emptySpace == 0 && parent->deletedChildren > 0) {
 
-                        if (parent->emptySpace == 0) {
-                            if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) == NULL) {
-                                getError(2);
-                                exit(2);
+                            i = 0;
+                            while (i < (parent->maxChildren - parent->emptySpace)) {
+
+                                if (parent->children[i].deleted == 1) {
+                                    free(parent->children[i].word);
+
+                                    int end = i + 1;
+
+                                    while (parent->children[end].deleted == 1 &&
+                                           end < parent->maxChildren - parent->emptySpace) {
+                                        free(parent->children[end].word);
+                                        end++;
+                                        memmove(&parent->children[i], &parent->children[end],
+                                                (parent->maxChildren - parent->emptySpace - end) *
+                                                sizeof(TrieNode));
+                                        parent->emptySpace += end - i;
+                                        parent->deletedChildren -= end - i;
+                                        if (i < result.position) {
+                                            result.position -= end -i;
+                                        }
+                                    }
+                                    i++;
+                                }
+                                memset(&parent->children[parent->maxChildren - parent->emptySpace], 0,
+                                       (parent->maxChildren - parent->emptySpace) * sizeof(TrieNode));
                             }
-                                            
-                            parent->children = newChildren;
-                            parent->emptySpace += parent->maxChildren;
-                            parent->maxChildren *= 2;
-                        
-                            memset(&newChildren[parent->maxChildren - parent->emptySpace], 0,
-                                   (parent->maxChildren - parent->emptySpace) * sizeof(TrieNode));
+
+                            if (parent->emptySpace == 0) {
+                                if ((newChildren = realloc(parent->children,
+                                                           (parent->maxChildren * 2) * sizeof(TrieNode))) == NULL) {
+                                    getError(2);
+                                    exit(2);
+                                }
+
+                                parent->children = newChildren;
+                                parent->emptySpace += parent->maxChildren;
+                                parent->maxChildren *= 2;
+
+                                memset(&newChildren[parent->maxChildren - parent->emptySpace], 0,
+                                       (parent->maxChildren - parent->emptySpace) * sizeof(TrieNode));
+                            }
+
+                            memmove(&parent->children[result.position + 1], &parent->children[result.position],
+                                    (parent->maxChildren - parent->emptySpace - result.position) *
+                                    sizeof(TrieNode));
                         }
-                        
-                        memmove(&parent->children[result.position + 1], &parent->children[result.position],
-                                (parent->maxChildren - parent->emptySpace - result.position) * sizeof(TrieNode));
                     }
                 }
-            }
                 /*If ngrams needs to go at the end of the children array, but there is no space*/
-            else {
-                if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) == NULL) {
-                    getError(2);
-                    exit(2);
-                }
-                parent->children = newChildren;
-                parent->emptySpace += parent->maxChildren;
-                parent->maxChildren *= 2;
+                else {
+                    if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) ==
+                        NULL) {
+                        getError(2);
+                        exit(2);
+                    }
+                    parent->children = newChildren;
+                    parent->emptySpace += parent->maxChildren;
+                    parent->maxChildren *= 2;
 
-                memset(&newChildren[parent->maxChildren - parent->emptySpace], 0,
-                        (parent->maxChildren - parent->emptySpace) * sizeof(TrieNode));
+                    memset(&newChildren[parent->maxChildren - parent->emptySpace], 0,
+                           (parent->maxChildren - parent->emptySpace) * sizeof(TrieNode));
+                }
+
+                /*Store the new child and update children count*/
+                trieNodeInit(word, &parent->children[result.position]);
+                parent->emptySpace--;
             }
 
-            /*Store the new child and update children count*/
-            trieNodeInit(word, &parent->children[result.position]);
-            parent->emptySpace--;
+            parent = &parent->children[result.position];
         }
-        
-        parent = &parent->children[result.position];
+
+        parent->is_final = 1;
+
+        return 0;
     }
 
-    parent->is_final = 1;
 
-    return 0;
-}
+    void trieDeleteNgram(NgramVector *ngram) {
+        int i;
+        Stack s;
+        BinaryResult br;
+        TrieNode *node = trieRoot->root;
+        bool stop = false;
 
+        initStack(&s);
+        for (i = 0; i < ngram->words; i++) {
+            //printf("Searching %s...\n", ngram->ngram[i]);
+            trieBinarySearch(&br, node, ngram->ngram[i]);
+            if (!br.found || node->children[br.position].deleted) {
+                deleteStack(&s);
+                return;
+            }
+            //printf("FOUND IT\n");
+            push(&s, node);
+            node = &(node->children[br.position]);
+        }
 
-void trieDeleteNgram(NgramVector *ngram) {
-    int i;
-    Stack s;
-    BinaryResult br;
-    TrieNode *node = trieRoot->root;
-    bool stop = false;
-
-    initStack(&s);
-    for (i = 0; i < ngram->words; i++) {
-        //printf("Searching %s...\n", ngram->ngram[i]);
-        trieBinarySearch(&br, node, ngram->ngram[i]);
-        if (!br.found || node->children[br.position].deleted){
+        //printf("final: %d\n", node->is_final);
+        if (!node->is_final) {
             deleteStack(&s);
             return;
         }
-        //printf("FOUND IT\n");
-        push(&s, node);
-        node = &(node->children[br.position]);
-    }
-    
-    //printf("final: %d\n", node->is_final);
-    if (!node->is_final){
-        deleteStack(&s);
-        return;
-    }
 
-    node->is_final = 0;
-    if (node->emptySpace + node->deletedChildren < node->maxChildren){          // there still are active children
+        node->is_final = 0;
+        if (node->emptySpace + node->deletedChildren <
+            node->maxChildren) {          // there still are active children
 //        printf("empty: = %d, deleted: %d | max: %d\n", node->emptySpace, node->deletedChildren, node->maxChildren);
 //        i = node->maxChildren-node->emptySpace-1;
 //    	while (node->children[i].deleted) {                                     // free all deleted children after the last active one
@@ -270,39 +279,41 @@ void trieDeleteNgram(NgramVector *ngram) {
 //			i--;
 //    	}
 //        printf("empty: = %d, deleted: %d | max: %d\n\n", node->emptySpace, node->deletedChildren, node->maxChildren);
-        deleteStack(&s);
-        return;
-    }
+            deleteStack(&s);
+            return;
+        }
 
-    // no active children, delete 'em all
-    for (i = 0; i < node->deletedChildren; i++)                                 // delete the words of inactive children
-        free(node->children[i].word);
-    free(node->children);                                                       // delete the array
-    node->deleted = 1;
-    
-    node = pop(&s);
-    node->deletedChildren++;
+        // no active children, delete 'em all
+        for (i = 0; i <
+                    node->deletedChildren; i++)                                 // delete the words of inactive children
+            free(node->children[i].word);
+        free(node->children);                                                       // delete the array
+        node->deleted = 1;
+
+        node = pop(&s);
+        node->deletedChildren++;
 
 
-    //for the rest of the ngram
-    while (notEmpty(&s)){
+        //for the rest of the ngram
+        while (notEmpty(&s)) {
 
-        /*i=node->maxChildren-node->emptySpace-1;
-        while(i>=0 && !stop){                       // free all deleted children after the last active one (could be all of them)
-            if (node->children[i].deleted){
-                free(node->children[i].word);
-                node->children[i].deleted = 0;
-                node->deletedChildren--;
-                node->emptySpace++;
-                i--;
-            }
-            else{
-                stop = true;
-            }
-        }*/
+            /*i=node->maxChildren-node->emptySpace-1;
+            while(i>=0 && !stop){                       // free all deleted children after the last active one (could be all of them)
+                if (node->children[i].deleted){
+                    free(node->children[i].word);
+                    node->children[i].deleted = 0;
+                    node->deletedChildren--;
+                    node->emptySpace++;
+                    i--;
+                }
+                else{
+                    stop = true;
+                }
+            }*/
 
-        //printf("space left: %d | max: %d\n", node->emptySpace+node->deletedChildren, node->maxChildren);
-        if (node->emptySpace + node->deletedChildren < node->maxChildren){           // there still are active children
+            //printf("space left: %d | max: %d\n", node->emptySpace+node->deletedChildren, node->maxChildren);
+            if (node->emptySpace + node->deletedChildren <
+                node->maxChildren) {           // there still are active children
 //        	i = node->maxChildren-node->emptySpace-1;
 //        	while (node->children[i].deleted){                                  // free all deleted children after the last active one
 //    			free(node->children[i].word);
@@ -311,28 +322,27 @@ void trieDeleteNgram(NgramVector *ngram) {
 //    			node->emptySpace++;
 //    			i--;
 //        	}
-            deleteStack(&s);
-            return;
-        }
+                deleteStack(&s);
+                return;
+            } else {
+                // no active children, delete 'em all
+                for (i = 0; i <
+                            node->deletedChildren; i++)                             // delete the words of inactive children
+                    free(node->children[i].word);
+                node->emptySpace += node->deletedChildren;
+                memset(node->children, 0, MINSIZE * sizeof(TrieNode));
+            }
+            //printf("\nfinal: %d\n", node->is_final);
+            if (node->is_final) {                                                    // end of another ngram, return
+                deleteStack(&s);
+                return;
+            }
 
-        else {
-            // no active children, delete 'em all
-            for (i = 0; i < node->deletedChildren; i++)                             // delete the words of inactive children
-                free(node->children[i].word);
-            node->emptySpace += node->deletedChildren;
-            memset(node->children, 0, MINSIZE * sizeof(TrieNode));
+            free(node->children);                                                   // delete the array
+            node->deleted = 1;
+            node = pop(&s);
+            node->deletedChildren++;
         }
-        //printf("\nfinal: %d\n", node->is_final);
-        if (node->is_final){                                                    // end of another ngram, return
-            deleteStack(&s);
-            return;
-        }
-
-        free(node->children);                                                   // delete the array
-        node->deleted = 1;
-        node = pop(&s);
-        node->deletedChildren++;
-    }
 
 //    if (node->emptySpace + node->deletedChildren < node->maxChildren) {           // there still are active children
 //        i = node->maxChildren - node->emptySpace - 1;
@@ -344,8 +354,8 @@ void trieDeleteNgram(NgramVector *ngram) {
 //            i--;
 //        }
 //    }
-    deleteStack(&s);
-}
+        deleteStack(&s);
+    }
 
 
 
@@ -418,27 +428,27 @@ void trieDeleteNgram(NgramVector *ngram) {
 
 
 
-void trieFree() {
+    void trieFree() {
 
-    TrieNode *node = trieRoot->root;
-    trieRecursiveFree(node);
+        TrieNode *node = trieRoot->root;
+        trieRecursiveFree(node);
 
-    free(trieRoot);
-}
-
-void trieRecursiveFree(TrieNode *node) {
-
-    int i;
-    for (i = 0; i < node->maxChildren - node->emptySpace; i++) {
-
-        free(node->word);
-
-        if (node->deleted == 1)
-            continue;
-
-        trieRecursiveFree(&node->children[i]);
+        free(trieRoot);
     }
 
-    free(node->children);
-    free(node);
-}
+    void trieRecursiveFree(TrieNode *node) {
+
+        int i;
+        for (i = 0; i < node->maxChildren - node->emptySpace; i++) {
+
+            free(node->word);
+
+            if (node->deleted == 1)
+                continue;
+
+            trieRecursiveFree(&node->children[i]);
+        }
+
+        free(node->children);
+        free(node);
+    }
