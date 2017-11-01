@@ -57,6 +57,10 @@ void createNgram(NgramVector *ngramVector, char *buffer){			// creates an ngram 
 			s = e;
 		}
 	}
+	/*printf("\nwords: %d\n", ngramVector->words);
+	for (i=0; i<ngramVector->words; i++)
+		printf("%s ", ngramVector->ngram[i]);
+	printf("\n\n");*/
 }
 
 

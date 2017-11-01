@@ -46,6 +46,8 @@ int main(int argc, char **argv) {
 
     //executeBurstCommands(burstListStart);
 
+    trieFree();
+
     return 0;
 }
 

@@ -142,6 +142,11 @@ int trieInsertSort(NgramVector *ngramVector) {
 
 	parent = trieRoot->root;
 
+	// printf("\nwords: %d\n", ngramVector->words);
+	//            	for (i=0; i<ngramVector->words; i++)
+	//            		printf("%s ", ngramVector->ngram[i]);
+	//            	printf("\n\n");
+
 	for (i = 0; i < ngramVector->words; i++) {
 		word = ngramVector->ngram[i];
 
@@ -163,31 +168,31 @@ int trieInsertSort(NgramVector *ngramVector) {
 					/*In between the other children*/
 					if (result.position < parent->maxChildren - parent->emptySpace) {
 						/*Creating space from deleted nodes*/                               //IF LOAD FACTOR IS BIG ENOUGH +++ THERE IS A BUG IN HERE
-						if (parent->emptySpace == 0 && parent->deletedChildren > 0) {
+						// if (parent->emptySpace == 0 && parent->deletedChildren > 0) {
 
-							j = 0;
-							while (j < (parent->maxChildren - parent->emptySpace)) {
+						// 	j = 0;
+						// 	while (j < (parent->maxChildren - parent->emptySpace)) {
 
-								if (parent->children[j].deleted == 1) {
-									free(parent->children[j].word);
+						// 		if (parent->children[j].deleted == 1) {
+						// 			free(parent->children[j].word);
 
-									int end = j + 1;
+						// 			int end = j + 1;
 
-									while (parent->children[end].deleted == 1 && end < parent->maxChildren - parent->emptySpace) {
-										free(parent->children[end].word);
-										end++;
-									}
-									memmove(&parent->children[j], &parent->children[end], (parent->maxChildren - parent->emptySpace - end) * sizeof(TrieNode));
-									parent->emptySpace += end - j;
-									parent->deletedChildren -= end - j;
-									if (j < result.position) {
-										result.position -= end -j;
-									}
-								}
-								j++;
-							}
-							memset(&parent->children[parent->maxChildren - parent->emptySpace], 0, (parent->maxChildren - parent->emptySpace) * sizeof(TrieNode));
-						}
+						// 			while (parent->children[end].deleted == 1 && end < parent->maxChildren - parent->emptySpace) {
+						// 				free(parent->children[end].word);
+						// 				end++;
+						// 			}
+						// 			memmove(&parent->children[j], &parent->children[end], (parent->maxChildren - parent->emptySpace - end) * sizeof(TrieNode));
+						// 			parent->emptySpace += end - j;
+						// 			parent->deletedChildren -= end - j;
+						// 			if (j < result.position) {
+						// 				result.position -= end -j;
+						// 			}
+						// 		}
+						// 		j++;
+						// 	}
+						// 	memset(&parent->children[parent->maxChildren - parent->emptySpace], 0, (parent->maxChildren - parent->emptySpace) * sizeof(TrieNode));
+						// }
 
 						if (parent->emptySpace == 0) {
 							if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) == NULL) {
@@ -328,16 +333,16 @@ void trieDeleteNgram(NgramVector *ngram) {
 		node->deletedChildren++;
 	}
 
-	//    if (node->emptySpace + node->deletedChildren < node->maxChildren) {           // there still are active children
-	//        i = node->maxChildren - node->emptySpace - 1;
-	//        while (node->children[i].deleted) {                                  // free all deleted children after the last active one
-	//            free(node->children[i].word);
-	//            node->children[i].deleted = 0;
-	//            node->deletedChildren--;
-	//            node->emptySpace++;
-	//            i--;
-	//        }
-	//    }
+	   if (node->emptySpace + node->deletedChildren < node->maxChildren) {           // there still are active children
+	       i = node->maxChildren - node->emptySpace - 1;
+	       while (node->children[i].deleted) {                                  // free all deleted children after the last active one
+	           free(node->children[i].word);
+	           node->children[i].deleted = 0;
+	           node->deletedChildren--;
+	           node->emptySpace++;
+	           i--;
+	       }
+	   }
 	deleteStack(&s);
 }
 
@@ -423,16 +428,13 @@ void trieFree() {
 void trieRecursiveFree(TrieNode *node) {
 
 	int i;
-	for (i = 0; i < node->maxChildren - node->emptySpace; i++) {
 
-		free(node->word);
-
-		if (node->deleted == 1)
-		continue;
-
-		trieRecursiveFree(&node->children[i]);
+	if (!node->deleted){
+		for (i = 0; i < node->maxChildren - node->emptySpace; i++)
+			trieRecursiveFree(&node->children[i]);
+		if (node->maxChildren > 1)
+			free(node->children);
 	}
-
-	free(node->children);
+	free(node->word);
 	free(node);
 }
