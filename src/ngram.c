@@ -61,6 +61,7 @@ void createNgram(NgramVector *ngramVector, char *buffer){			// creates an ngram 
 
 
 void deleteNgram(NgramVector *ngramVector){							// deletes the ngram struct, does not touch the words of the ngram
+	//deleteWords(ngramVector);
 	free(ngramVector->ngram);
 	free(ngramVector);
 }
@@ -70,5 +71,6 @@ void deleteWords(NgramVector *ngramVector){
 	int i;
 
 	for (i=0; i<ngramVector->words; i++)
-		free(ngramVector->ngram[i]);
+		if (ngramVector->ngram[i] != NULL)
+			free(ngramVector->ngram[i]);
 }

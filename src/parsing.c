@@ -30,6 +30,7 @@ void readInputFile(char *inputFile){
 		// }
 		createNgram(ngram, buffer);
 		trieInsertSort(ngram);                                  // or any other insertion function for the initial trie
+		deleteWords(ngram);
 	}
 	deleteNgram(ngram);
     
@@ -77,17 +78,17 @@ void readQueryFile(char *queryFile){
             }
             else if (command == 'D'){
                 trieDeleteNgram(ngram);
-                deleteWords(ngram);
+                //deleteWords(ngram);
             }
             else if (command == 'Q'){
                 trieSearch(ngram);
-                deleteWords(ngram);
+                //deleteWords(ngram);
             }
             else {
                 printf("Wrong query\n");
                 exit(1);
             }
-
+            deleteWords(ngram);
             deleteNgram(ngram);
                     
 			//addCommand(command, ngram);//
