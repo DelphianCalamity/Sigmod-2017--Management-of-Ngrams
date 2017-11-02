@@ -1,6 +1,3 @@
-//
-// Created by Stathis on 10/12/2017.
-//
 #include <stdio.h>
 
 void getError(int code){

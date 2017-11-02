@@ -8,13 +8,12 @@
 #include "parsing.h"
 #include "trieStructs.h"
 
-void readInputFile(char *inputFile){
-	int i;
+void readInputFile(char *inputFile) {
+
 	size_t size=0;
 	char *buffer=NULL;
 	NgramVector *ngram;
 	FILE *fp;
-
 
 	if ((fp = fopen(inputFile, "r")) == NULL){                  // open init file
 		getError(3);
@@ -24,10 +23,6 @@ void readInputFile(char *inputFile){
 	ngram = initNgram();
 	
 	while (getline(&buffer, &size, fp) != -1){
-		i = strlen(buffer);
-		// if (buffer[i-1] == '\n'){							// remove \n for easier handling
-		// 	buffer[i-1] = '\0';
-		// }
 		createNgram(ngram, buffer);
 		trieInsertSort(ngram);                                  // or any other insertion function for the initial trie
 		deleteWords(ngram);
@@ -40,12 +35,11 @@ void readInputFile(char *inputFile){
 }
 
 
-
 void readQueryFile(char *queryFile){
-	int i;
+
 	size_t size=0;
 	char *buffer=NULL;
-	char command, burstFlag=1;
+	char command; //, burstFlag=1;
 	NgramVector *ngram;
 	FILE *fp;
 
@@ -56,19 +50,17 @@ void readQueryFile(char *queryFile){
 
 	while (getline(&buffer, &size, fp) != -1){
 		
-//      if (burstFlag){
-//			addBurst();
-//			burstFlag = 0;
-//		}
+        //if (burstFlag){
+		//	addBurst();
+		//	burstFlag = 0;
+		//}
         
 		if (buffer[0] == 'F'){
             //processBursts();
             //burstFlag = 1;
         }
 		else {                                                  //Ignoring burst list for the first part
-            
-			i = strlen(buffer);
-            
+
             command = buffer[0];
 			ngram = initNgram();
 			createNgram(ngram, &buffer[2]);

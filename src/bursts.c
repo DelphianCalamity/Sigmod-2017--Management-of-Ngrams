@@ -10,7 +10,6 @@
 // adds a command at the end of the currently last burst
 void addCommand(char com, NgramVector *ngram){
 	Burst *temp;
-	int i;
 
 	if ((temp = malloc(sizeof(Burst))) == NULL){
 		getError(1);
@@ -57,7 +56,6 @@ void addBurst(void){
 // executes all commands in current burst
 void executeBurstCommands(BurstList *burst){
 	Burst *temp;
-	int i;
 
 	while (burst->start != NULL){
 		temp=burst->start;
