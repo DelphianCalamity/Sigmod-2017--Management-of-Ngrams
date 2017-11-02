@@ -7,7 +7,7 @@ OBJS = $(SRCS:.c=.o)
 
 PROG1 = unitTest
 SRCS1 = unit_testing.c unitTest.c errorMessages.c ngram.c stack.c trieStructs.c
-HDRS1 = unit_testing.h errorMessages.h ngram.h stack.h trieStructs.h
+HDRS1 = ./UnitTesting/unit_testing.h errorMessages.h ngram.h stack.h trieStructs.h
 OBJS1 = $(SRCS1:.c=.o)
 
 all: $(PROG) $(PROG1)
@@ -32,10 +32,10 @@ parsing.o : parsing.c $(HDRS)
 trieStructs.o : trieStructs.c $(HDRS)
 	$(CC) trieStructs.c -c $(FLAGS)
 
-unit_testing.o : unit_testing.c $(HDRS1)
-	$(CC) unit_testing.c -c $(FLAGS)
-unitTest.o : unitTest.c $(HDRS1)
-	$(CC) unitTest.c -c $(FLAGS)
+unit_testing.o : ./UnitTesting/unit_testing.c $(HDRS1)
+	$(CC) ./UnitTesting/unit_testing.c -c $(FLAGS)
+unitTest.o : ./UnitTesting/unitTest.c $(HDRS1)
+	$(CC) ./UnitTesting/unitTest.c -c $(FLAGS)
 
 clean :
 	rm -f core $(PROG) $(OBJS) $(PROG1) $(OBJS1)

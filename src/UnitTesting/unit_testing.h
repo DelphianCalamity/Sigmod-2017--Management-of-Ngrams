@@ -1,7 +1,7 @@
 #ifndef UNIT_TESTING_H
 #define UNIT_TESTING_H
 
-#include "ngram.h"
+#include "../ngram.h"
 
 void testBinarySearch();
 void testSearch();

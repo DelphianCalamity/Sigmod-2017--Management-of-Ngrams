@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include "unit_testing.h"
-#include "trieStructs.h"
+#include "../trieStructs.h"
 #include <assert.h>
-#include "ngram.h"
-#include "errorMessages.h"
-#include "trieStructs.h"
+#include "../ngram.h"
+#include "../errorMessages.h"
 #include <stdlib.h>
 #include <string.h>
 
