@@ -301,13 +301,11 @@ void trieDeleteNgram(NgramVector *ngram) {
 		}
 		memset(&(node->children[i+1]), 0, (node->maxChildren-i-1)*sizeof(TrieNode));
 
-		//printf("space left: %d | max: %d\n", node->emptySpace+node->deletedChildren, node->maxChildren);
 		if (node->emptySpace + node->deletedChildren < node->maxChildren) {           	// there still are active children
 			deleteStack(&s);
 			return;
 		}
 
-		//printf("\nfinal: %d\n", node->is_final);
 		if (node->is_final) {                                                    		// end of another ngram, return
 			deleteStack(&s);
 			return;
@@ -334,6 +332,7 @@ void trieDeleteNgram(NgramVector *ngram) {
 	deleteStack(&s);
 }
 
+/**********************************************************************/
 void trieFree() {
 
 	TrieNode *node = trieRoot->root;
