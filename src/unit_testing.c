@@ -14,7 +14,7 @@ void testBinarySearch() {
     BinaryResult br;
     TrieNode node;
 
-    trieNodeInit("", &node);
+    trieNodeInit(NULL, &node);
 
     trieNodeInit("aa", &node.children[0]);
     node.emptySpace--;
@@ -38,6 +38,11 @@ void testBinarySearch() {
     trieBinarySearch(&br, &node, "aa");
     printf("found=%d\nposition=%d\n", br.found, br.position);
     assert(br.found==1 && br.position==0);
+
+    free(node.children[0].children);
+    free(node.children[1].children);
+    free(node.children[2].children);
+    free(node.children);
 
     printf("End Of Binary Search testing..\n");
 }
@@ -226,7 +231,6 @@ void testDelete() {
     deleteNgram(ngram);
 
     str = "this is a";
-    ngram = testCreateNgram(str, strlen(str)+1);
     ngram = testCreateNgram(str, strlen(str)+1);
     trieDeleteNgram(ngram);
     deleteWords(ngram);

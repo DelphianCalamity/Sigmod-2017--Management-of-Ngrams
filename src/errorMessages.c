@@ -22,7 +22,7 @@ void getError(int code) {
     return;
 }
 
-void* safemalloc(size_t size) {
+void* safemalloc(int size) {
     void* pointer = malloc(size);
     if (pointer == NULL) {
         getError(1);
@@ -31,7 +31,7 @@ void* safemalloc(size_t size) {
     return pointer;
 }
 
-void* safecalloc(size_t num, size_t size) {
+void* safecalloc(int num, int size) {
     void* pointer = calloc(num, size);
     if (pointer == NULL) {
         getError(1);
@@ -40,7 +40,7 @@ void* safecalloc(size_t num, size_t size) {
     return pointer;
 }
 
-void* saferealloc(void* ptr, size_t size) {
+void* saferealloc(void* ptr, int size) {
     void* pointer = realloc(ptr, size);
     if (pointer == NULL) {
         getError(2);

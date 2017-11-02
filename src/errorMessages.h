@@ -2,8 +2,8 @@
 #define _ERRORMESSAGES_H
 
 void getError(int);
-void* safemalloc(size_t);
-void* safecalloc(size_t num, size_t size);
-void* saferealloc(void* ptr, size_t size);
+void* safemalloc(int);
+void* safecalloc(int num, int size);
+void* saferealloc(void* ptr, int size);
 
 #endif //_ERRORMESSAGES_H

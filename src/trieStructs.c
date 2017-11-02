@@ -136,11 +136,6 @@ int trieInsertSort(NgramVector *ngramVector) {
 
 	parent = trieRoot->root;
 
-	// printf("\nwords: %d\n", ngramVector->words);
-	//            	for (i=0; i<ngramVector->words; i++)
-	//            		printf("%s ", ngramVector->ngram[i]);
-	//            	printf("\n\n");
-
 	for (i = 0; i < ngramVector->words; i++) {
 		word = ngramVector->ngram[i];
 
