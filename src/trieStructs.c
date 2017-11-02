@@ -252,18 +252,17 @@ void trieDeleteNgram(NgramVector *ngram) {
 
 	initStack(&s);
 	for (i = 0; i < ngram->words; i++) {
-		//printf("Searching %s...\n", ngram->ngram[i]);
+
 		trieBinarySearch(&br, node, ngram->ngram[i]);
 		if (!br.found || node->children[br.position].deleted) {
 			deleteStack(&s);
 			return;
 		}
-		//printf("FOUND IT\n");
+
 		push(&s, node);
 		node = &(node->children[br.position]);
 	}
 
-	//printf("final: %d\n", node->is_final);
 	if (!node->is_final) {														// node not final, specified n-gram not found
 		deleteStack(&s);
 		return;
@@ -315,7 +314,8 @@ void trieDeleteNgram(NgramVector *ngram) {
 		}
 
 		free(node->children);                                                   		// delete the array
-		node->deleted = 1;
+        node->children = NULL;
+        node->deleted = 1;
 		node = pop(&s);
 		node->deletedChildren++;
 	}
@@ -340,6 +340,7 @@ void trieFree() {
 	TrieNode *node = trieRoot->root;
 	trieRecursiveFree(node);
 
+    free(node);
 	free(trieRoot);
 }
 
@@ -350,9 +351,10 @@ void trieRecursiveFree(TrieNode *node) {
 	if (!node->deleted){
 		for (i = 0; i < node->maxChildren - node->emptySpace; i++)
 			trieRecursiveFree(&node->children[i]);
-		if (node->maxChildren > 1)
+		if (node->children != NULL)
 			free(node->children);
 	}
-	free(node->word);
-	free(node);
+
+    if(node->word != NULL)
+	    free(node->word);
 }

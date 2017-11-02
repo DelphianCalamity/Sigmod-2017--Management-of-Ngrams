@@ -1,12 +1,12 @@
-CC = gcc -O3
+CC = gcc
 SRCS = bursts.c errorMessages.c main.c ngram.c parsing.c stack.c trieStructs.c
 HDRS = bursts.h errorMessages.h ngram.h parsing.h stack.h trieStructs.h
 PROG = ngrams
-FLAGS = -Wall
+FLAGS = -Wall -O3
 OBJS = $(SRCS:.c=.o)
 
 $(PROG) :  $(OBJS)
-	$(CC) $(OBJS) -o $(PROG) -lm
+	$(CC) $(OBJS) -o $(PROG)
 
 main.o : main.c $(HDRS)
 	$(CC) main.c -c $(FLAGS)
