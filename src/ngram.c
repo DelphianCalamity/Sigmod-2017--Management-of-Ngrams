@@ -25,26 +25,21 @@ NgramVector * initNgram(void){										// creates and initializes the ngram str
 
 void createNgram(NgramVector *ngramVector, char *buffer){			// creates an ngram from the buffer
 	
-    int i=0, s, e;
+    int s=0, e;
 
-	s = 0;
-	e = 0;
 	ngramVector->words = 0;
-	
-    for (i=0; i<(strlen(buffer)); i++) {
-		if (buffer[i] != ' ' && buffer[i] != '\n' && buffer[i] != '\0')
-			e++;
-		else {
-            
-			if (s != e){
 
+	int size = strlen(buffer);
+    for (e=0; e<size; e++) {
+		if (!(buffer[e] != ' ' && buffer[e] != '\n')) {
+
+			if (s != e){
                 if (ngramVector->words == ngramVector->capacity){
-                    
-                    if ((ngramVector->ngram = realloc(ngramVector->ngram, 2*ngramVector->capacity*sizeof(char*))) == NULL) {
+					ngramVector->capacity *= 2;
+					if ((ngramVector->ngram = realloc(ngramVector->ngram, ngramVector->capacity*sizeof(char*))) == NULL) {
                         getError(2);
                         exit(2);
                     }
-                    ngramVector->capacity *= 2;
                 }
 
 				ngramVector->ngram[ngramVector->words] = malloc((e-s+1)*sizeof(char));
@@ -52,8 +47,7 @@ void createNgram(NgramVector *ngramVector, char *buffer){			// creates an ngram 
 				ngramVector->ngram[ngramVector->words][e-s]='\0';
 				ngramVector->words++;
 			}
-			e++;
-			s = e;
+			s = e+1;
 		}
 	}
 }
