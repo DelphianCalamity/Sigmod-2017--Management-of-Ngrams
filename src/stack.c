@@ -6,19 +6,19 @@
 #include "stack.h"
 #include "trieStructs.h"
 
-void initStack(Stack *s){
+void initStack(Stack *s) {
 	s->stack = safemalloc(10*sizeof(TrieNode *));
 	s->size=10;
 	s->last=-1;
 }
 
-void push(Stack *s, TrieNode *node){
+void push(Stack *s, TrieNode *node) {
 
 	//printf("Gonna push, size is:%d and last is:%d\n", s->size, s->last);
 	if (s->last == (s->size-1)){
 		//printf("Realloc with new size:%d\n", s->size + (s->size)/10 + 1);
-		s->size = s->size + (s->size)/10 + 1;
-		s->stack = saferealloc(s->stack, (s->size)*sizeof(TrieNode *));;
+		s->size *= 2;  //s->size + (s->size)/10 + 1;
+		s->stack = saferealloc(s->stack, (s->size)*sizeof(TrieNode *));
 	}
 	s->last++;
 	s->stack[s->last]=node;
@@ -30,7 +30,6 @@ bool notEmpty(Stack *s){
 		return 0;
 	return 1;
 }
-
 
 TrieNode * pop(Stack *s){
 	//printf("In start of pop size is:%d and last is:%d\n", s->size, s->last);
@@ -46,7 +45,6 @@ TrieNode * pop(Stack *s){
 void deleteStack(Stack *s){
 	free(s->stack);
 }
-
 
  void printStack(Stack *S){
 	int i;

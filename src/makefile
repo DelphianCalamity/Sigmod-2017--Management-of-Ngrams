@@ -2,11 +2,22 @@ CC = gcc
 SRCS = bursts.c errorMessages.c main.c ngram.c parsing.c stack.c trieStructs.c
 HDRS = bursts.h errorMessages.h ngram.h parsing.h stack.h trieStructs.h
 PROG = ngrams
-FLAGS = -Wall -O3
+FLAGS = -Wall #-O3
 OBJS = $(SRCS:.c=.o)
+
+PROG1 = unitTest
+SRCS1 = unit_testing.c unitTest.c errorMessages.c ngram.c stack.c trieStructs.c
+HDRS1 = unit_testing.h errorMessages.h ngram.h stack.h trieStructs.h
+OBJS1 = $(SRCS1:.c=.o)
+
+all: $(PROG) $(PROG1)
 
 $(PROG) :  $(OBJS)
 	$(CC) $(OBJS) -o $(PROG)
+
+$(PROG1) :  $(OBJS1)
+	$(CC) $(OBJS1) -o $(PROG1)
+
 
 main.o : main.c $(HDRS)
 	$(CC) main.c -c $(FLAGS)
@@ -20,7 +31,13 @@ parsing.o : parsing.c $(HDRS)
 	$(CC) parsing.c -c $(FLAGS)
 trieStructs.o : trieStructs.c $(HDRS)
 	$(CC) trieStructs.c -c $(FLAGS)
+
+unit_testing.o : unit_testing.c $(HDRS1)
+	$(CC) unit_testing.c -c $(FLAGS)
+unitTest.o : unitTest.c $(HDRS1)
+	$(CC) unitTest.c -c $(FLAGS)
+
 clean :
-	rm -f core $(PROG) $(OBJS)
+	rm -f core $(PROG) $(OBJS) $(PROG1) $(OBJS1)
 TAGS : $(SRCS) $(HDRS)
 	etags -t $(SRCS) $(HDRS)

@@ -2,12 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-
 #include "errorMessages.h"
 #include "stack.h"
 #include "ngram.h"
 #include "trieStructs.h"
-
 
 /*Initialization of trie root*/
 void trieRootInit() {
@@ -37,6 +35,7 @@ void trieNodeInit(char *word, TrieNode *child) {
 
 void trieBinarySearch(BinaryResult *br, TrieNode *parent, char *word) {
 
+	int cmp;
 	TrieNode *children = parent->children;
 
 	br->found = 0;
@@ -53,10 +52,12 @@ void trieBinarySearch(BinaryResult *br, TrieNode *parent, char *word) {
 
 	while (fst <= lst) {
 
-		if (strcmp(children[middle].word, word) < 0)
+		cmp = strcmp(children[middle].word, word);
+
+		if (cmp < 0)
 			fst = middle + 1;
 
-		else if (strcmp(children[middle].word, word) == 0) {
+		else if (cmp == 0) {
 			br->position = middle;
 			br->found = 1;
 
@@ -246,7 +247,7 @@ void trieDeleteNgram(NgramVector *ngram) {
 		node = &(node->children[br.position]);
 	}
 
-	if (!node->is_final) {														// node not final, specified n-gram not found
+	if (!node->is_final) {														 // node not final, specified n-gram not found
 		deleteStack(&s);
 		return;
 	}

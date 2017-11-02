@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "bursts.h"
 #include "errorMessages.h"
 #include "ngram.h"
