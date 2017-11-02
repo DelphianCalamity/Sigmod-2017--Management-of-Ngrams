@@ -8,15 +8,9 @@
 NgramVector * initNgram(void){										// creates and initializes the ngram struct
 	NgramVector *ngramVector;
 
-	if ((ngramVector = malloc(sizeof(NgramVector))) == NULL){
-		getError(1);
-		exit(1);
-	}
+	ngramVector = safemalloc(sizeof(NgramVector));
 
-	if ((ngramVector->ngram = malloc(INIT_SIZE*sizeof(char *))) == NULL){
-		getError(1);
-		exit(1);
-	}
+	ngramVector->ngram = safemalloc(INIT_SIZE*sizeof(char *));
 	ngramVector->capacity = INIT_SIZE;
 	ngramVector->words = 0;
 
@@ -35,13 +29,11 @@ void createNgram(NgramVector *ngramVector, char *buffer, ssize_t size){			// cre
 			if (s != e){
                 if (ngramVector->words == ngramVector->capacity){
 					ngramVector->capacity *= 2;
-					if ((ngramVector->ngram = realloc(ngramVector->ngram, ngramVector->capacity*sizeof(char*))) == NULL) {
-                        getError(2);
-                        exit(2);
-                    }
+					ngramVector->ngram = saferealloc(ngramVector->ngram, ngramVector->capacity*sizeof(char*));
+
                 }
 
-				ngramVector->ngram[ngramVector->words] = malloc((e-s+1)*sizeof(char));
+				ngramVector->ngram[ngramVector->words] = safemalloc((e-s+1)*sizeof(char));
 				memcpy(ngramVector->ngram[ngramVector->words], &buffer[s], e-s);
 				ngramVector->ngram[ngramVector->words][e-s]='\0';
 				ngramVector->words++;

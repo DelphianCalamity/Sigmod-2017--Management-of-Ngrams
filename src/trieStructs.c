@@ -11,14 +11,8 @@
 
 /*Initialization of trie root*/
 void trieRootInit() {
-	if ((trieRoot = malloc(sizeof(TrieRoot))) == NULL) {
-		getError(1);
-		exit(1);
-	}
-	if ((trieRoot->root = malloc(sizeof(TrieNode))) == NULL) {
-		getError(1);
-		exit(1);
-	}
+	trieRoot = safemalloc(sizeof(TrieRoot));
+	trieRoot->root = safemalloc(sizeof(TrieNode));
 	trieNodeInit(NULL, trieRoot->root);
 	trieRoot->lastQuery = 1;
 }
@@ -37,12 +31,7 @@ void trieNodeInit(char *word, TrieNode *child) {
 	child->word = word;
 
 	/*Initialize new node's children*/
-	if ((child->children = malloc(MINSIZE * sizeof(TrieNode))) == NULL) {
-		getError(1);
-		exit(1);
-	}
-
-	memset(child->children, 0, MINSIZE * sizeof(TrieNode));
+	child->children = safecalloc(MINSIZE, sizeof(TrieNode));
 }
 
 
@@ -199,10 +188,8 @@ int trieInsertSort(NgramVector *ngramVector) {
 						// }
 
 						if (parent->emptySpace == 0) {
-							if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) == NULL) {
-								getError(2);
-								exit(2);
-							}
+
+							newChildren = saferealloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode));
 
 							parent->children = newChildren;
 							parent->emptySpace += parent->maxChildren;
@@ -211,17 +198,13 @@ int trieInsertSort(NgramVector *ngramVector) {
 							memset(&newChildren[parent->maxChildren - parent->emptySpace], 0, (parent->maxChildren - parent->emptySpace) * sizeof(TrieNode));
 						}
 
-						memmove(&parent->children[result.position + 1], &parent->children[result.position], (parent->maxChildren - parent->emptySpace - result.position) *
-						sizeof(TrieNode));
+						memmove(&parent->children[result.position + 1], &parent->children[result.position], (parent->maxChildren - parent->emptySpace - result.position) * sizeof(TrieNode));
 					}
 				}
 			}
 			/*If ngrams needs to go at the end of the children array, but there is no space*/
 			else {
-				if ((newChildren = realloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode))) == NULL) {
-					getError(2);
-					exit(2);
-				}
+				newChildren = saferealloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode));
 				parent->children = newChildren;
 				parent->emptySpace += parent->maxChildren;
 				parent->maxChildren *= 2;

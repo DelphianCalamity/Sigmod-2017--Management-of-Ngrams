@@ -70,14 +70,12 @@ void readQueryFile(char *queryFile){
             if (command == 'A'){
                 trieInsertSort(ngram);
             }
-            else if (command == 'D'){
+            else if (command == 'D')
                 trieDeleteNgram(ngram);
-                //deleteWords(ngram);
-            }
-            else if (command == 'Q'){
+
+            else if (command == 'Q')
                 trieSearch(ngram);
-                //deleteWords(ngram);
-            }
+
             else {
                 printf("Wrong query\n");
                 exit(1);

@@ -11,10 +11,7 @@
 void addCommand(char com, NgramVector *ngram){
 	Burst *temp;
 
-	if ((temp = malloc(sizeof(Burst))) == NULL){
-		getError(1);
-		exit(1);
-	}
+	temp = safemalloc(sizeof(Burst));
 	// printf("\n");
 	// for (i=0; i<ngram->words; i++)
 	// 	printf("%s ", ngram->ngram[i]);
@@ -38,11 +35,7 @@ void addCommand(char com, NgramVector *ngram){
 void addBurst(void){
 	BurstList *temp;
 
-	if ((temp = malloc(sizeof(BurstList))) == NULL){
-		getError(1);
-		exit(1);
-	}
-
+	temp = safemalloc(sizeof(BurstList));
 	temp->start = NULL;
 	temp->end = NULL;
 	temp->next = NULL;

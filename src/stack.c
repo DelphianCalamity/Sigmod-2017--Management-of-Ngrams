@@ -7,27 +7,18 @@
 #include "trieStructs.h"
 
 void initStack(Stack *s){
-	if ((s->stack=malloc(10*sizeof(TrieNode *)))==NULL){
-		getError(1);
-		exit(1);
-	}
+	s->stack = safemalloc(10*sizeof(TrieNode *));
 	s->size=10;
 	s->last=-1;
 }
 
-
 void push(Stack *s, TrieNode *node){
-	TrieNode **temp;
 
 	//printf("Gonna push, size is:%d and last is:%d\n", s->size, s->last);
 	if (s->last == (s->size-1)){
 		//printf("Realloc with new size:%d\n", s->size + (s->size)/10 + 1);
 		s->size = s->size + (s->size)/10 + 1;
-		if ((temp=realloc(s->stack, (s->size)*sizeof(TrieNode *)))==NULL){
-			getError(2);
-			exit(2);
-		}
-		s->stack=temp;
+		s->stack = saferealloc(s->stack, (s->size)*sizeof(TrieNode *));;
 	}
 	s->last++;
 	s->stack[s->last]=node;
