@@ -21,9 +21,10 @@ void readInputFile(char *inputFile) {
 	}
 
 	ngram = initNgram();
-	
-	while (getline(&buffer, &size, fp) != -1){
-		createNgram(ngram, buffer);
+
+    ssize_t len;
+    while ((len=getline(&buffer, &size, fp)) != -1){
+		createNgram(ngram, buffer, len);
 		trieInsertSort(ngram);                                  // or any other insertion function for the initial trie
 		deleteWords(ngram);
 	}
@@ -48,13 +49,14 @@ void readQueryFile(char *queryFile){
 		exit(2);
 	}
 
-	while (getline(&buffer, &size, fp) != -1){
+    ssize_t len;
+	while ((len=getline(&buffer, &size, fp)) != -1){
 		
         //if (burstFlag){
 		//	addBurst();
 		//	burstFlag = 0;
 		//}
-        
+
 		if (buffer[0] == 'F'){
             //processBursts();
             //burstFlag = 1;
@@ -63,8 +65,8 @@ void readQueryFile(char *queryFile){
 
             command = buffer[0];
 			ngram = initNgram();
-			createNgram(ngram, &buffer[2]);
-            
+			createNgram(ngram, &buffer[2], len-2);
+
             if (command == 'A'){
                 trieInsertSort(ngram);
             }
@@ -82,7 +84,7 @@ void readQueryFile(char *queryFile){
             }
             deleteWords(ngram);
             deleteNgram(ngram);
-                    
+
 			//addCommand(command, ngram);//
 		}
 	}

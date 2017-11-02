@@ -23,13 +23,12 @@ NgramVector * initNgram(void){										// creates and initializes the ngram str
 	return ngramVector;
 }
 
-void createNgram(NgramVector *ngramVector, char *buffer){			// creates an ngram from the buffer
+void createNgram(NgramVector *ngramVector, char *buffer, ssize_t size){			// creates an ngram from the buffer
 	
     int s=0, e;
 
 	ngramVector->words = 0;
 
-	int size = strlen(buffer);
     for (e=0; e<size; e++) {
 		if (!(buffer[e] != ' ' && buffer[e] != '\n')) {
 
@@ -53,7 +52,7 @@ void createNgram(NgramVector *ngramVector, char *buffer){			// creates an ngram 
 }
 
 
-void deleteNgram(NgramVector *ngramVector){							// deletes the ngram struct, does not touch the words of the ngram
+void deleteNgram(NgramVector *ngramVector){							        // deletes the ngram struct, does not touch the words of the ngram
 	//deleteWords(ngramVector);
 	free(ngramVector->ngram);
 	free(ngramVector);

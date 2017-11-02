@@ -334,7 +334,6 @@ void trieDeleteNgram(NgramVector *ngram) {
 	deleteStack(&s);
 }
 
-
 void trieFree() {
 
 	TrieNode *node = trieRoot->root;
