@@ -3,7 +3,8 @@
 
 #include "ngram.h"
 
-#define MINSIZE 500
+#define MINSIZE 10
+#define FACTOR 0.2
 
 typedef struct trieNode TrieNode;
 typedef struct trieRoot TrieRoot;
@@ -37,6 +38,7 @@ void trieNodeInit(char *, TrieNode *);
 void trieBinarySearch(BinaryResult*, TrieNode *, char *);
 void trieSearch(NgramVector *);
 void trieSearch_Ngram(TrieNode*, int, int, NgramVector *, int *);
+void trieCompactSpace(TrieNode*, BinaryResult*);
 int trieInsertSort(NgramVector *);
 void trieDeleteNgram(NgramVector*);
 void trieRecursiveFree(TrieNode*);
