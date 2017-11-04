@@ -4,7 +4,7 @@
 #include "ngram.h"
 
 #define MINSIZE 10
-#define FACTOR 0.2
+#define FACTOR 0.3
 
 typedef struct trieNode TrieNode;
 typedef struct trieRoot TrieRoot;
