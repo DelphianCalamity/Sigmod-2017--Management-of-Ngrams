@@ -130,8 +130,6 @@ void trieCompactSpace(TrieNode *parent) {
 
 	int j, end;
 
-	/*j = 0;
-	while (j < (parent->maxChildren - parent->emptySpace) && parent->deletedChildren > 0) {*/
 	for (j=0; j < (parent->maxChildren - parent->emptySpace) && parent->deletedChildren > 0; j++){
 
 		if (parent->children[j].deleted == 1) {
@@ -146,7 +144,6 @@ void trieCompactSpace(TrieNode *parent) {
 			parent->emptySpace += end - j;
 			parent->deletedChildren -= end - j;
 		}
-		//j++;
 	}
 	memset(&parent->children[parent->maxChildren - parent->emptySpace], 0, parent->emptySpace * sizeof(TrieNode));
 }
@@ -169,10 +166,6 @@ int trieInsertSort(NgramVector *ngramVector) {
 		trieBinarySearch(&result, parent, word);
 
 		if (result.found == 0 || parent->children[result.position].deleted == 1) {
-
-			/*Creating space from deleted nodes*/
-//			if ((double) parent->deletedChildren / (parent->maxChildren - parent->emptySpace) > FACTOR)
-//				trieCompactSpace(parent, &result);
 
 			/*If it's within the borders of the children array*/
 			if (result.position < parent->maxChildren) {
@@ -247,21 +240,21 @@ void trieDeleteNgram(NgramVector *ngram) {
 		node = &(node->children[br.position]);
 	}
 
-	if (!node->is_final) {                                                         // node not final, specified n-gram not found
+	if (!node->is_final) {                                                         	// node not final, specified n-gram not found
 		deleteStack(&s);
 		return;
 	}
 
 	node->is_final = 0;
-	if (node->emptySpace + node->deletedChildren < node->maxChildren) {          // there still are active children
+	if (node->emptySpace + node->deletedChildren < node->maxChildren) {          	// there still are active children
 		deleteStack(&s);
 		return;
 	}
 
 	// no active children, delete 'em all
-	for (i = 0; i < node->deletedChildren; i++)                                 // delete the words of inactive children
+	for (i = 0; i < node->deletedChildren; i++)                                 	// delete the words of inactive children
 		free(node->children[i].word);
-	free(node->children);                                                       // delete the array
+	free(node->children);                                                       	// delete the array
 	node->deleted = 1;
 
 	node = pop(&s);
@@ -289,26 +282,26 @@ void trieDeleteNgram(NgramVector *ngram) {
 		if ((double) node->deletedChildren / (node->maxChildren - node->emptySpace) > FACTOR)
 			trieCompactSpace(node);
 
-		if (node->emptySpace + node->deletedChildren < node->maxChildren) {            // there still are active children
+		if (node->emptySpace + node->deletedChildren < node->maxChildren) {           // there still are active children
 			deleteStack(&s);
 			return;
 		}
 
-		if (node->is_final) {                                                            // end of another ngram, return
+		if (node->is_final) {                                                         // end of another ngram, return
 			deleteStack(&s);
 			return;
 		}
 
-		free(node->children);                                                        // delete the array
+		free(node->children);                                                         // delete the array
 		node->children = NULL;
 		node->deleted = 1;
 		node = pop(&s);
 		node->deletedChildren++;
 	}
 
-	if (node->emptySpace + node->deletedChildren < node->maxChildren) {             // there still are active children
+	if (node->emptySpace + node->deletedChildren < node->maxChildren) {               // there still are active children
 		i = node->maxChildren - node->emptySpace - 1;
-		while (node->children[i].deleted) {                                        // free all deleted children after the last active one
+		while (node->children[i].deleted) {                                        	  // free all deleted children after the last active one
 			free(node->children[i].word);
 			node->children[i].deleted = 0;
 			node->deletedChildren--;

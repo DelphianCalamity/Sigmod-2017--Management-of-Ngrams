@@ -66,23 +66,7 @@ void readQueryFile(char *queryFile){
 			ngram = initNgram();
 			createNgram(ngram, &buffer[2], len-2);
 
-            // if (command == 'A'){
-            //     trieInsertSort(ngram);
-            // }
-            // else if (command == 'D')
-            //     trieDeleteNgram(ngram);
-
-            // else if (command == 'Q')
-            //     trieSearch(ngram);
-
-            // else {
-            //     printf("Wrong query\n");
-            //     exit(1);
-            // }
-            // deleteWords(ngram);
-            // deleteNgram(ngram);
-
-			addCommand(command, ngram);//
+			addCommand(command, ngram);
 		}
 	}
 

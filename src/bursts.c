@@ -52,17 +52,15 @@ void executeBurstCommands(BurstList *burst){
 
 	while (burst->start != NULL){
 		temp=burst->start;
-//printf(" number of words = %d\n", temp->ngram->words);
+		//printf(" number of words = %d\n", temp->ngram->words);
 		if (temp->command == 'A'){
 			trieInsertSort(temp->ngram);
         }
 		else if (temp->command == 'D'){
 			trieDeleteNgram(temp->ngram);
-			//deleteWords(temp->ngram);
         }
 		else{
             trieSearch(temp->ngram);
-			//deleteWords(temp->ngram);
 		}
 		burst->start = burst->start->next;
 		deleteWords(temp->ngram);
