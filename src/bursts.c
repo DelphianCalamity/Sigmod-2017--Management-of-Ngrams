@@ -58,14 +58,14 @@ void executeBurstCommands(BurstList *burst){
         }
 		else if (temp->command == 'D'){
 			trieDeleteNgram(temp->ngram);
-			deleteWords(temp->ngram);
+			//deleteWords(temp->ngram);
         }
 		else{
             trieSearch(temp->ngram);
-			deleteWords(temp->ngram);
+			//deleteWords(temp->ngram);
 		}
 		burst->start = burst->start->next;
-
+		deleteWords(temp->ngram);
         deleteNgram(temp->ngram);
 		free(temp);
 	}

@@ -41,6 +41,8 @@ int main(int argc, char **argv) {
     readInputFile(finit);             //Input & Storing
     readQueryFile(fquery);
 
+    processBursts();
+
     trieFree();
 
     return 0;

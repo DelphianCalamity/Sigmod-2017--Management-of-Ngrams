@@ -39,7 +39,7 @@ void readQueryFile(char *queryFile){
 
 	size_t size=0;
 	char *buffer=NULL;
-	char command; //, burstFlag=1;
+	char command, burstFlag=1;
 	NgramVector *ngram;
 	FILE *fp;
 
@@ -51,14 +51,14 @@ void readQueryFile(char *queryFile){
     ssize_t len;
 	while ((len=getline(&buffer, &size, fp)) != -1){
 		
-        //if (burstFlag){
-		//	addBurst();
-		//	burstFlag = 0;
-		//}
+        if (burstFlag){
+			addBurst();
+			burstFlag = 0;
+		}
 
 		if (buffer[0] == 'F'){
             //processBursts();
-            //burstFlag = 1;
+            burstFlag = 1;
         }
 		else {                                                  //Ignoring burst list for the first part
 
@@ -66,23 +66,23 @@ void readQueryFile(char *queryFile){
 			ngram = initNgram();
 			createNgram(ngram, &buffer[2], len-2);
 
-            if (command == 'A'){
-                trieInsertSort(ngram);
-            }
-            else if (command == 'D')
-                trieDeleteNgram(ngram);
+            // if (command == 'A'){
+            //     trieInsertSort(ngram);
+            // }
+            // else if (command == 'D')
+            //     trieDeleteNgram(ngram);
 
-            else if (command == 'Q')
-                trieSearch(ngram);
+            // else if (command == 'Q')
+            //     trieSearch(ngram);
 
-            else {
-                printf("Wrong query\n");
-                exit(1);
-            }
-            deleteWords(ngram);
-            deleteNgram(ngram);
+            // else {
+            //     printf("Wrong query\n");
+            //     exit(1);
+            // }
+            // deleteWords(ngram);
+            // deleteNgram(ngram);
 
-			//addCommand(command, ngram);//
+			addCommand(command, ngram);//
 		}
 	}
 

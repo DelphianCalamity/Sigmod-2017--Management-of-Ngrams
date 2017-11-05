@@ -284,6 +284,10 @@ void trieDeleteNgram(NgramVector *ngram) {
 		}
 		memset(&(node->children[i+1]), 0, (node->maxChildren-i-1)*sizeof(TrieNode));
 
+		/*Creating space from deleted nodes*/
+        if ((double)node->deletedChildren/(node->maxChildren-node->emptySpace) > FACTOR)
+            trieCompactSpace(node, NULL);
+
 		if (node->emptySpace + node->deletedChildren < node->maxChildren) {           	// there still are active children
 			deleteStack(&s);
 			return;
