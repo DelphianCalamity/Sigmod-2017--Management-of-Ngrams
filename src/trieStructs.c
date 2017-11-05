@@ -170,8 +170,8 @@ int trieInsertSort(NgramVector *ngramVector) {
 		if (result.found == 0 || parent->children[result.position].deleted == 1) {
 
 			/*Creating space from deleted nodes*/
-			if ((double) parent->deletedChildren / (parent->maxChildren - parent->emptySpace) > FACTOR)
-				trieCompactSpace(parent, &result);
+//			if ((double) parent->deletedChildren / (parent->maxChildren - parent->emptySpace) > FACTOR)
+//				trieCompactSpace(parent, &result);
 
 			/*If it's within the borders of the children array*/
 			if (result.position < parent->maxChildren) {
