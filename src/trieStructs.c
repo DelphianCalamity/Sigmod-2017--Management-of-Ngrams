@@ -130,8 +130,9 @@ void trieCompactSpace(TrieNode *parent) {
 
 	int j, end;
 
-	j = 0;
-	while (j < (parent->maxChildren - parent->emptySpace) && parent->deletedChildren > 0) {
+	/*j = 0;
+	while (j < (parent->maxChildren - parent->emptySpace) && parent->deletedChildren > 0) {*/
+	for (j=0; j < (parent->maxChildren - parent->emptySpace) && parent->deletedChildren > 0; j++){
 
 		if (parent->children[j].deleted == 1) {
 			free(parent->children[j].word);
@@ -145,7 +146,7 @@ void trieCompactSpace(TrieNode *parent) {
 			parent->emptySpace += end - j;
 			parent->deletedChildren -= end - j;
 		}
-		j++;
+		//j++;
 	}
 	memset(&parent->children[parent->maxChildren - parent->emptySpace], 0, parent->emptySpace * sizeof(TrieNode));
 }
