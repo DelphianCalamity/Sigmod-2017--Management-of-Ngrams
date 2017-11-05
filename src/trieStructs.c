@@ -316,6 +316,10 @@ void trieDeleteNgram(NgramVector *ngram) {
 		}
 	}
 
+	/*Creating space from deleted nodes*/
+	if ((double) node->deletedChildren / (node->maxChildren - node->emptySpace) > FACTOR)
+		trieCompactSpace(node);
+
 	deleteStack(&s);
 }
 
