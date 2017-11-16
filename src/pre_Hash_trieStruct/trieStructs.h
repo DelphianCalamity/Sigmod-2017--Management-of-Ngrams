@@ -2,12 +2,9 @@
 #define __TRIESTRUCTS_H__
 
 #include "ngram.h"
-#include "Hashtable/Hashtable.h"
 
 #define MINSIZE 10
 #define FACTOR 0.3
-
-typedef struct hashtable_info* Hashtable_Info_ptr;		//Forward Declaration
 
 typedef struct trieNode TrieNode;
 typedef struct trieRoot TrieRoot;
@@ -25,7 +22,7 @@ struct trieNode{
 };
 
 struct trieRoot{
-	Hashtable_Info_ptr hashtable;
+    TrieNode *root;
     int lastQuery;
 };
 
@@ -43,7 +40,6 @@ void trieSearch(NgramVector *);
 void trieSearch_Ngram(TrieNode*, int, int, NgramVector *, int *);
 void trieCompactSpace(TrieNode*);
 int trieInsertSort(NgramVector *);
-void trieMakeSpace(BinaryResult*, TrieNode*, char*);
 void trieDeleteNgram(NgramVector*);
 void trieRecursiveFree(TrieNode*);
 void trieFree();

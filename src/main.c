@@ -43,6 +43,7 @@ int main(int argc, char **argv) {
 
     processBursts();
 
+	//Hashtable_print(trieRoot->hashtable);
     trieFree();
 
     return 0;
