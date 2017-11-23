@@ -2,16 +2,24 @@
 #define __TRIESTRUCTS_H__
 
 #include "ngram.h"
+#include "stack.h"
 #include "Hashtable/Hashtable.h"
 
 #define MINSIZE 10
 #define FACTOR 0.3
 
+#define DYNAMIC 1
+#define STATIC 0
+
+typedef struct stack Stack;								//Forward Declaration
 typedef struct hashtable_info* Hashtable_Info_ptr;		//Forward Declaration
 
 typedef struct trieNode TrieNode;
 typedef struct trieRoot TrieRoot;
 typedef struct binaryResult BinaryResult;
+
+typedef struct top Top;
+typedef struct topK TopK;
 
 struct trieNode{
     char* word;
@@ -20,13 +28,15 @@ struct trieNode{
     int maxChildren;
     int deletedChildren;
     char is_final;
-    char deleted;
+	char deleted;
     int visited;
+	int printed;
 };
 
 struct trieRoot{
 	Hashtable_Info_ptr hashtable;
     int lastQuery;
+	int lastBurst;
 };
 
 struct binaryResult{
@@ -34,10 +44,24 @@ struct binaryResult{
     char found;
 };
 
+struct top {
+	int appearances;
+	NgramVector ngram;
+};
+
+struct topK {
+	int k;
+	int searchQs;
+	int minmax;
+	Top* tops;
+};
+
+Stack s;
+char TRIE_TYPE;
 TrieRoot *trieRoot;                                 //Global Variable
 
 void trieRootInit();
-void trieNodeInit(char *, TrieNode *);
+void trieNodeInit(char *, TrieNode *, TrieNode *);
 void trieBinarySearch(BinaryResult*, TrieNode *, char *);
 void trieSearch(NgramVector *);
 void trieSearch_Ngram(TrieNode*, int, int, NgramVector *, int *);

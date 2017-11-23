@@ -31,7 +31,6 @@ void Hashtable_init_bucket(Bucket* bucket) {
 	bucket->maxChildren = IN_SIZE;
 	bucket->deletedChildren = 0;
     bucket->children = safecalloc(IN_SIZE, sizeof(TrieNode));
-
 	bucket->word = NULL;
 	bucket->deleted=0;
 }
@@ -40,9 +39,12 @@ void Hashtable_init_bucket(Bucket* bucket) {
 void Hashtable_Bucket_print(Hashtable_Info_ptr hash, Bucketptr bucket) {
 
 	int i;
+	double key;
 	for (i = 0; i < bucket->maxChildren-bucket->emptySpace; i++) {
-		if (bucket->children[i].deleted == 0)
-			printf("%s, %d, %d\n", (bucket->children[i].word), Hash_function(hash, (bucket->children[i].word), hash->round), Hash_function(hash, (bucket->children[i].word), hash->round+1));
+		if (bucket->children[i].deleted == 0) {
+			key = Hashtable_hashkey((bucket->children[i].word));
+			printf("%s, %d, %d\n", (bucket->children[i].word), Hash_function(hash, key, hash->round), Hash_function(hash, key, hash->round + 1));
+		}
 	}
 }
 
@@ -72,10 +74,8 @@ double Hashtable_hashkey(char* word) {
 	return key;
 }
 
-int Hash_function(Hashtable_Info_ptr hashtable, char* word, int round) {       // f(x) = k%(2^i)m
-
-	double key = Hashtable_hashkey(word);
-	int x = pow(2, round) * hashtable->m;		//Initial number of buckets * 2^round*m
+int Hash_function(Hashtable_Info_ptr hashtable, double key, int round) {       	// f(x) = k%(2^i)m
+	int x = pow(2, round) * hashtable->m;										//Initial number of buckets * 2^round*m
 	return (int) key % x;
 }
 /********************************************************/
@@ -84,10 +84,10 @@ int Hash_function(Hashtable_Info_ptr hashtable, char* word, int round) {       /
 TrieNode* Hashtable_insert(Hashtable_Info_ptr hashtable, BinaryResult* br, char* word) {
 
 	Bucketptr bucket = hashtable->Phashtable;
-
-	int DestinationBucket = Hash_function(hashtable, word, hashtable->round);            		//Hash function of the current round
+	double key = Hashtable_hashkey(word);
+	int DestinationBucket = Hash_function(hashtable, key, hashtable->round);            		//Hash function of the current round
 	if (DestinationBucket < hashtable->p)
-		DestinationBucket = Hash_function(hashtable, word, hashtable->round + 1);        		//Hash function of the next round
+		DestinationBucket = Hash_function(hashtable, key, hashtable->round + 1);        		//Hash function of the next round
 
 	return Hashtable_insert_child(hashtable, br, bucket+DestinationBucket, word);
 }
@@ -110,7 +110,7 @@ TrieNode* Hashtable_insert_child(Hashtable_Info_ptr hashtable, BinaryResult* res
 
 	/*Store the new child and update children count*/
 	if (result->found != 1) {                                          //If found != 1 the node must be inserted - otherwise it is already there
-		trieNodeInit(word, &bucket->children[result->position]);
+		trieNodeInit(word, &bucket->children[result->position], bucket);
 		if (result->found == 0)		                                   //If found == 2 the node replaced a deleted node
 			bucket->emptySpace--;
 
@@ -127,8 +127,7 @@ void Hashtable_move_child(Hashtable_Info_ptr hashtable, Bucketptr bucket, TrieNo
 
 	/*Store the new child and update children count*/
 	memcpy(&bucket->children[result.position], node, sizeof(TrieNode));
-	bucket->children[result.position].word = safemalloc((strlen(node->word)+1)*sizeof(char));
-	strcpy(bucket->children[result.position].word, node->word);
+	bucket->word = node->word;
 
 	if (result.found == 0)
 		bucket->emptySpace--;
@@ -139,6 +138,7 @@ void Hashtable_move_child(Hashtable_Info_ptr hashtable, Bucketptr bucket, TrieNo
 void Hashtable_split(Hashtable_Info_ptr hashtable) {
 
 	TrieNode* node;
+	double key;
 	int i, DestinationBucket;
     Bucketptr bucket = &(hashtable->Phashtable[hashtable->p]);
 
@@ -149,12 +149,16 @@ void Hashtable_split(Hashtable_Info_ptr hashtable) {
 
 		node = &bucket->children[i];
 		if (!node->deleted) {
-			DestinationBucket = Hash_function(hashtable, node->word, hashtable->round + 1);   					//REHASH
+			key = Hashtable_hashkey(node->word);
+			DestinationBucket = Hash_function(hashtable, key, hashtable->round + 1);   							//REHASH
 
 			if (DestinationBucket != hashtable->p) {
 
 				Hashtable_move_child(hashtable, (hashtable->Phashtable + DestinationBucket), node);
 
+				char* temp = node->word;																		//Copy the deleted node's word , cause an alive node points there too. (problem when delete frees word)
+				node->word = safemalloc((strlen(temp)+1)*sizeof(char));
+				strcpy(node->word, temp);
 				node->children = NULL;
 				node->deleted = 1;
 				bucket->deletedChildren++;
@@ -175,11 +179,7 @@ void Hashtable_split(Hashtable_Info_ptr hashtable) {
 	if ((double) bucket->deletedChildren / (bucket->maxChildren - bucket->emptySpace) > FACTOR)
 		trieCompactSpace(bucket);
 
-	int m = hashtable->m;                   //Initial number of buckets
-    int x = pow(2, hashtable->round);       // 2^round*m
-    x = x * m;                              //x = number of buckets at the current round
-
-    if ((hashtable->p + 1) == x) {          //If the buckets have been doubled during this round
+    if ((hashtable->p + 1) == (pow(2, hashtable->round) * hashtable->m)) {          //If the buckets have been doubled during this round
         hashtable->round++;                 //Increase the round
         hashtable->p = 0;
     } else hashtable->p++;                  //Increase p
@@ -190,11 +190,13 @@ void Hashtable_split(Hashtable_Info_ptr hashtable) {
 
 TrieNode* Hashtable_lookup(BinaryResult* result, Hashtable_Info_ptr hashtable, char* word) {
 
+	double key;
     Bucketptr bucket = hashtable->Phashtable;
+	key = Hashtable_hashkey(word);
 
-    int i = Hash_function(hashtable, word, hashtable->round);
+    int i = Hash_function(hashtable, key, hashtable->round);
     if (i < hashtable->p)
-		i = Hash_function(hashtable, word, hashtable->round + 1);
+		i = Hash_function(hashtable, key, hashtable->round + 1);
 
 	trieBinarySearch(result, bucket+i, word);
 
@@ -207,11 +209,13 @@ TrieNode* Hashtable_lookup(BinaryResult* result, Hashtable_Info_ptr hashtable, c
 
 TrieNode* Hashtable_lookup_Bucket(Hashtable_Info_ptr hashtable, char* word) {
 
+	double key;
 	Bucketptr bucket = hashtable->Phashtable;
+	key = Hashtable_hashkey(word);
 
-	int i = Hash_function(hashtable, word, hashtable->round);
+	int i = Hash_function(hashtable, key, hashtable->round);
 	if (i < hashtable->p)
-		i = Hash_function(hashtable, word, hashtable->round + 1);
+		i = Hash_function(hashtable, key, hashtable->round + 1);
 
 	return bucket+i;
 }

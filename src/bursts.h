@@ -2,13 +2,13 @@
 #define __BURSTS_H__
 
 #include "ngram.h"
+#include "trieStructs.h"
 
 typedef struct burstList BurstList;
 typedef struct burst Burst;
 
-
-
 struct burstList{
+	//TopK topK;
 	Burst *start;           // first command
 	Burst *end;             // last command
 	BurstList *next;        // next burst

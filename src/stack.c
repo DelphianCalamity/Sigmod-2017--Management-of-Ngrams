@@ -42,6 +42,10 @@ TrieNode * pop(Stack *s){
 	return (s->stack[s->last+1]);
 }
 
+void emptyStack(Stack *s){
+	s->last = -1;
+}
+
 void deleteStack(Stack *s){
 	free(s->stack);
 }

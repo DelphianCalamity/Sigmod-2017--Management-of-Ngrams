@@ -2,7 +2,9 @@
 #define  __STACK_H__
 
 #include "trieStructs.h"
+#include <stdbool.h>
 
+typedef struct trieNode TrieNode;
 typedef struct stack Stack;
 
 struct stack{
@@ -14,6 +16,7 @@ struct stack{
 void initStack(Stack *);
 void push(Stack *, TrieNode *);
 bool notEmpty(Stack *);
+void emptyStack(Stack *s);
 TrieNode * pop(Stack *);
 void deleteStack(Stack *);
 void printStack(Stack *);

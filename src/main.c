@@ -37,15 +37,13 @@ int main(int argc, char **argv) {
         exit(2);
     }
 
-    trieRootInit();                   //Initializing Trie
+	trieRootInit();                   //Initializing Trie
     readInputFile(finit);             //Input & Storing
     readQueryFile(fquery);
-
     processBursts();
 
-	//Hashtable_print(trieRoot->hashtable);
-    trieFree();
-
+//	Hashtable_print(trieRoot->hashtable);
+	trieFree();
     return 0;
 }
 
