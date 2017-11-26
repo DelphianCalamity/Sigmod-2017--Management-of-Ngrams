@@ -10,6 +10,7 @@
 char *bloomfilter;
 unsigned int *cells;
 
+void initBloom(void);
 bool findInBloom(NgramVector*);
 
 #endif

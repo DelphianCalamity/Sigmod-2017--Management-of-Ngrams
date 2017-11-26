@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "bloomFilter.h"
 #include "errorMessages.h"
 #include "stack.h"
 #include "ngram.h"
@@ -96,6 +97,9 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 	int j;
 	BinaryResult br;
 
+	/*if (!findInBloom(ngramVector)){
+		//print and do what's necessary
+	}*/
 	for (; i < ngramVector->words; i++) {
 		if (node == NULL)                                                          	//No more nodes
 			return;

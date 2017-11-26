@@ -7,6 +7,11 @@
 #include "ngram.c"
 #include "trieStructs.h"
 
+void initBloom(void){
+	bloomfilter = safecalloc(0, BLOOMSIZE);
+	cells = safemalloc(K);
+}
+
 unsigned long hash(NgramVector *ngram, unsigned int h){
     unsigned long hash = 5381;
     int c, i,j;
