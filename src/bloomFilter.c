@@ -7,6 +7,18 @@
 #include "ngram.c"
 #include "trieStructs.h"
 
+unsigned long hash(NgramVector *ngram, unsigned int h){
+    unsigned long hash = 5381;
+    int c, i,j;
+
+    for (i=0; i<ngram->words; i++){
+    	j=0;
+	    while (c = ngram->ngram[i][j++])
+    	    hash = ((hash << h) + hash) + c;
+	}
+    return hash;
+}
+
 bool findInBloom(NgramVector *ngram){
 	unsigned int i, place, bit, value;
 	char prev;
@@ -15,10 +27,10 @@ bool findInBloom(NgramVector *ngram){
 	memset(cells, 0, K*sizeof(unsigned int));
 
 	for (i=0; i<K; i++){
-		//cells[i] = hash(ngram, i)%(BLOOMSIZE*8);
+		cells[i] = hash(ngram, i)%(BLOOMSIZE*8);
 		place = (cells[i]/8)%BLOOMSIZE;		/* place has the place of the byte that has the desired bit */
 		bit = cells[i]%8;					/* bit has the place of the desired bit in the byte */
-		prev = bloomFilter[place];			/* prev has the value of the corresponding byte in the bloom filter BEFORE the change */
+		prev = bloomfilter[place];			/* prev has the value of the corresponding byte in the bloom filter BEFORE the change */
 		value = 1;
 		value = value << bit;				/* creating the new value of the desired bit */
 		value = value | prev;				/* OR operation: value now has the new value of the byte that was to be changed */

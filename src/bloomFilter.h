@@ -7,7 +7,7 @@
 #define BLOOMSIZE 16384			// it's actually 8 times more, since we're playing with bits, not whole bytes
 #define K 10
 
-char *bloomFilter;
+char *bloomfilter;
 unsigned int *cells;
 
 bool findInBloom(NgramVector*);
