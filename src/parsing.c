@@ -22,7 +22,13 @@ void readInputFile(char *inputFile) {
 	ngram = initNgram();
 
     ssize_t len;
-    while ((len=getline(&buffer, &size, fp)) != -1){
+	if((len=getline(&buffer, &size, fp)) != -1){				//Identify Trie's type (Static or Dynamic)
+		if(strcmp(buffer, "STATIC") == 0)
+			TRIE_TYPE = STATIC;
+		else TRIE_TYPE = DYNAMIC;
+	}
+
+	while ((len=getline(&buffer, &size, fp)) != -1){
 		createNgram(ngram, buffer, len);
 		trieInsertSort(ngram);                                  // or any other insertion function for the initial trie
 		deleteWords(ngram);
@@ -37,11 +43,11 @@ void readInputFile(char *inputFile) {
 
 void readQueryFile(char *queryFile){
 
+	FILE *fp;
 	size_t size=0;
 	char *buffer=NULL;
 	char command, burstFlag=1;
 	NgramVector *ngram;
-	FILE *fp;
 
 	if ((fp = fopen(queryFile, "r")) == NULL){                  // open query file
 		getError(3);
@@ -57,7 +63,11 @@ void readQueryFile(char *queryFile){
 		}
 
 		if (buffer[0] == 'F'){
-            //processBursts();
+			if(len > 2) {
+				buffer[len] = '\0';
+				//burstListEnd->topK.k = atoi(buffer+2);
+				//burstListEnd->topK.tops = safecalloc(sizeof(Top) * burstListEnd->topK.k);
+			}
             burstFlag = 1;
         }
 		else {                                                  //Ignoring burst list for the first part

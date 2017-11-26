@@ -5,6 +5,7 @@
 #include "errorMessages.h"
 #include "stack.h"
 #include "ngram.h"
+#include "bursts.h"
 #include "trieStructs.h"
 #include "Hashtable/Hashtable.h"
 
@@ -16,18 +17,16 @@ void trieRootInit() {
 }
 
 /*Initialization of a new trienode*/
-void trieNodeInit(char *word, TrieNode *child) {
+void trieNodeInit(char *word, TrieNode *child, TrieNode *parent) {
 
 	/*Initialize basic info of node*/
+	child->word = word;
 	child->emptySpace = MINSIZE;
 	child->maxChildren = MINSIZE;
 	child->deletedChildren = 0;
 	child->is_final = 0;
 	child->deleted = 0;
 	child->visited = 0;
-
-	child->word = word;
-
 	/*Initialize new node's children*/
 	child->children = safecalloc(MINSIZE, sizeof(TrieNode));
 }
@@ -78,17 +77,17 @@ void trieSearch(NgramVector *ngramVector) {
 
 	int i;
 	int check = 0;
-	TrieNode *root;
+	TrieNode *node;
 
 	for (i=0; i < ngramVector->words; i++) {                                         //For all root's children
-		root = Hashtable_lookup_Bucket(trieRoot->hashtable, ngramVector->ngram[i]);
-		trieSearch_Ngram(root, i, i, ngramVector, &check);
+		node = Hashtable_lookup_Bucket(trieRoot->hashtable, ngramVector->ngram[i]);
+		trieSearch_Ngram(node, i, i, ngramVector, &check);
 	}
+
 	if (check > 0)
 		trieRoot->lastQuery++;
 
 	else printf("-1");
-
 	printf("\n");
 }
 
@@ -98,20 +97,23 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 	BinaryResult br;
 
 	for (; i < ngramVector->words; i++) {
-		if (node == NULL)                                                           //No more nodes
+		if (node == NULL)                                                          	//No more nodes
 			return;
 
 		trieBinarySearch(&br, node, ngramVector->ngram[i]);
 
-		if (br.found == 0 || node->children[br.position].deleted == 1)              //If word not found or deleted
-			return;
+		if (br.found == 0 || node->children[br.position].deleted == 1)              	//If word not found or deleted
+			 			return;
 
-		if (node->children[br.position].is_final == 1 && node->children[br.position].visited < trieRoot->lastQuery) {      //An ngram is found and is not already 'printed'
+		node = &node->children[br.position];
 
-			node->children[br.position].visited = trieRoot->lastQuery;
+		if (node->is_final && node->visited< trieRoot->lastQuery) {      				//An ngram is found and is not already 'printed'
 
-			if (*check > 0)
+			node->visited = trieRoot->lastQuery;
+
+			if (*check > 0) {
 				printf("|");
+			}
 
 			for (j = round; j < i; j++)
 				printf("%s ", ngramVector->ngram[j]);
@@ -119,8 +121,6 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 			printf("%s", ngramVector->ngram[j]);
 			(*check)++;
 		}
-
-		node = &node->children[br.position];
 	}
 }
 
@@ -168,7 +168,7 @@ int trieInsertSort(NgramVector *ngramVector) {
 			trieMakeSpace(&result, parent, word);
 			/*Store the new child and update children count*/
 			if(result.found != 1) {											//If found != 1 the node must be inserted - otherwise it is already there
-				trieNodeInit(word, &parent->children[result.position]);
+				trieNodeInit(word, &parent->children[result.position], parent);
 				if(result.found == 0)                                      	//If found == 2 the node replaced a deleted node
 					parent->emptySpace--;
 				ngramVector->ngram[i] = NULL;
@@ -184,8 +184,6 @@ int trieInsertSort(NgramVector *ngramVector) {
 }
 
 void trieMakeSpace(BinaryResult* result, TrieNode* parent, char* word) {
-
-	TrieNode *newChildren;
 
 	/*Run binary search*/
 	trieBinarySearch(result, parent, word);
@@ -208,13 +206,11 @@ void trieMakeSpace(BinaryResult* result, TrieNode* parent, char* word) {
 
 					if (parent->emptySpace == 0) {
 
-						newChildren = saferealloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode));
-
-						parent->children = newChildren;
+						parent->children = saferealloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode));
 						parent->emptySpace += parent->maxChildren;
 						parent->maxChildren *= 2;
 
-						memset(&newChildren[parent->maxChildren - parent->emptySpace], 0, parent->emptySpace * sizeof(TrieNode));
+						memset(&parent->children[parent->maxChildren - parent->emptySpace], 0, parent->emptySpace * sizeof(TrieNode));
 					}
 					memmove(&parent->children[result->position + 1], &parent->children[result->position], (parent->maxChildren - parent->emptySpace - result->position) * sizeof(TrieNode));
 				}
@@ -222,16 +218,14 @@ void trieMakeSpace(BinaryResult* result, TrieNode* parent, char* word) {
 		}
 			/*If ngrams needs to go at the end of the children array, but there is no space*/
 		else {
-			newChildren = saferealloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode));
-			parent->children = newChildren;
+			parent->children = saferealloc(parent->children, (parent->maxChildren * 2) * sizeof(TrieNode));
 			parent->emptySpace += parent->maxChildren;
 			parent->maxChildren *= 2;
 
-			memset(&newChildren[parent->maxChildren - parent->emptySpace], 0, parent->emptySpace * sizeof(TrieNode));
+			memset(&parent->children[parent->maxChildren - parent->emptySpace], 0, parent->emptySpace * sizeof(TrieNode));
 		}
 	}
 }
-
 
 /****************************************************************************/
 

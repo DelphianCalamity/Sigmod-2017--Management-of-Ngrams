@@ -1,41 +1,36 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "bursts.h"
 #include "errorMessages.h"
 #include "ngram.h"
 #include "trieStructs.h"
 
 // adds a command at the end of the currently last burst
-void addCommand(char com, NgramVector *ngram){
+void addCommand(char com, NgramVector *ngram) {
 	Burst *temp;
 
 	temp = safemalloc(sizeof(Burst));
-	// printf("\n");
-	// for (i=0; i<ngram->words; i++)
-	// 	printf("%s ", ngram->ngram[i]);
 	temp->command = com;
 	temp->ngram = ngram;
-	// printf("\nFrom Bursts: \n");
-	// for (i=0; i<temp->ngram->words; i++)
-	// 	printf("%s ", temp->ngram->ngram[i]);
 	temp->next = NULL;
-	if (burstListEnd->start == NULL)			// first command in this burst
+	if (burstListEnd->start == NULL)	           // first command in this burst
 		burstListEnd->start = temp;
 	else
-		burstListEnd->end->next = temp;			// add command at the end of the burst
+		burstListEnd->end->next = temp;            // add command at the end of the burst
+
 	burstListEnd->end = temp;
-	// printf("\nFrom List:\n");
-	// for (i=0; i<burstListEnd->end->ngram->words; i++)
-	// 	printf("%s ", burstListEnd->end->ngram->ngram[i]);
+//	if (com == 'Q')
+//		burstListEnd->topK.searchQs++;
 }
 
 // adds a burst at the end of BurstList
-void addBurst(void){
-	BurstList *temp;
+void addBurst(void) {
 
+	BurstList *temp;
 	temp = safemalloc(sizeof(BurstList));
+//	temp->topK.searchQs = 0;
+//	temp->topK.minmax = 0;
 	temp->start = NULL;
 	temp->end = NULL;
 	temp->next = NULL;
@@ -59,7 +54,7 @@ void executeBurstCommands(BurstList *burst){
 		else if (temp->command == 'D'){
 			trieDeleteNgram(temp->ngram);
         }
-		else{
+		else if (temp->command == 'Q'){
             trieSearch(temp->ngram);
 		}
 		burst->start = burst->start->next;
@@ -77,6 +72,7 @@ void processBursts(void){
 	while (burstListStart != NULL){
 		temp=burstListStart;
 		executeBurstCommands(temp);
+		//trieRoot->lastBurst += temp->topK.searchQs;
 		burstListStart = burstListStart->next;
 		free(temp);
 	}
