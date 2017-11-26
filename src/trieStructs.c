@@ -103,7 +103,7 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 		trieBinarySearch(&br, node, ngramVector->ngram[i]);
 
 		if (br.found == 0 || node->children[br.position].deleted == 1)              	//If word not found or deleted
-			 			return;
+			return;
 
 		node = &node->children[br.position];
 

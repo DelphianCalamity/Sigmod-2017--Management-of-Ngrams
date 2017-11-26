@@ -8,7 +8,7 @@ typedef struct burstList BurstList;
 typedef struct burst Burst;
 
 struct burstList{
-	//TopK topK;
+	int k;
 	Burst *start;           // first command
 	Burst *end;             // last command
 	BurstList *next;        // next burst
@@ -25,8 +25,8 @@ void addBurst(void);
 void executeBurstCommands(BurstList *);
 void processBursts(void);
 
-#endif
-
 BurstList *burstListStart;
 BurstList *burstListEnd;
+
+#endif
 

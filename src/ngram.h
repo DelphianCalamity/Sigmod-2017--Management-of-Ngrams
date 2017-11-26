@@ -9,7 +9,7 @@ typedef struct ngramVector{
 	int words;
 } NgramVector;
 
-NgramVector * initNgram(void);
+NgramVector* initNgram(void);
 void createNgram(NgramVector*, char*, ssize_t);
 void deleteNgram(NgramVector*);
 void deleteWords(NgramVector*);

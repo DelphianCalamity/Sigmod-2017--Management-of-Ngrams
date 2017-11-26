@@ -20,8 +20,6 @@ void addCommand(char com, NgramVector *ngram) {
 		burstListEnd->end->next = temp;            // add command at the end of the burst
 
 	burstListEnd->end = temp;
-//	if (com == 'Q')
-//		burstListEnd->topK.searchQs++;
 }
 
 // adds a burst at the end of BurstList
@@ -29,8 +27,6 @@ void addBurst(void) {
 
 	BurstList *temp;
 	temp = safemalloc(sizeof(BurstList));
-//	temp->topK.searchQs = 0;
-//	temp->topK.minmax = 0;
 	temp->start = NULL;
 	temp->end = NULL;
 	temp->next = NULL;
@@ -72,7 +68,6 @@ void processBursts(void){
 	while (burstListStart != NULL){
 		temp=burstListStart;
 		executeBurstCommands(temp);
-		//trieRoot->lastBurst += temp->topK.searchQs;
 		burstListStart = burstListStart->next;
 		free(temp);
 	}

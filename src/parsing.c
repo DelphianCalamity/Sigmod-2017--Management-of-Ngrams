@@ -23,7 +23,7 @@ void readInputFile(char *inputFile) {
 
     ssize_t len;
 	if((len=getline(&buffer, &size, fp)) != -1){				//Identify Trie's type (Static or Dynamic)
-		if(strcmp(buffer, "STATIC") == 0)
+		if(buffer[0] == 'S')
 			TRIE_TYPE = STATIC;
 		else TRIE_TYPE = DYNAMIC;
 	}
@@ -65,8 +65,7 @@ void readQueryFile(char *queryFile){
 		if (buffer[0] == 'F'){
 			if(len > 2) {
 				buffer[len] = '\0';
-				//burstListEnd->topK.k = atoi(buffer+2);
-				//burstListEnd->topK.tops = safecalloc(sizeof(Top) * burstListEnd->topK.k);
+				burstListEnd->k = atoi(buffer+2);
 			}
             burstFlag = 1;
         }

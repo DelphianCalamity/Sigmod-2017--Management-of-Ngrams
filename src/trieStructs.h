@@ -11,15 +11,11 @@
 #define DYNAMIC 1
 #define STATIC 0
 
-typedef struct stack Stack;								//Forward Declaration
 typedef struct hashtable_info* Hashtable_Info_ptr;		//Forward Declaration
 
 typedef struct trieNode TrieNode;
 typedef struct trieRoot TrieRoot;
 typedef struct binaryResult BinaryResult;
-
-typedef struct top Top;
-typedef struct topK TopK;
 
 struct trieNode{
     char* word;
@@ -30,7 +26,6 @@ struct trieNode{
     char is_final;
 	char deleted;
     int visited;
-	int printed;
 };
 
 struct trieRoot{
@@ -44,21 +39,8 @@ struct binaryResult{
     char found;
 };
 
-struct top {
-	int appearances;
-	NgramVector ngram;
-};
-
-struct topK {
-	int k;
-	int searchQs;
-	int minmax;
-	Top* tops;
-};
-
-Stack s;
 char TRIE_TYPE;
-TrieRoot *trieRoot;                                 //Global Variable
+TrieRoot *trieRoot;                                 	//Global Variable
 
 void trieRootInit();
 void trieNodeInit(char *, TrieNode *, TrieNode *);
