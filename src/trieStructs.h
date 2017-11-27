@@ -7,6 +7,7 @@
 
 #define MINSIZE 10
 #define FACTOR 0.3
+#define BUFFER_SIZE 100
 
 #define DYNAMIC 1
 #define STATIC 0
@@ -49,7 +50,7 @@ void trieRootInit();
 void trieNodeInit(char *, TrieNode *, TrieNode *);
 void trieBinarySearch(BinaryResult*, TrieNode *, char *);
 void trieSearch(NgramVector *);
-void trieSearch_Ngram(TrieNode*, int, int, NgramVector *, int *);
+void trieSearch_Ngram(TrieNode*, int, int, NgramVector *, char**, int*, int *);
 void trieCompactSpace(TrieNode*);
 int trieInsertSort(NgramVector *);
 void trieMakeSpace(BinaryResult*, TrieNode*, char*);

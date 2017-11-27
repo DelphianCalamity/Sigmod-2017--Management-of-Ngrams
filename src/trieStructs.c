@@ -9,6 +9,7 @@
 #include "bursts.h"
 #include "trieStructs.h"
 #include "Hashtable/Hashtable.h"
+#include "TopK/topK_Hashtable.h"
 
 /*Initialization of trie root*/
 void trieRootInit() {
@@ -30,9 +31,9 @@ void trieNodeInit(char *word, TrieNode *child, TrieNode *parent) {
 	child->visited = 0;
 	/*Initialize new node's children*/
 	child->children = safecalloc(MINSIZE, sizeof(TrieNode));
-	node->offsets = NULL;
-	node->offsetsSize = 0;
-	node->maxOffsetSize = 10;
+	child->offsets = NULL;
+	child->offsetsSize = 0;
+	child->maxOffsetSize = 10;
 }
 
 void trieBinarySearch(BinaryResult *br, TrieNode *parent, char *word) {
@@ -51,26 +52,20 @@ void trieBinarySearch(BinaryResult *br, TrieNode *parent, char *word) {
 
 		return;
 	}
-
 	while (fst <= lst) {
 
 		cmp = strcmp(children[middle].word, word);
-
 		if (cmp < 0)
 			fst = middle + 1;
-
 		else if (cmp == 0) {
 			br->position = middle;
 			br->found = 1;
-
 			return;
 		}
 		else
 			lst = middle - 1;
-
 		middle = (fst + lst) / 2;
 	}
-
 	br->position = fst;
 }
 
@@ -81,10 +76,14 @@ void trieSearch(NgramVector *ngramVector) {
 	int i;
 	int check = 0;
 	TrieNode *node;
+	char* buffer = malloc(BUFFER_SIZE*sizeof(char));
+    int capacity = BUFFER_SIZE;
+    buffer[0] = '\0';
 
 	for (i=0; i < ngramVector->words; i++) {                                         //For all root's children
 		node = Hashtable_lookup_Bucket(trieRoot->hashtable, ngramVector->ngram[i]);
-		trieSearch_Ngram(node, i, i, ngramVector, &check);
+		trieSearch_Ngram(node, i, i, ngramVector, &buffer, &capacity, &check);
+		buffer[0] = '\0';
 	}
 
 	if (check > 0)
@@ -92,40 +91,54 @@ void trieSearch(NgramVector *ngramVector) {
 
 	else printf("-1");
 	printf("\n");
+
+	free(buffer);
 }
 
-void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector, int *check) {
+void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector, char** buffer, int* capacity, int *check) {
 
-	int j;
+	char *ngram;
 	BinaryResult br;
+	int space, len = 0;
 
-	/*if (!findInBloom(ngramVector)){
-		//print and do what's necessary
-	}*/
 	for (; i < ngramVector->words; i++) {
-		if (node == NULL)                                                          	//No more nodes
+		if (node == NULL)                                                          				//No more nodes
 			return;
 
 		trieBinarySearch(&br, node, ngramVector->ngram[i]);
 
-		if (br.found == 0 || node->children[br.position].deleted == 1)              	//If word not found or deleted
+		if (br.found == 0 || node->children[br.position].deleted == 1)              			//If word not found or deleted
 			return;
 
 		node = &node->children[br.position];
 
-		if (node->is_final && node->visited< trieRoot->lastQuery) {      				//An ngram is found and is not already 'printed'
+		if (node->is_final && node->visited < trieRoot->lastQuery) {      						//An ngram is found and is not already 'printed'
 
 			node->visited = trieRoot->lastQuery;
 
-			if (*check > 0) {
-				printf("|");
-			}
+            for (; round <= i; round++) {
+                if((space=(int)strlen(ngramVector->ngram[round])) >= *capacity - len-1) {
+                    *buffer = saferealloc(*buffer, 2 * (*capacity)*sizeof(char));              //Re-allocate space
+                    *capacity *= 2;
+                }
+                memcpy(*buffer + len, ngramVector->ngram[round], space*sizeof(char));
+                len += space+1;
+                (*buffer)[len-1] = ' ';
+            }
+            (*buffer)[len]='\0';
 
-			for (j = round; j < i; j++)
-				printf("%s ", ngramVector->ngram[j]);
 
-			printf("%s", ngramVector->ngram[j]);
-			(*check)++;
+			ngram = safemalloc(len*sizeof(char));
+			memcpy(ngram, *buffer, len);
+			ngram[len-1] = '\0';
+
+			//if (!findInBloom(ngram)) {
+				if (*check > 0)
+					printf("|");
+				printf("%s", ngram);
+
+				(*check)++;
+			//}
 		}
 	}
 }

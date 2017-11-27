@@ -1,6 +1,6 @@
 CC = gcc
-SRCS = bursts.c errorMessages.c main.c ngram.c parsing.c stack.c trieStructs.c Hashtable.c compactTree.c bloomFilter.c
-HDRS = bursts.h errorMessages.h ngram.h parsing.h stack.h trieStructs.h ./Hashtable/Hashtable.h compactTree.h bloomFilter.h
+SRCS = bursts.c errorMessages.c main.c ngram.c parsing.c stack.c trieStructs.c Hashtable.c compactTree.c bloomFilter.c topK_Hashtable.c
+HDRS = bursts.h errorMessages.h ngram.h parsing.h stack.h trieStructs.h ./Hashtable/Hashtable.h compactTree.h bloomFilter.h ./TopK/topK_Hashtable.h
 PROG = ngrams
 FLAGS = -Wall -g -O3
 OBJS = $(SRCS:.c=.o)
@@ -39,6 +39,8 @@ compactTree.o : compactTree.c $(HDRS)
 	$(CC) compactTree.c -c $(FLAGS)
 bloomFilter.o : bloomFilter.c $(HDRS)
 	$(CC) bloomFilter.c -c $(FLAGS)
+topK_Hashtable.o : ./TopK/topK_Hashtable.c $(HDRS)
+	$(CC) ./TopK/topK_Hashtable.c -c $(FLAGS)
 
 
 unit_testing.o : ./UnitTesting/unit_testing.c $(HDRS1)

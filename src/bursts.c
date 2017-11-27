@@ -5,6 +5,7 @@
 #include "errorMessages.h"
 #include "ngram.h"
 #include "trieStructs.h"
+#include "TopK/topK_Hashtable.h"
 
 // adds a command at the end of the currently last burst
 void addCommand(char com, NgramVector *ngram) {
@@ -39,7 +40,9 @@ void addBurst(void) {
 
 // executes all commands in current burst
 void executeBurstCommands(BurstList *burst){
+
 	Burst *temp;
+	hashtable = topK_Hashtable_create(5, 1);
 
 	while (burst->start != NULL){
 		temp=burst->start;
@@ -58,7 +61,8 @@ void executeBurstCommands(BurstList *burst){
         deleteNgram(temp->ngram);
 		free(temp);
 	}
-	
+
+	topK_Hashtable_Destroy(hashtable);
 }
 
 // goes through all bursts
