@@ -4,27 +4,23 @@
 #include <stdbool.h>
 #include "bloomFilter.h"
 #include "errorMessages.h"
-#include "ngram.h"
-#include "trieStructs.h"
 
 void initBloom(void){
-	bloomfilter = safecalloc(0, BLOOMSIZE);
+	bloomfilter = safemalloc(BLOOMSIZE);
 	cells = safemalloc(K);
 }
 
-unsigned long hash(NgramVector *ngram, unsigned int h){
+unsigned long hash(char *ngram, unsigned int h){
     unsigned long hash = 5381;
-    int c, i,j;
+    int c, i;
 
-    for (i=0; i<ngram->words; i++){
-    	j=0;
-	    while (c = ngram->ngram[i][j++])
-    	    hash = ((hash << h) + hash) + c;
-	}
+	i=0;
+    while (c = ngram[i++])
+	    hash = ((hash << h) + hash) + c;
     return hash;
 }
 
-bool findInBloom(NgramVector *ngram){
+bool findInBloom(char *ngram){
 	unsigned int i, place, bit, value;
 	char prev;
 	bool retval=true;
