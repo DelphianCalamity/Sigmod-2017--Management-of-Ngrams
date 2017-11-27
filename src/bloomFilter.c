@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "bloomFilter.h"
 #include "errorMessages.h"
-#include "ngram.c"
+#include "ngram.h"
 #include "trieStructs.h"
 
 void initBloom(void){
@@ -41,7 +41,7 @@ bool findInBloom(NgramVector *ngram){
 		value = value | prev;				/* OR operation: value now has the new value of the byte that was to be changed */
 		if ((value^prev) == 0)				/* if the XOR operation returns a non-zero value, it means the bit was changed (we have not encountered this ngram before) */
 			retval = false;					/* if retval is false (at least one bit was changed), the ngram has not been encountered yet; print it */
-		bloomfilter[place] = value;		
+		bloomfilter[place] = value;
 	}
 	return retval;
 }
