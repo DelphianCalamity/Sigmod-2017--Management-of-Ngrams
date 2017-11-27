@@ -30,8 +30,10 @@ void trieNodeInit(char *word, TrieNode *child, TrieNode *parent) {
 	child->visited = 0;
 	/*Initialize new node's children*/
 	child->children = safecalloc(MINSIZE, sizeof(TrieNode));
+	node->offsets = NULL;
+	node->offsetsSize = 0;
+	node->maxOffsetSize = 10;
 }
-
 
 void trieBinarySearch(BinaryResult *br, TrieNode *parent, char *word) {
 
