@@ -26,6 +26,9 @@ struct trieNode{
     char is_final;
 	char deleted;
     int visited;
+    short *offsets;
+    int offsetsSize;
+    int maxOffsetSize;
 };
 
 struct trieRoot{

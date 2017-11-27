@@ -3,6 +3,8 @@
 
 #define INIT_SIZE 10
 
+#include <unistd.h>
+
 typedef struct ngramVector{
 	char **ngram;
 	int capacity;

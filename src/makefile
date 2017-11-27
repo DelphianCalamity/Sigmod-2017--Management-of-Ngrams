@@ -1,8 +1,8 @@
 CC = gcc
-SRCS = bursts.c errorMessages.c main.c ngram.c parsing.c stack.c trieStructs.c Hashtable.c
-HDRS = bursts.h errorMessages.h ngram.h parsing.h stack.h trieStructs.h ./Hashtable/Hashtable.h
+SRCS = bursts.c errorMessages.c main.c ngram.c parsing.c stack.c trieStructs.c Hashtable.c compactTree.c bloomFilter.c
+HDRS = bursts.h errorMessages.h ngram.h parsing.h stack.h trieStructs.h ./Hashtable/Hashtable.h compactTree.h bloomFilter.h
 PROG = ngrams
-FLAGS = -Wall -O3
+FLAGS = -Wall -g -O3
 OBJS = $(SRCS:.c=.o)
 
 PROG1 = unitTest
@@ -35,6 +35,10 @@ stack.o : stack.c $(HDRS)
 	$(CC) stack.c -c $(FLAGS)
 Hashtable.o : ./Hashtable/Hashtable.c $(HDRS)
 	$(CC) ./Hashtable/Hashtable.c -c $(FLAGS)
+compactTree.o : compactTree.c $(HDRS)
+	$(CC) compactTree.c -c $(FLAGS)
+bloomFilter.o : bloomFilter.c $(HDRS)
+	$(CC) bloomFilter.c -c $(FLAGS)
 
 
 unit_testing.o : ./UnitTesting/unit_testing.c $(HDRS1)

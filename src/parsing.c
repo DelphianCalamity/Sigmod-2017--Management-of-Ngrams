@@ -34,9 +34,10 @@ void readInputFile(char *inputFile) {
 		deleteWords(ngram);
 	}
 	deleteNgram(ngram);
-    
-    if(buffer != NULL)
+
+    if(buffer != NULL){
         free(buffer);
+	}
 	fclose(fp);
 }
 
@@ -56,7 +57,7 @@ void readQueryFile(char *queryFile){
 
     ssize_t len;
 	while ((len=getline(&buffer, &size, fp)) != -1){
-		
+
         if (burstFlag){
 			addBurst();
 			burstFlag = 0;
@@ -79,7 +80,8 @@ void readQueryFile(char *queryFile){
 		}
 	}
 
-    if(buffer != NULL)
+    if(buffer != NULL){
         free(buffer);
+	}
 	fclose(fp);
 }
