@@ -42,7 +42,7 @@ void addBurst(void) {
 void executeBurstCommands(BurstList *burst){
 
 	Burst *temp;
-	hashtable = topK_Hashtable_create(5, 1);
+	hashtable = topK_Hashtable_create(800, 5);
 
 	while (burst->start != NULL){
 		temp=burst->start;
@@ -62,8 +62,11 @@ void executeBurstCommands(BurstList *burst){
 		free(temp);
 	}
 
+	topK_print_TopK(hashtable, burst->k);		//print the TopK ngrams
+	//topK_Hashtable_print(hashtable);
 	topK_Hashtable_Destroy(hashtable);
 }
+
 
 // goes through all bursts
 void processBursts(void){

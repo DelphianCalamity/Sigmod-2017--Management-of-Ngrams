@@ -16,7 +16,7 @@ unsigned long hash(char *ngram, unsigned int h){
     int c, i;
 
 	i=0;
-    while (c = ngram[i++])
+    while ((c = ngram[i++]))
 	    hash = (((hash << h) + hash) + c);
     return hash;
 }

@@ -139,13 +139,14 @@ void Hashtable_split(Hashtable_Info_ptr hashtable) {
 
 	TrieNode* node;
 	double key;
-	int i, DestinationBucket;
+	int i, DestinationBucket, size;
     Bucketptr bucket = &(hashtable->Phashtable[hashtable->p]);
 
 	Hashtable_init_bucket(hashtable->Phashtable + hashtable->Buckets);
     hashtable->Buckets++;
 
-	for (i=0; i<bucket->maxChildren-bucket->emptySpace; i++) {
+	size = bucket->maxChildren-bucket->emptySpace;
+	for (i=0; i<size; i++) {
 
 		node = &bucket->children[i];
 		if (!node->deleted) {

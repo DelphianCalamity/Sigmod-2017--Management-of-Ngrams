@@ -64,10 +64,13 @@ void readQueryFile(char *queryFile){
 		}
 
 		if (buffer[0] == 'F'){
+
 			if(len > 2) {
 				buffer[len] = '\0';
 				burstListEnd->k = atoi(buffer+2);
 			}
+			else burstListEnd->k = 0;
+
             burstFlag = 1;
         }
 		else {                                                  //Ignoring burst list for the first part

@@ -76,7 +76,7 @@ void trieSearch(NgramVector *ngramVector) {
 	int i;
 	int check = 0;
 	TrieNode *node;
-	char* buffer = malloc(BUFFER_SIZE*sizeof(char));
+	char* buffer = safemalloc(BUFFER_SIZE*sizeof(char));
     int capacity = BUFFER_SIZE;
     buffer[0] = '\0';
 
@@ -128,7 +128,6 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
             }
             (*buffer)[len]='\0';
 
-
 			ngram = safemalloc(len*sizeof(char));
 			memcpy(ngram, *buffer, len);
 			ngram[len-1] = '\0';
@@ -140,6 +139,9 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 
 				(*check)++;
 			}
+
+			topK_Hashtable_insert(hashtable, ngram);
+			topK_Hashtable_Check_LoadFactor(hashtable);
 		}
 	}
 }

@@ -50,6 +50,8 @@ void topK_Hashtable_insert(TopK_Hashtable_Info_ptr, char*);
 void topK_Hashtable_insert_child(TopK_Hashtable_Info_ptr, Big_Bucket*, char*);
 void topK_Hashtable_move_bucket(TopK_Hashtable_Info_ptr, Big_Bucket*, TopK_Bucket*);
 
+void topK_print_TopK(TopK_Hashtable_Info_ptr hashtable, int k);
+
 void topK_Hashtable_Destroy(TopK_Hashtable_Info_ptr);
 
 #endif
