@@ -11,14 +11,9 @@ void initBloom(void){
 	cells = safemalloc(K);
 }
 
-unsigned long hash(char *ngram, unsigned int h){
-    unsigned long hash = 5381;
-    int c, i;
-
-	i=0;
-    while ((c = ngram[i++]))
-	    hash = (((hash << h) + hash) + c);
-    return hash;
+void killBloom(void){
+	free(bloomfilter);
+	free(cells);
 }
 
 bool findInBloom(char *ngram){
@@ -29,8 +24,7 @@ bool findInBloom(char *ngram){
 	memset(cells, 0, K*sizeof(unsigned int));
 
 	for (i=0; i<K; i++){
-		//cells[i] = hash(ngram, i)%(BLOOMSIZE*8);
-		cells[i] = (int) murmurhash(ngram, (uint32_t) strlen(ngram), i);
+		cells[i] = (int) murmurhash(ngram, (uint32_t) strlen(ngram), i)%(BLOOMSIZE*8);
 		place = (cells[i]/8)%BLOOMSIZE;		/* place has the place of the byte that has the desired bit */
 		bit = cells[i]%8;					/* bit has the place of the desired bit in the byte */
 		prev = bloomfilter[place];			/* prev has the value of the corresponding byte in the bloom filter BEFORE the change */

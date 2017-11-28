@@ -18,8 +18,7 @@
  * using the MurmurHash3 algorithm
  */
 
-uint32_t
-murmurhash (const char *, uint32_t, uint32_t);
+uint32_t murmurhash (const char *, uint32_t, uint32_t);
 
 
 #endif

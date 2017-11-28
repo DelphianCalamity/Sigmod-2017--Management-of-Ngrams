@@ -41,8 +41,9 @@ int main(int argc, char **argv) {
 	trieRootInit();                   //Initializing Trie
     readInputFile(finit);             //Input & Storing
     readQueryFile(fquery);
-    initBloom();
+    //initBloom();
     processBursts();
+    //killBloom();
 
 //	Hashtable_print(trieRoot->hashtable);
 	trieFree();

@@ -80,7 +80,7 @@ void trieSearch(NgramVector *ngramVector) {
     int capacity = BUFFER_SIZE;
     buffer[0] = '\0';
 
-    memset(bloomfilter, 0, BLOOMSIZE);
+    //memset(bloomfilter, 0, BLOOMSIZE);
 	for (i=0; i < ngramVector->words; i++) {                                         //For all root's children
 		node = Hashtable_lookup_Bucket(trieRoot->hashtable, ngramVector->ngram[i]);
 		trieSearch_Ngram(node, i, i, ngramVector, &buffer, &capacity, &check);
@@ -113,7 +113,7 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 
 		node = &node->children[br.position];
 
-		if (node->is_final /*&& node->visited < trieRoot->lastQuery*/) {      						//An ngram is found and is not already 'printed'
+		if (node->is_final && node->visited < trieRoot->lastQuery) {      						//An ngram is found and is not already 'printed'
 
 			node->visited = trieRoot->lastQuery;
 
@@ -132,7 +132,7 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 			memcpy(ngram, *buffer, len);
 			ngram[len-1] = '\0';
 
-			if (!findInBloom(ngram)) {
+			//if (!findInBloom(ngram)) {
 				if (*check > 0)
 					printf("|");
 				printf("%s", ngram);
@@ -141,7 +141,7 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 
 				topK_Hashtable_insert(hashtable, ngram);
 				topK_Hashtable_Check_LoadFactor(hashtable);
-			}
+			//}
 
 		}
 	}
