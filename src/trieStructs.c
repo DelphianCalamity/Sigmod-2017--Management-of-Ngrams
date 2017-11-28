@@ -113,7 +113,7 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 
 		node = &node->children[br.position];
 
-		if (node->is_final /*&& node->visited < trieRoot->lastQuery*/) {      						//An ngram is found and is not already 'printed'
+		if (node->is_final && node->visited < trieRoot->lastQuery) {      						//An ngram is found and is not already 'printed'
 
 			node->visited = trieRoot->lastQuery;
 
@@ -138,10 +138,11 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 				printf("%s", ngram);
 
 				(*check)++;
+
+				topK_Hashtable_insert(hashtable, ngram);
+				topK_Hashtable_Check_LoadFactor(hashtable);
 			}
 
-			topK_Hashtable_insert(hashtable, ngram);
-			topK_Hashtable_Check_LoadFactor(hashtable);
 		}
 	}
 }
