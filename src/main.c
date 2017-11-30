@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "bloomFilter.h"
+#include "BloomFilter/bloomFilter.h"
 #include "trieStructs.h"
 #include "parsing.h"
 #include "errorMessages.h"
@@ -39,14 +39,23 @@ int main(int argc, char **argv) {
     }
 
 	trieRootInit();                   //Initializing Trie
-    readInputFile(finit);             //Input & Storing
+	readInputFile(finit);             //Input & Storing
     readQueryFile(fquery);
-    //initBloom();
-    processBursts();
-    //killBloom();
+
+	#ifdef BLOOM
+    	initBloom();
+	#endif
+
+	processBursts();
+
+	#ifdef BLOOM
+		killBloom();
+	#endif
 
 //	Hashtable_print(trieRoot->hashtable);
+
 	trieFree();
+
     return 0;
 }
 

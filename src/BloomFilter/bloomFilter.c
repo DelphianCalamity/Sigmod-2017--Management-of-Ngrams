@@ -3,8 +3,8 @@
 #include <string.h>
 #include <stdbool.h>
 #include "bloomFilter.h"
-#include "errorMessages.h"
 #include "murmur.h"
+#include "../errorMessages.h"
 
 void initBloom(void){
 	bloomfilter = safemalloc(BLOOMSIZE);

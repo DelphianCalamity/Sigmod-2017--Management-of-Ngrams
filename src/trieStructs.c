@@ -2,12 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "bloomFilter.h"
 #include "errorMessages.h"
 #include "stack.h"
 #include "ngram.h"
 #include "bursts.h"
 #include "trieStructs.h"
+#include "BloomFilter/bloomFilter.h"
 #include "Hashtable/Hashtable.h"
 #include "TopK/topK_Hashtable.h"
 
@@ -15,7 +15,10 @@
 void trieRootInit() {
 	trieRoot = safemalloc(sizeof(TrieRoot));
 	trieRoot->hashtable = Hashtable_create(800, 0.75);
-	trieRoot->lastQuery = 1;
+
+	#ifndef BLOOM
+		trieRoot->lastQuery = 1;
+	#endif
 }
 
 /*Initialization of a new trienode*/
@@ -28,7 +31,11 @@ void trieNodeInit(char *word, TrieNode *child, TrieNode *parent) {
 	child->deletedChildren = 0;
 	child->is_final = 0;
 	child->deleted = 0;
-	child->visited = 0;
+
+	#ifndef BLOOM
+		child->visited = 0;
+	#endif
+
 	/*Initialize new node's children*/
 	child->children = safecalloc(MINSIZE, sizeof(TrieNode));
 	child->offsets = NULL;
@@ -80,15 +87,22 @@ void trieSearch(NgramVector *ngramVector) {
     int capacity = BUFFER_SIZE;
     buffer[0] = '\0';
 
-    //memset(bloomfilter, 0, BLOOMSIZE);
+	#ifdef BLOOM
+    	memset(bloomfilter, 0, BLOOMSIZE);
+	#endif
+
 	for (i=0; i < ngramVector->words; i++) {                                         //For all root's children
 		node = Hashtable_lookup_Bucket(trieRoot->hashtable, ngramVector->ngram[i]);
 		trieSearch_Ngram(node, i, i, ngramVector, &buffer, &capacity, &check);
 		buffer[0] = '\0';
 	}
 
-	if (check > 0)
-		trieRoot->lastQuery++;
+	if (check > 0) {
+
+		#ifndef BLOOM
+			trieRoot->lastQuery++;
+		#endif
+	}
 
 	else printf("-1");
 	printf("\n");
@@ -113,26 +127,26 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 
 		node = &node->children[br.position];
 
-		if (node->is_final && node->visited < trieRoot->lastQuery) {      						//An ngram is found and is not already 'printed'
+		#ifndef BLOOM	//WITHOUT BLOOM FILTER
+			if (node->is_final && node->visited < trieRoot->lastQuery) {      						//An ngram is found and is not already 'printed'
 
-			node->visited = trieRoot->lastQuery;
+				node->visited = trieRoot->lastQuery;
 
-            for (; round <= i; round++) {
-                if((space=(int)strlen(ngramVector->ngram[round])) >= *capacity - len-1) {
-                    *buffer = saferealloc(*buffer, 2 * (*capacity)*sizeof(char));              //Re-allocate space
-                    *capacity *= 2;
-                }
-                memcpy(*buffer + len, ngramVector->ngram[round], space*sizeof(char));
-                len += space+1;
-                (*buffer)[len-1] = ' ';
-            }
-            (*buffer)[len]='\0';
+				for (; round <= i; round++) {
+					if((space=(int)strlen(ngramVector->ngram[round])) >= *capacity - len-1) {
+						*buffer = saferealloc(*buffer, 2 * (*capacity)*sizeof(char));              //Re-allocate space
+						*capacity *= 2;
+					}
+					memcpy(*buffer + len, ngramVector->ngram[round], space*sizeof(char));
+					len += space+1;
+					(*buffer)[len-1] = ' ';
+				}
+				(*buffer)[len]='\0';
 
-			ngram = safemalloc(len*sizeof(char));
-			memcpy(ngram, *buffer, len);
-			ngram[len-1] = '\0';
+				ngram = safemalloc(len*sizeof(char));
+				memcpy(ngram, *buffer, len);
+				ngram[len-1] = '\0';
 
-			//if (!findInBloom(ngram)) {
 				if (*check > 0)
 					printf("|");
 				printf("%s", ngram);
@@ -141,9 +155,39 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 
 				topK_Hashtable_insert(hashtable, ngram);
 				topK_Hashtable_Check_LoadFactor(hashtable);
-			//}
+			}
 
-		}
+		#else			//WITH BLOOM FILTER
+			if (node->is_final) {
+
+				for (; round <= i; round++) {
+					if((space=(int)strlen(ngramVector->ngram[round])) >= *capacity - len-1) {
+						*buffer = saferealloc(*buffer, 2 * (*capacity)*sizeof(char));              //Re-allocate space
+						*capacity *= 2;
+					}
+					memcpy(*buffer + len, ngramVector->ngram[round], space*sizeof(char));
+					len += space+1;
+					(*buffer)[len-1] = ' ';
+				}
+				(*buffer)[len]='\0';
+
+				ngram = safemalloc(len*sizeof(char));
+				memcpy(ngram, *buffer, len);
+				ngram[len-1] = '\0';
+
+				if (!findInBloom(ngram)) {
+					if (*check > 0)
+						printf("|");
+					printf("%s", ngram);
+
+					(*check)++;
+
+					topK_Hashtable_insert(hashtable, ngram);
+					topK_Hashtable_Check_LoadFactor(hashtable);
+				}
+			}
+		#endif
+
 	}
 }
 

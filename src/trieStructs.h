@@ -5,6 +5,8 @@
 #include "stack.h"
 #include "Hashtable/Hashtable.h"
 
+#define BLOOM
+
 #define MINSIZE 10
 #define FACTOR 0.3
 #define BUFFER_SIZE 100
@@ -26,7 +28,11 @@ struct trieNode{
     int deletedChildren;
     char is_final;
 	char deleted;
-    int visited;
+
+	#ifndef BLOOM
+    	int visited;
+	#endif
+
     short *offsets;
     int offsetsSize;
     int maxOffsetSize;
@@ -34,8 +40,10 @@ struct trieNode{
 
 struct trieRoot{
 	Hashtable_Info_ptr hashtable;
-    int lastQuery;
-	int lastBurst;
+
+	#ifndef BLOOM
+		int lastQuery;
+	#endif
 };
 
 struct binaryResult{
