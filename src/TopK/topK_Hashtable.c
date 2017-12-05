@@ -231,7 +231,7 @@ void topK_print_TopK(TopK_Hashtable_Info_ptr hashtable, int k) {
 
 	TopK_Bucket temp; temp.appearances = 0; temp.ngram="\0";
 
-	if (k > 0)
+	if (k > 0 && hashtable->Records > 0)
 		printf("Top: ");
 
 	for (j=0; j<k; j++) {

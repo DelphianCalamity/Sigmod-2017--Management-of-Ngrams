@@ -117,12 +117,12 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 	int space, len = 0;
 
 	for (; i < ngramVector->words; i++) {
-		if (node == NULL)                                                          				//No more nodes
+		if (node == NULL)                                                          					//No more nodes
 			return;
 
 		trieBinarySearch(&br, node, ngramVector->ngram[i]);
 
-		if (br.found == 0 || node->children[br.position].deleted == 1)              			//If word not found or deleted
+		if (br.found == 0 || node->children[br.position].deleted == 1)              				//If word not found or deleted
 			return;
 
 		node = &node->children[br.position];
@@ -134,7 +134,7 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 
 				for (; round <= i; round++) {
 					if((space=(int)strlen(ngramVector->ngram[round])) >= *capacity - len-1) {
-						*buffer = saferealloc(*buffer, 2 * (*capacity)*sizeof(char));              //Re-allocate space
+						*buffer = saferealloc(*buffer, 2 * (*capacity)*sizeof(char));              	//Re-allocate space
 						*capacity *= 2;
 					}
 					memcpy(*buffer + len, ngramVector->ngram[round], space*sizeof(char));
@@ -162,8 +162,8 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 
 				for (; round <= i; round++) {
 					if((space=(int)strlen(ngramVector->ngram[round])) >= *capacity - len-1) {
-						*buffer = saferealloc(*buffer, 2 * (*capacity)*sizeof(char));              //Re-allocate space
 						*capacity *= 2;
+						*buffer = saferealloc(*buffer, *capacity*sizeof(char));              //Re-allocate space
 					}
 					memcpy(*buffer + len, ngramVector->ngram[round], space*sizeof(char));
 					len += space+1;
@@ -430,6 +430,8 @@ void trieRecursiveFree(TrieNode *node) {
 			trieRecursiveFree(&node->children[i]);
 		if (node->children != NULL)
 			free(node->children);
+		if(node->offsets != NULL)
+			free(node->offsets);
 	}
 
 	if (node->word != NULL)

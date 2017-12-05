@@ -16,8 +16,7 @@ void push(Stack *s, TrieNode *node) {
 
 	//printf("Gonna push, size is:%d and last is:%d\n", s->size, s->last);
 	if (s->last == (s->size-1)){
-		//printf("Realloc with new size:%d\n", s->size + (s->size)/10 + 1);
-		s->size *= 2;  //s->size + (s->size)/10 + 1;
+		s->size *= 2;
 		s->stack = saferealloc(s->stack, (s->size)*sizeof(TrieNode *));
 	}
 	s->last++;

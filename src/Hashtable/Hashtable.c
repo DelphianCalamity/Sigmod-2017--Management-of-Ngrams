@@ -32,6 +32,7 @@ void Hashtable_init_bucket(Bucket* bucket) {
 	bucket->deletedChildren = 0;
     bucket->children = safecalloc(IN_SIZE, sizeof(TrieNode));
 	bucket->word = NULL;
+	bucket->offsets = NULL;
 	bucket->deleted=0;
 }
 

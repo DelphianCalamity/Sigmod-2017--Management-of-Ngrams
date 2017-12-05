@@ -5,7 +5,7 @@
 #include "stack.h"
 #include "Hashtable/Hashtable.h"
 
-//#define BLOOM
+#define BLOOM
 
 #define MINSIZE 10
 #define FACTOR 0.3
@@ -53,6 +53,7 @@ struct binaryResult{
 
 char TRIE_TYPE;
 TrieRoot *trieRoot;                                 	//Global Variable
+void (*SearchPtr)(NgramVector*);
 
 void trieRootInit();
 void trieNodeInit(char *, TrieNode *, TrieNode *);

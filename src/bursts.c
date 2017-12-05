@@ -53,7 +53,7 @@ void executeBurstCommands(BurstList *burst){
 			trieDeleteNgram(temp->ngram);
         }
 		else if (temp->command == 'Q'){
-            trieSearch(temp->ngram);
+			(*SearchPtr)(temp->ngram);
 		}
 		burst->start = burst->start->next;
 		deleteWords(temp->ngram);

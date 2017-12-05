@@ -39,23 +39,22 @@ int main(int argc, char **argv) {
         exit(2);
     }
 
-	trieRootInit();                   //Initializing Trie
-	readInputFile(finit);             //Input & Storing
+	trieRootInit();                   		//Initializing Trie
+	readInputFile(finit);             		//Input & Storing
 
-	if (TRIE_TYPE == STATIC)
+	if (TRIE_TYPE == STATIC) {           	//If trie is static then compress it
 		trieCompactTree();
+		SearchPtr = &trieSearch_Static;		//Pointer to function
+	}
+	else SearchPtr = &trieSearch;
 
     readQueryFile(fquery);
 
-	#ifdef BLOOM
-    	initBloom();
-	#endif
+	initBloom();
 
 	processBursts();
 
-	#ifdef BLOOM
-		killBloom();
-	#endif
+	killBloom();
 
 //	Hashtable_print(trieRoot->hashtable);
 
