@@ -46,7 +46,6 @@ void executeBurstCommands(BurstList *burst){
 
 	while (burst->start != NULL){
 		temp=burst->start;
-		//printf(" number of words = %d\n", temp->ngram->words);
 		if (temp->command == 'A'){
 			trieInsertSort(temp->ngram);
         }

@@ -40,7 +40,7 @@ void trieNodeInit(char *word, TrieNode *child, TrieNode *parent) {
 	child->children = safecalloc(MINSIZE, sizeof(TrieNode));
 	child->offsets = NULL;
 	child->offsetsSize = 0;
-	child->maxOffsetSize = 10;
+	//child->maxOffsetSize = 10;
 }
 
 void trieBinarySearch(BinaryResult *br, TrieNode *parent, char *word) {

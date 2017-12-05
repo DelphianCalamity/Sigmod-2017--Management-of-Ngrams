@@ -5,7 +5,7 @@
 #include "stack.h"
 #include "Hashtable/Hashtable.h"
 
-#define BLOOM
+//#define BLOOM
 
 #define MINSIZE 10
 #define FACTOR 0.3
@@ -35,7 +35,7 @@ struct trieNode{
 
     short *offsets;
     int offsetsSize;
-    int maxOffsetSize;
+    //int maxOffsetSize;
 };
 
 struct trieRoot{

@@ -16,7 +16,6 @@ struct stack{
 void initStack(Stack *);
 void push(Stack *, TrieNode *);
 bool notEmpty(Stack *);
-void emptyStack(Stack *s);
 TrieNode * pop(Stack *);
 void deleteStack(Stack *);
 void printStack(Stack *);

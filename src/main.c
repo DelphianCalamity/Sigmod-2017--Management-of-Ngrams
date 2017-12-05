@@ -7,6 +7,7 @@
 #include "errorMessages.h"
 #include "bursts.h"
 #include <unistd.h>
+#include "compactTree.h"
 
 int main(int argc, char **argv) {
 
@@ -33,13 +34,17 @@ int main(int argc, char **argv) {
         }
     }
 
-    if(finit == NULL || fquery == NULL){
+    if (finit == NULL || fquery == NULL){
         getError(3);
         exit(2);
     }
 
 	trieRootInit();                   //Initializing Trie
 	readInputFile(finit);             //Input & Storing
+
+	if (TRIE_TYPE == STATIC)
+		trieCompactTree();
+
     readQueryFile(fquery);
 
 	#ifdef BLOOM
