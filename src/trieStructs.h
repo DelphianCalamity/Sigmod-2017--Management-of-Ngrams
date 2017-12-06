@@ -5,7 +5,7 @@
 #include "stack.h"
 #include "Hashtable/Hashtable.h"
 
-#define BLOOM
+//#define BLOOM
 
 #define MINSIZE 10
 #define FACTOR 0.3
@@ -56,7 +56,7 @@ TrieRoot *trieRoot;                                 	//Global Variable
 void (*SearchPtr)(NgramVector*);
 
 void trieRootInit();
-void trieNodeInit(char *, TrieNode *, TrieNode *);
+void trieNodeInit(char *, TrieNode *);
 void trieBinarySearch(BinaryResult*, TrieNode *, char *);
 void trieSearch(NgramVector *);
 void trieSearch_Ngram(TrieNode*, int, int, NgramVector *, char**, int*, int *);

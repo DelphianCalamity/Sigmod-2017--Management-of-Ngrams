@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "stack.h"
-#include "errorMessages.h"
-#include "trieStructs.h"
+#include "../stack.h"
 #include "compactTree.h"
-#include "BloomFilter/bloomFilter.h"
-#include "Hashtable/Hashtable.h"
-#include "TopK/topK_Hashtable.h"
+#include "../trieStructs.h"
+#include "../errorMessages.h"
+#include "../BloomFilter/bloomFilter.h"
+#include "../Hashtable/Hashtable.h"
+#include "../TopK/topK_Hashtable.h"
 
 //void trieCompactTree(){
 //	int i,j, parentLength, childLength ;
@@ -234,11 +234,9 @@ void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngra
 		node = &node->children[br.position];
 
 		if (node->offsets != NULL) {																		//Compacted branch -- more than one words inside this node
-			//printf("\noffsets Size= %d\n", node->offsetsSize);
+
 			for (j=0,x=0; j < node->offsetsSize && i < ngramVector->words; j++, i++) {
 
-//				printf("BOOM: %s| %d\n", &node->word[x], node->offsets[j]);
-//				printf("ngra: %s\n\n", ngramVector->ngram[i]);
 				if (strcmp(&node->word[x], ngramVector->ngram[i]) != 0)                                    	//If not equal - abort
 					return;
 
@@ -266,8 +264,8 @@ void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngra
 
 						(*check)++;
 
-						topK_Hashtable_insert(hashtable, ngram);
-						topK_Hashtable_Check_LoadFactor(hashtable);
+						topK_Hashtable_insert(hashtable, ngram, len-1);
+						topK_Hashtable_Check_LoadFactor(hashtable, len-1);
 					}
 				}
 				(node->offsets[j] < 0) ? x+=(-node->offsets[j]+1) : (x+=node->offsets[j]+1);
@@ -302,8 +300,8 @@ void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngra
 
 			(*check)++;
 
-			topK_Hashtable_insert(hashtable, ngram);
-			topK_Hashtable_Check_LoadFactor(hashtable);
+			topK_Hashtable_insert(hashtable, ngram, len-1);
+			topK_Hashtable_Check_LoadFactor(hashtable, len-1);
 		}
 
 #else			//WITH BLOOM FILTER
@@ -331,8 +329,8 @@ void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngra
 
 					(*check)++;
 
-					topK_Hashtable_insert(hashtable, ngram);
-					topK_Hashtable_Check_LoadFactor(hashtable);
+					topK_Hashtable_insert(hashtable, ngram, len-1);
+					topK_Hashtable_Check_LoadFactor(hashtable, len-1);
 				}
 			}
 #endif

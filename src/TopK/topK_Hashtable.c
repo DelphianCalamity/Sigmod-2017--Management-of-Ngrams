@@ -42,7 +42,7 @@ void topK_Hashtable_Bucket_print(TopK_Hashtable_Info_ptr hash, Big_Bucket *bucke
 	int i;
 	double key;
 	for (i = 0; i < bucket->records; i++) {
-			key = topK_Hashtable_hashkey((bucket->topBuckets[i].ngram));
+			key = topK_Hashtable_hashkey((bucket->topBuckets[i].ngram), strlen((bucket->topBuckets[i].ngram)));
 			printf("%s, %d, (%d, %d)\n", bucket->topBuckets[i].ngram, bucket->topBuckets[i].appearances, topK_Hash_function(hash, key, hash->round), topK_Hash_function(hash, key, hash->round + 1));
 	}
 }
@@ -64,10 +64,10 @@ void topK_Hashtable_print(TopK_Hashtable_Info_ptr hashtable) {
 
 /********************************************************/
 
-double topK_Hashtable_hashkey(char* ngram) {
+double topK_Hashtable_hashkey(char* ngram, int len) {
 
 	double key = 0;
-	int i, len = strlen(ngram);
+	int i;//, len = strlen(ngram);
 
 	for(i=0; i < len; i++)
 		key += (int)ngram[i];
@@ -81,10 +81,10 @@ int topK_Hash_function(TopK_Hashtable_Info_ptr hashtable, double key, int round)
 /********************************************************/
 
 
-void topK_Hashtable_insert(TopK_Hashtable_Info_ptr hashtable, char* ngram) {
+void topK_Hashtable_insert(TopK_Hashtable_Info_ptr hashtable, char* ngram, int len) {
 
 	Big_Bucket* bucket = hashtable->Phashtable;
-	double key = topK_Hashtable_hashkey(ngram);
+	double key = topK_Hashtable_hashkey(ngram, len);
 	int DestinationBucket = topK_Hash_function(hashtable, key, hashtable->round);            		//Hash function of the current round
 	if (DestinationBucket < hashtable->p)
 		DestinationBucket = topK_Hash_function(hashtable, key, hashtable->round + 1);        		//Hash function of the next round
@@ -93,14 +93,14 @@ void topK_Hashtable_insert(TopK_Hashtable_Info_ptr hashtable, char* ngram) {
 }
 
 
-void topK_Hashtable_Check_LoadFactor(TopK_Hashtable_Info_ptr hashtable) {
+void topK_Hashtable_Check_LoadFactor(TopK_Hashtable_Info_ptr hashtable, int len) {
 
 	/* If > Load_Factor Split */
 	float fraction = (float) hashtable->Records / (hashtable->Buckets * TOPK_IN_SIZE);           	//Without counting the overflow buckets
 	if (fraction > hashtable->load_factor) {
 		if (hashtable->p == 0)                                      								//First split of the round ---> Double the Hashtable by using realloc
 			hashtable->Phashtable = saferealloc(hashtable->Phashtable, sizeof(Big_Bucket) * hashtable->Buckets * 2);
-		topK_Hashtable_split(hashtable);
+		topK_Hashtable_split(hashtable, len);
 	}
 }
 
@@ -190,7 +190,7 @@ void topK_Hashtable_move_bucket(TopK_Hashtable_Info_ptr hashtable, Big_Bucket* b
 
 
 /********************************************************/
-void topK_Hashtable_split(TopK_Hashtable_Info_ptr hashtable) {
+void topK_Hashtable_split(TopK_Hashtable_Info_ptr hashtable, int len) {
 
 	double key;
 	TopK_Bucket* bucket;
@@ -204,7 +204,7 @@ void topK_Hashtable_split(TopK_Hashtable_Info_ptr hashtable) {
 
 		bucket = &big_bucket->topBuckets[i];
 
-		key = topK_Hashtable_hashkey(bucket->ngram);
+		key = topK_Hashtable_hashkey(bucket->ngram, len);
 		DestinationBucket = topK_Hash_function(hashtable, key, hashtable->round + 1);   							//REHASH
 
 		if (DestinationBucket != hashtable->p) {

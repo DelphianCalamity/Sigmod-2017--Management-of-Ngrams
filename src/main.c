@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "BloomFilter/bloomFilter.h"
-#include "trieStructs.h"
+#include <unistd.h>
+#include "bursts.h"
 #include "parsing.h"
 #include "errorMessages.h"
-#include "bursts.h"
-#include <unistd.h>
-#include "compactTree.h"
+#include "trieStructs.h"
+#include "BloomFilter/bloomFilter.h"
+#include "CompactTrie/compactTree.h"
 
 int main(int argc, char **argv) {
 

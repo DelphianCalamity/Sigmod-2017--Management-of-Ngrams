@@ -67,10 +67,10 @@ void Hashtable_print(Hashtable_Info_ptr hashtable) {
 /********************************************************/
 double Hashtable_hashkey(char* word) {
 
+	int i;
 	double key = 0;
-	int i, len = strlen(word);
 
-	for(i=0; i < len; i++)
+	for(i=0; word[i] != '\0'; i++)
 		key += (int)word[i];
 	return key;
 }
@@ -111,7 +111,7 @@ TrieNode* Hashtable_insert_child(Hashtable_Info_ptr hashtable, BinaryResult* res
 
 	/*Store the new child and update children count*/
 	if (result->found != 1) {                                          //If found != 1 the node must be inserted - otherwise it is already there
-		trieNodeInit(word, &bucket->children[result->position], bucket);
+		trieNodeInit(word, &bucket->children[result->position]);
 		if (result->found == 0)		                                   //If found == 2 the node replaced a deleted node
 			bucket->emptySpace--;
 

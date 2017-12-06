@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
-#include "errorMessages.h"
 #include "stack.h"
 #include "ngram.h"
 #include "bursts.h"
+#include <string.h>
+#include <stdbool.h>
 #include "trieStructs.h"
+#include "errorMessages.h"
 #include "BloomFilter/bloomFilter.h"
 #include "Hashtable/Hashtable.h"
 #include "TopK/topK_Hashtable.h"
@@ -22,7 +22,7 @@ void trieRootInit() {
 }
 
 /*Initialization of a new trienode*/
-void trieNodeInit(char *word, TrieNode *child, TrieNode *parent) {
+void trieNodeInit(char *word, TrieNode *child) {
 
 	/*Initialize basic info of node*/
 	child->word = word;
@@ -87,11 +87,11 @@ void trieSearch(NgramVector *ngramVector) {
     int capacity = BUFFER_SIZE;
     buffer[0] = '\0';
 
-	#ifdef BLOOM
+#ifdef BLOOM
     	memset(bloomfilter, 0, BLOOMSIZE);
-	#endif
+#endif
 
-	for (i=0; i < ngramVector->words; i++) {                                         //For all root's children
+	for (i=0; i < ngramVector->words; i++) {                                         				//For all root's children
 		node = Hashtable_lookup_Bucket(trieRoot->hashtable, ngramVector->ngram[i]);
 		trieSearch_Ngram(node, i, i, ngramVector, &buffer, &capacity, &check);
 		buffer[0] = '\0';
@@ -127,7 +127,7 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 
 		node = &node->children[br.position];
 
-		#ifndef BLOOM	//WITHOUT BLOOM FILTER
+#ifndef BLOOM	//WITHOUT BLOOM FILTER
 			if (node->is_final && node->visited < trieRoot->lastQuery) {      						//An ngram is found and is not already 'printed'
 
 				node->visited = trieRoot->lastQuery;
@@ -153,17 +153,17 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 
 				(*check)++;
 
-				topK_Hashtable_insert(hashtable, ngram);
-				topK_Hashtable_Check_LoadFactor(hashtable);
+				topK_Hashtable_insert(hashtable, ngram, len-1);
+				topK_Hashtable_Check_LoadFactor(hashtable, len-1);
 			}
 
-		#else			//WITH BLOOM FILTER
+#else			//WITH BLOOM FILTER
 			if (node->is_final) {
 
 				for (; round <= i; round++) {
 					if((space=(int)strlen(ngramVector->ngram[round])) >= *capacity - len-1) {
 						*capacity *= 2;
-						*buffer = saferealloc(*buffer, *capacity*sizeof(char));              //Re-allocate space
+						*buffer = saferealloc(*buffer, *capacity*sizeof(char));             	 	//Re-allocate space
 					}
 					memcpy(*buffer + len, ngramVector->ngram[round], space*sizeof(char));
 					len += space+1;
@@ -182,11 +182,11 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 
 					(*check)++;
 
-					topK_Hashtable_insert(hashtable, ngram);
-					topK_Hashtable_Check_LoadFactor(hashtable);
+					topK_Hashtable_insert(hashtable, ngram, len-1);
+					topK_Hashtable_Check_LoadFactor(hashtable, len-1);
 				}
 			}
-		#endif
+#endif
 
 	}
 }
@@ -235,7 +235,7 @@ int trieInsertSort(NgramVector *ngramVector) {
 			trieMakeSpace(&result, parent, word);
 			/*Store the new child and update children count*/
 			if(result.found != 1) {											//If found != 1 the node must be inserted - otherwise it is already there
-				trieNodeInit(word, &parent->children[result.position], parent);
+				trieNodeInit(word, &parent->children[result.position]);
 				if(result.found == 0)                                      	//If found == 2 the node replaced a deleted node
 					parent->emptySpace--;
 				ngramVector->ngram[i] = NULL;
@@ -307,7 +307,7 @@ void trieDeleteNgram(NgramVector *ngram) {
 		return;
 
 	initStack(&s);
-	node = Hashtable_lookup(&br, trieRoot->hashtable, ngram->ngram[0]);                //For root
+	node = Hashtable_lookup(&br, trieRoot->hashtable, ngram->ngram[0]);               	 //For root
 	if (node == NULL) {
 		deleteStack(&s);
 		return;
@@ -327,21 +327,21 @@ void trieDeleteNgram(NgramVector *ngram) {
 		node = &(node->children[br.position]);
 	}
 
-	if (!node->is_final) {                                                         	// node not final, specified n-gram not found
+	if (!node->is_final) {                                                         		// node not final, specified n-gram not found
 		deleteStack(&s);
 		return;
 	}
 
 	node->is_final = 0;
-	if (node->emptySpace + node->deletedChildren < node->maxChildren) {          	// there still are active children
+	if (node->emptySpace + node->deletedChildren < node->maxChildren) {          		// there still are active children
 		deleteStack(&s);
 		return;
 	}
 
 	// no active children, delete 'em all
-	for (i = 0; i < node->deletedChildren; i++)                                 	// delete the words of inactive children
+	for (i = 0; i < node->deletedChildren; i++)                                 		// delete the words of inactive children
 		free(node->children[i].word);
-	free(node->children);                                                       	// delete the array
+	free(node->children);                                                       		// delete the array
 	node->deleted = 1;
 
 	node = pop(&s);
@@ -351,7 +351,7 @@ void trieDeleteNgram(NgramVector *ngram) {
 	while (notEmpty(&s)) {
 
 		i = node->maxChildren - node->emptySpace - 1;
-		while (i >= 0 && !stop) {                                                   // free all deleted children after the last active one (could be all of them)
+		while (i >= 0 && !stop) {                                                   	// free all deleted children after the last active one (could be all of them)
 			if (node->children[i].deleted) {
 				free(node->children[i].word);
 				node->children[i].deleted = 0;
