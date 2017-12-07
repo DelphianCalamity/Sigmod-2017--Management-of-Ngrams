@@ -7,10 +7,7 @@
 #define K 5
 
 char *bloomfilter;
-unsigned int *cells;
 
-void initBloom(void);
-void killBloom(void);
 bool findInBloom(char*);
 
 #endif

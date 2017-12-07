@@ -6,27 +6,17 @@
 #include "murmur.h"
 #include "../errorMessages.h"
 
-void initBloom(void){
-	bloomfilter = safemalloc(BLOOMSIZE);
-	cells = safemalloc(K);
-}
-
-void killBloom(void){
-	free(bloomfilter);
-	free(cells);
-}
 
 bool findInBloom(char *ngram){
-	unsigned int i, place, bit, value;
+	unsigned int i, place, bit, value, hash, l;
 	char prev;
 	bool retval=true;
 
-	memset(cells, 0, K*sizeof(unsigned int));
-
+	l = strlen(ngram);
 	for (i=0; i<K; i++){
-		cells[i] = (int) murmurhash(ngram, (uint32_t) strlen(ngram), i)%(BLOOMSIZE*8);
-		place = (cells[i]/8)%BLOOMSIZE;		/* place has the place of the byte that has the desired bit */
-		bit = cells[i]%8;					/* bit has the place of the desired bit in the byte */
+		hash = (unsigned int) murmurhash(ngram, (uint32_t) l, i)%(BLOOMSIZE*8);
+		place = (hash/8)%BLOOMSIZE;		/* place has the place of the byte that has the desired bit */
+		bit = hash%8;					/* bit has the place of the desired bit in the byte */
 		prev = bloomfilter[place];			/* prev has the value of the corresponding byte in the bloom filter BEFORE the change */
 		value = 1;
 		value = value << bit;				/* creating the new value of the desired bit */

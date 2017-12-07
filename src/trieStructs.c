@@ -185,6 +185,9 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 					topK_Hashtable_insert(hashtable, ngram, len-1);
 					topK_Hashtable_Check_LoadFactor(hashtable, len-1);
 				}
+				else{
+					free(ngram);
+				}
 			}
 #endif
 

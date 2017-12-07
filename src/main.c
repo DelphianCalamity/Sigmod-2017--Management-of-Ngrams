@@ -50,12 +50,16 @@ int main(int argc, char **argv) {
 
     readQueryFile(fquery);
 
-	initBloom();
+#ifdef BLOOM
+	bloomfilter = safemalloc(BLOOMSIZE);
+#endif
 
 	processBursts();
 
-	killBloom();
-
+#ifdef BLOOM
+	free(bloomfilter);
+#endif
+    
 //	Hashtable_print(trieRoot->hashtable);
 
 	trieFree();
