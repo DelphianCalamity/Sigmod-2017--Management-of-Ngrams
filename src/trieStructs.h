@@ -35,7 +35,6 @@ struct trieNode{
 
     short *offsets;
     int offsetsSize;
-    //int maxOffsetSize;
 };
 
 struct trieRoot{
