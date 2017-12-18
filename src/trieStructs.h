@@ -4,8 +4,9 @@
 #include "ngram.h"
 #include "stack.h"
 #include "Hashtable/Hashtable.h"
+#include "Threads/JobScheduler.h"
 
-//#define BLOOM
+#define BLOOM
 
 #define MINSIZE 10
 #define FACTOR 0.3
@@ -15,6 +16,7 @@
 #define STATIC 0
 
 typedef struct hashtable_info* Hashtable_Info_ptr;		//Forward Declaration
+typedef struct jobScheduler JobScheduler;
 
 typedef struct trieNode TrieNode;
 typedef struct trieRoot TrieRoot;
@@ -52,6 +54,7 @@ struct binaryResult{
 
 char TRIE_TYPE;
 TrieRoot *trieRoot;                                 	//Global Variable
+JobScheduler jobScheduler;
 void (*SearchPtr)(NgramVector*);
 
 void trieRootInit();

@@ -4,29 +4,28 @@
 #include "ngram.h"
 #include "trieStructs.h"
 
-typedef struct burstList BurstList;
+#define CMD_INIT 20
 typedef struct burst Burst;
+typedef struct job Job;
 
-struct burstList{
+struct burst {
 	int k;
-	Burst *start;           // first command
-	Burst *end;             // last command
-	BurstList *next;        // next burst
+	int numOfJobs;
+	int capacity;
+	Job* jobs;
 };
 
-struct burst{
+struct job {
 	char command;           // Q, A or D, depends on the command
 	NgramVector *ngram;
-	Burst *next;            // next command
 };
 
-void addCommand(char, NgramVector*);
-void addBurst(void);
-void executeBurstCommands(BurstList *);
-void processBursts(void);
+Burst burst;
 
-BurstList *burstListStart;
-BurstList *burstListEnd;
+void burst_init();
+void executeCommand(Job*);
+void executeBurstCommands();
+void addCommand(char, NgramVector*);
 
 #endif
 

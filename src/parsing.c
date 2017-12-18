@@ -50,38 +50,44 @@ void readQueryFile(char *queryFile){
 	char command, burstFlag=1;
 	NgramVector *ngram;
 
-	if ((fp = fopen(queryFile, "r")) == NULL){                  // open query file
+	if ((fp = fopen(queryFile, "r")) == NULL) {                  // open query file
 		getError(3);
 		exit(2);
 	}
 
+	burst_init();
+
     ssize_t len;
-	while ((len=getline(&buffer, &size, fp)) != -1){
+	while ((len=getline(&buffer, &size, fp)) != -1) {
 
-        if (burstFlag){
-			addBurst();
+        if (burstFlag)
 			burstFlag = 0;
-		}
 
-		if (buffer[0] == 'F'){
+		if (buffer[0] == 'F') {
 
-			if(len > 2) {
+			if (len > 2) {
 				buffer[len] = '\0';
-				burstListEnd->k = atoi(buffer+2);
+				burst.k = atoi(buffer+2);
 			}
-			else burstListEnd->k = 0;
+			else burst.k = 0;
 
             burstFlag = 1;
-        }
-		else {                                                  //Ignoring burst list for the first part
+			executeBurstCommands();								//frees space too
 
+			burst.numOfJobs = 0;
+		}
+
+		else {
             command = buffer[0];
 			ngram = initNgram();
 			createNgram(ngram, &buffer[2], len-2);
 
 			addCommand(command, ngram);
+			//JobScheduler_SubmitJob(&burst.jobs[i]);			//Replaces the command on top
 		}
 	}
+
+	free(burst.jobs);
 
     if(buffer != NULL){
         free(buffer);

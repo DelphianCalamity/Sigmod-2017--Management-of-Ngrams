@@ -2,79 +2,60 @@
 #include <stdlib.h>
 #include <string.h>
 #include "bursts.h"
-#include "errorMessages.h"
 #include "ngram.h"
 #include "trieStructs.h"
+#include "errorMessages.h"
 #include "TopK/topK_Hashtable.h"
 
-// adds a command at the end of the currently last burst
+
+void burst_init() {
+	burst.numOfJobs = 0;
+	burst.capacity = CMD_INIT;
+	burst.jobs = safemalloc(sizeof(Job) * CMD_INIT);
+}
+
 void addCommand(char com, NgramVector *ngram) {
-	Burst *temp;
 
-	temp = safemalloc(sizeof(Burst));
-	temp->command = com;
-	temp->ngram = ngram;
-	temp->next = NULL;
-	if (burstListEnd->start == NULL)	           // first command in this burst
-		burstListEnd->start = temp;
-	else
-		burstListEnd->end->next = temp;            // add command at the end of the burst
-
-	burstListEnd->end = temp;
+	if (burst.numOfJobs == burst.capacity) {
+		burst.capacity *= 2;
+		burst.jobs = saferealloc(burst.jobs, burst.capacity * sizeof(Job));
+	}
+	burst.jobs[burst.numOfJobs].command = com;
+	burst.jobs[burst.numOfJobs].ngram = ngram;
+	burst.numOfJobs++;
 }
 
-// adds a burst at the end of BurstList
-void addBurst(void) {
+void executeBurstCommands() {
 
-	BurstList *temp;
-	temp = safemalloc(sizeof(BurstList));
-	temp->start = NULL;
-	temp->end = NULL;
-	temp->next = NULL;
-	if (burstListStart == NULL)					// first burst
-		burstListStart = temp;
-	else
-		burstListEnd->next = temp;				// add burst to the end of the list
-	burstListEnd = temp;
-}
-
-// executes all commands in current burst
-void executeBurstCommands(BurstList *burst){
-
-	Burst *temp;
+	int i;
 	hashtable = topK_Hashtable_create(800, 5);
 
-	while (burst->start != NULL){
-		temp=burst->start;
-		if (temp->command == 'A'){
-			trieInsertSort(temp->ngram);
-        }
-		else if (temp->command == 'D'){
-			trieDeleteNgram(temp->ngram);
-        }
-		else if (temp->command == 'Q'){
-			(*SearchPtr)(temp->ngram);
-		}
-		burst->start = burst->start->next;
-		deleteWords(temp->ngram);
-        deleteNgram(temp->ngram);
-		free(temp);
+	for (i=0; i<burst.numOfJobs; i++) {
+		executeCommand(&burst.jobs[i]);
 	}
 
-	topK_print_TopK(hashtable, burst->k);		//print the TopK ngrams
+	//JobScheduler_execute_all_jobs();					//Replaces the command on top
+	//sleep(10);
+	//JobScheduler_wait_all_tasks_finish();
+	//JobScheduler_Reset();
+
+	topK_print_TopK(hashtable, burst.k);				//print the TopK ngrams
 	//topK_Hashtable_print(hashtable);
 	topK_Hashtable_Destroy(hashtable);
 }
 
+void executeCommand(Job* job) {
 
-// goes through all bursts
-void processBursts(void){
-	BurstList *temp;
-
-	while (burstListStart != NULL){
-		temp=burstListStart;
-		executeBurstCommands(temp);
-		burstListStart = burstListStart->next;
-		free(temp);
+	if (job->command == 'A'){
+		trieInsertSort(job->ngram);
 	}
+	else if (job->command == 'D'){
+		trieDeleteNgram(job->ngram);
+	}
+	else if (job->command == 'Q'){
+		(*SearchPtr)(job->ngram);
+	}
+
+	deleteWords(job->ngram);
+	deleteNgram(job->ngram);
 }

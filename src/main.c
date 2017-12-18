@@ -8,6 +8,7 @@
 #include "trieStructs.h"
 #include "BloomFilter/bloomFilter.h"
 #include "CompactTrie/compactTree.h"
+#include "Threads/JobScheduler.h"
 
 int main(int argc, char **argv) {
 
@@ -40,6 +41,8 @@ int main(int argc, char **argv) {
     }
 
 	trieRootInit();                   		//Initializing Trie
+	//JobScheduler_Init();					//Initializing Job Scheduler
+
 	readInputFile(finit);             		//Input & Storing
 
 	if (TRIE_TYPE == STATIC) {           	//If trie is static then compress it
@@ -48,17 +51,16 @@ int main(int argc, char **argv) {
 	}
 	else SearchPtr = &trieSearch;
 
-    readQueryFile(fquery);
-
 	bloomfilter = safemalloc(BLOOMSIZE);
 
-	processBursts();
+	readQueryFile(fquery);
 
 	free(bloomfilter);
     
 //	Hashtable_print(trieRoot->hashtable);
 
 	trieFree();
+	//JobScheduler_Destroy();
 
     return 0;
 }
