@@ -18,7 +18,7 @@ NgramVector * initNgram(void){										// creates and initializes the ngram str
 }
 
 void createNgram(NgramVector *ngramVector, char *buffer, ssize_t size){			// creates an ngram from the buffer
-	
+
     int s=0, e;
 
 	ngramVector->words = 0;

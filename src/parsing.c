@@ -56,6 +56,7 @@ void readQueryFile(char *queryFile){
 	}
 
 	burst_init();
+	trie_buffer_Init();
 
     ssize_t len;
 	while ((len=getline(&buffer, &size, fp)) != -1) {
@@ -72,7 +73,8 @@ void readQueryFile(char *queryFile){
 			else burst.k = 0;
 
             burstFlag = 1;
-			executeBurstCommands();								//frees space too
+
+			processBurst();
 
 			burst.numOfJobs = 0;
 		}
@@ -81,16 +83,16 @@ void readQueryFile(char *queryFile){
             command = buffer[0];
 			ngram = initNgram();
 			createNgram(ngram, &buffer[2], len-2);
-
 			addCommand(command, ngram);
-			//JobScheduler_SubmitJob(&burst.jobs[i]);			//Replaces the command on top
 		}
 	}
 
-	free(burst.jobs);
+	trie_buffer_Destroy();
 
     if(buffer != NULL){
         free(buffer);
 	}
 	fclose(fp);
 }
+
+

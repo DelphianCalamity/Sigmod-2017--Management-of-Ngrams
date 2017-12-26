@@ -25,37 +25,73 @@ void addCommand(char com, NgramVector *ngram) {
 	burst.numOfJobs++;
 }
 
-void executeBurstCommands() {
-
-	int i;
-	hashtable = topK_Hashtable_create(800, 5);
-
-	for (i=0; i<burst.numOfJobs; i++) {
-		executeCommand(&burst.jobs[i]);
-	}
-
-	//JobScheduler_execute_all_jobs();					//Replaces the command on top
-	//sleep(10);
-	//JobScheduler_wait_all_tasks_finish();
-	//JobScheduler_Reset();
-
-	topK_print_TopK(hashtable, burst.k);				//print the TopK ngrams
-	//topK_Hashtable_print(hashtable);
-	topK_Hashtable_Destroy(hashtable);
-}
-
 void executeCommand(Job* job) {
 
-	if (job->command == 'A'){
-		trieInsertSort(job->ngram);
-	}
-	else if (job->command == 'D'){
-		trieDeleteNgram(job->ngram);
-	}
-	else if (job->command == 'Q'){
-		(*SearchPtr)(job->ngram);
-	}
-
+	(*SearchPtr)(job->ngram, job->Q_version, job->id);
 	deleteWords(job->ngram);
 	deleteNgram(job->ngram);
+}
+
+
+void processBurst() {
+
+	int i=0, id=0;
+
+	while (i < burst.numOfJobs) {
+
+		switch(burst.jobs[i].command) {
+
+			case 'D':   trieFakeDeleteNgram(burst.jobs[i].ngram);
+						i++;
+						break;
+
+			case 'A':   trieInsertSort(burst.jobs[i].ngram);
+						deleteWords(burst.jobs[i].ngram);
+						deleteNgram(burst.jobs[i].ngram);
+						i++;
+						break;
+
+			case 'Q':	while (i < burst.numOfJobs && burst.jobs[i].command == 'Q') {
+
+							burst.jobs[i].id = id++;
+							burst.jobs[i].Q_version = trieRoot->current_version;
+							JobScheduler_SubmitJob(&burst.jobs[i]);
+							i++;
+						}
+
+						trieRoot->current_version++;
+						break;
+		}
+	}
+
+	if (queryBuffer.capacity < id) {
+		queryBuffer.capacity = id;
+		queryBuffer.sizes = saferealloc(queryBuffer.sizes, sizeof(int) * id);
+		queryBuffer.buffer = saferealloc(queryBuffer.buffer, sizeof(char*) * id);
+		queryBuffer.capacities = saferealloc(queryBuffer.capacities, sizeof(int) * id);
+	}
+
+	JobScheduler_execute_all_jobs();
+	JobScheduler_wait_all_tasks_finish();
+
+
+	// End of Burst - Delete Ngrams                 -- to be optimized
+	for (i=0; i < burst.numOfJobs; i++) {
+
+		if (burst.jobs[i].command == 'D') {
+
+			trieDeleteNgram(burst.jobs[i].ngram);
+			deleteWords(burst.jobs[i].ngram);
+			deleteNgram(burst.jobs[i].ngram);
+		}
+	}
+
+	// print burst ngrams
+	for (i=0; i < id; i++) {
+		printf("%s\n", queryBuffer.buffer[i]);
+		free(queryBuffer.buffer[i]);
+	}
+
+	//topK
+
 }

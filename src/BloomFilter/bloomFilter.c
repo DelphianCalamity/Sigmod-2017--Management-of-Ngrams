@@ -7,7 +7,7 @@
 #include "../errorMessages.h"
 
 
-bool findInBloom(char *ngram){
+bool findInBloom(char *ngram, char *bloomfilter){
 	unsigned int i, place, bit, value, hash, l;
 	char prev;
 	bool retval=true;
@@ -15,8 +15,8 @@ bool findInBloom(char *ngram){
 	l = strlen(ngram);
 	for (i=0; i<K; i++){
 		hash = (unsigned int) murmurhash(ngram, (uint32_t) l, i)%(BLOOMSIZE*8);
-		place = (hash/8)%BLOOMSIZE;		/* place has the place of the byte that has the desired bit */
-		bit = hash%8;					/* bit has the place of the desired bit in the byte */
+		place = (hash/8)%BLOOMSIZE;		    /* place has the place of the byte that has the desired bit */
+		bit = hash%8;					    /* bit has the place of the desired bit in the byte */
 		prev = bloomfilter[place];			/* prev has the value of the corresponding byte in the bloom filter BEFORE the change */
 		value = 1;
 		value = value << bit;				/* creating the new value of the desired bit */

@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     }
 
 	trieRootInit();                   		//Initializing Trie
-	//JobScheduler_Init();					//Initializing Job Scheduler
+	JobScheduler_Init();					//Initializing Job Scheduler
 
 	readInputFile(finit);             		//Input & Storing
 
@@ -51,12 +51,8 @@ int main(int argc, char **argv) {
 	}
 	else SearchPtr = &trieSearch;
 
-	bloomfilter = safemalloc(BLOOMSIZE);
-
 	readQueryFile(fquery);
 
-	free(bloomfilter);
-    
 //	Hashtable_print(trieRoot->hashtable);
 
 	trieFree();

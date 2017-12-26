@@ -42,7 +42,7 @@ void trieCompactRoot(Stack *stack) {
         if (tempSize == 1) {
             prePrevious = previous = NULL;
 
-            wBuffer = parent->word;                                                          //Initializing word-buffer, offset-buffer variables
+            wBuffer = parent->word;                                                            //Initializing word-buffer, offset-buffer variables
             wLen = strlen(parent->word) + 1;
             wCapacity = wLen;
             oCapacity = 5;
@@ -52,8 +52,7 @@ void trieCompactRoot(Stack *stack) {
             else oBuffer[0] = wLen - 1;
             oLen = 1;
         }
-        while (tempSize ==
-               1) {                                                                //While parents have only one child
+        while (tempSize == 1) {                                                                //While parents have only one child
 
             prePrevious = previous;
             previous = parent->children;
@@ -62,17 +61,15 @@ void trieCompactRoot(Stack *stack) {
             wSpace = strlen(parent->word) + 1;
             while (wSpace > wCapacity - wLen) {
                 wCapacity *= 2;
-                wBuffer = saferealloc(wBuffer,
-                                      wCapacity * sizeof(char));                //Re-allocate space for word-Buffer
+                wBuffer = saferealloc(wBuffer, wCapacity * sizeof(char));                       //Re-allocate space for word-Buffer
             }
             if (oCapacity == oLen) {
                 oCapacity *= 2;
-                oBuffer = saferealloc(oBuffer,
-                                      oCapacity * sizeof(short));                //Re-allocate space for offset-Buffer
+                oBuffer = saferealloc(oBuffer, oCapacity * sizeof(short));                      //Re-allocate space for offset-Buffer
             }
 
             memcpy(wBuffer + wLen, parent->word, wSpace * sizeof(char));
-            wLen += wSpace;        //Copy current node's word at wBuffer
+            wLen += wSpace;                                                                     //Copy current node's word at wBuffer
 
             wSpace--;
             if (parent->is_final)
@@ -80,14 +77,13 @@ void trieCompactRoot(Stack *stack) {
             else oBuffer[oLen] = wSpace;
             oLen++;
 
-            free(parent->word);                                                                //Free allocated space
+            free(parent->word);                                                                 //Free allocated space
             tempSize = parent->maxChildren - parent->emptySpace;
             if (prePrevious != NULL)
                 free(prePrevious);
         }
 
-        if (node !=
-            parent) {                                                                //Copy last compacted node's rest info to the branch's first node
+        if (node != parent) {                                                                   //Copy last compacted node's rest info to the branch's first node
             node->word = wBuffer;
             node->children = parent->children;
             node->maxChildren = parent->maxChildren;
@@ -110,148 +106,138 @@ void trieCompactRoot(Stack *stack) {
             /*** PRINT***/
         }
 
-        if (node->emptySpace !=
-            node->maxChildren) {                                        //If node is not a leaf - has more than one children - push them in stack
+        if (node->emptySpace != node->maxChildren) {                                        //If node is not a leaf - has more than one children - push them in stack
             for (i = 0; i < node->maxChildren - node->emptySpace; i++)
                 push(stack, &(node->children[i]));
         }
     }
 }
-
-void compactTree() {
-    int i, j, startWord, endWord, sumLength = 0, wordsCount = 0, counter;
-    size_t parentLength, childLength;
-    Stack stack;
-    char *tempWord, *tempWord2;
-    TrieNode *hashtable = trieRoot->hashtable->Phashtable, *parent, *child, *tempchildren;
-
-    initStack(&stack);
-    for (i = 0; i < trieRoot->hashtable->Buckets; i++) {
-        for (j = 0; j < hashtable[i].maxChildren - hashtable[i].emptySpace; j++) {
-            push(&stack, &(hashtable[i].children[j]));
-        }
-    }
-
-    while (notEmpty(&stack)) {
-        if (stack.stack[stack.last]->emptySpace + 1 == stack.stack[stack.last]->maxChildren) {
-            parent = stack.stack[stack.last];
-
-            sumLength += strlen(parent->word) + 1;
-            wordsCount++;
-
-            startWord = stack.last;
-            /*Add 1 child children to the stack*/
-            while ((parent->emptySpace) +1 == parent->maxChildren) {
-                push(&stack, &parent->children[0]);
-                sumLength += strlen(parent->children[0].word) + 1;
-                wordsCount++;
-            }
-
-            /*Change size of the parent word*/
-            parent->word = saferealloc(parent->word, sumLength);
-
-            /*Allocate memory for offsets*/
-            parent->offsets = safemalloc(sizeof(short) * wordsCount);
-
-            endWord = stack.last;
-            counter = 0;
-            while (endWord != startWord) {
-                startWord++;
-                childLength = strlen(stack.stack[startWord]->word);
-                memcpy(parent->word + strlen(parent->word), parent->word, childLength * sizeof(char));
-                if (stack.stack[startWord]->is_final)
-                    stack.stack[startWord]->offsets[counter] = -(short) childLength;
-                else
-                    stack.stack[startWord]->offsets[counter] = (short) childLength;
-
-
-                if (startWord == endWord) {
-                    /*Copy rest Info*/
-                }
-                free(stack.stack[startWord]->word);
-                free(stack.stack[startWord]->children);
-                free(stack.stack[startWord]);
-            }
-        } else if (stack.stack[stack.last]->emptySpace + 1 < stack.stack[stack.last]->maxChildren) {
-            parent = pop(&stack);
-            for (i = 0; i < parent->maxChildren - parent->emptySpace; i++) {
-                push(&stack, &(parent->children[i]));
-            }
-        } else if (stack.stack[stack.last]->emptySpace == stack.stack[stack.last]->maxChildren) {
-            pop(&stack);
-        }
-
-    }
-    deleteStack(&stack);
-}
-
+//
+//void compactTree() {
+//    int i, j, startWord, endWord, sumLength = 0, wordsCount = 0, counter;
+//    size_t parentLength, childLength;
+//    Stack stack;
+//    char *tempWord, *tempWord2;
+//    TrieNode *hashtable = trieRoot->hashtable->Phashtable, *parent, *child, *tempchildren;
+//
+//    initStack(&stack);
+//    for (i = 0; i < trieRoot->hashtable->Buckets; i++) {
+//        for (j = 0; j < hashtable[i].maxChildren - hashtable[i].emptySpace; j++) {
+//            push(&stack, &(hashtable[i].children[j]));
+//        }
+//    }
+//
+//    while (notEmpty(&stack)) {
+//        if (stack.stack[stack.last]->emptySpace + 1 == stack.stack[stack.last]->maxChildren) {
+//            parent = stack.stack[stack.last];
+//
+//            sumLength += strlen(parent->word) + 1;
+//            wordsCount++;
+//
+//            startWord = stack.last;
+//            /*Add 1 child children to the stack*/
+//            while ((parent->emptySpace) +1 == parent->maxChildren) {
+//                push(&stack, &parent->children[0]);
+//                sumLength += strlen(parent->children[0].word) + 1;
+//                wordsCount++;
+//            }
+//
+//            /*Change size of the parent word*/
+//            parent->word = saferealloc(parent->word, sumLength);
+//
+//            /*Allocate memory for offsets*/
+//            parent->offsets = safemalloc(sizeof(short) * wordsCount);
+//
+//            endWord = stack.last;
+//            counter = 0;
+//            while (endWord != startWord) {
+//                startWord++;
+//                childLength = strlen(stack.stack[startWord]->word);
+//                memcpy(parent->word + strlen(parent->word), parent->word, childLength * sizeof(char));
+//                if (stack.stack[startWord]->is_final)
+//                    stack.stack[startWord]->offsets[counter] = -(short) childLength;
+//                else
+//                    stack.stack[startWord]->offsets[counter] = (short) childLength;
+//
+//
+//                if (startWord == endWord) {
+//                    /*Copy rest Info*/
+//                }
+//                free(stack.stack[startWord]->word);
+//                free(stack.stack[startWord]->children);
+//                free(stack.stack[startWord]);
+//            }
+//        } else if (stack.stack[stack.last]->emptySpace + 1 < stack.stack[stack.last]->maxChildren) {
+//            parent = pop(&stack);
+//            for (i = 0; i < parent->maxChildren - parent->emptySpace; i++) {
+//                push(&stack, &(parent->children[i]));
+//            }
+//        } else if (stack.stack[stack.last]->emptySpace == stack.stack[stack.last]->maxChildren) {
+//            pop(&stack);
+//        }
+//
+//    }
+//    deleteStack(&stack);
+//}
+//
 
 /****************************************************************************/
 
-void trieSearch_Static(NgramVector *ngramVector) {
+void trieSearch_Static(NgramVector *ngramVector, int Q_version, int id) {
 
     int i;
     int check = 0;
     TrieNode *node;
+    char *bloomfilter = safecalloc(BLOOMSIZE, sizeof(char));
     char *buffer = safemalloc(BUFFER_SIZE * sizeof(char));
     int capacity = BUFFER_SIZE;
     buffer[0] = '\0';
 
-    memset(bloomfilter, 0, BLOOMSIZE);
-
     for (i = 0;
          i < ngramVector->words; i++) {                                                    //For all root's children
         node = Hashtable_lookup_Bucket(trieRoot->hashtable, ngramVector->ngram[i]);
-        trieSearch_Ngram_Static(node, i, i, ngramVector, &buffer, &capacity, &check);
+        trieSearch_Ngram_Static(node, i, i, ngramVector, &buffer, &capacity, &check, bloomfilter);
         buffer[0] = '\0';
     }
 
-    if (check > 0) {
-#ifndef BLOOM
-        trieRoot->lastQuery++;
-#endif
-    } else printf("-1");
+    if (check <= 0) {
+        printf("-1");
+    }
     printf("\n");
 
+	free(bloomfilter);
     free(buffer);
 }
 
-void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngramVector, char **buffer, int *capacity,
-                             int *check) {
+void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngramVector, char **buffer, int *capacity, int *check, char* bloomFilter) {
 
     char *ngram;
     BinaryResult br;
     int j, x, space, len = 0;
 
     for (; i < ngramVector->words; i++) {
-        if (node ==
-            NULL)                                                                                    //No more nodes
-            return;
+        if (node == NULL)                                                                                       //No more nodes
+	        return;
 
         trieBinarySearch(&br, node, ngramVector->ngram[i]);
 
-        if (br.found ==
-            0)                                                                                //If word not found
+        if (br.found == 0)                                                                                      //If word not found
             return;
 
         node = &node->children[br.position];
 
-        if (node->offsets !=
-            NULL) {                                                                        //Compacted branch -- more than one words inside this node
+        if (node->offsets != NULL) {                                                                            //Compacted branch -- more than one words inside this node
 
             for (j = 0, x = 0; j < node->offsetsSize && i < ngramVector->words; j++, i++) {
 
-                if (strcmp(&node->word[x], ngramVector->ngram[i]) !=
-                    0)                                        //If not equal - abort
+                if (strcmp(&node->word[x], ngramVector->ngram[i]) != 0)                                         //If not equal - abort
                     return;
 
-                if (node->offsets[j] <
-                    0) {                                                                    //If word is final
+                if (node->offsets[j] < 0) {                                                                     //If word is final
 
                     for (; round <= i; round++) {
                         if ((space = (int) strlen(ngramVector->ngram[round])) >= *capacity - len - 1) {
-                            *buffer = saferealloc(*buffer, 2 * (*capacity) *
-                                                           sizeof(char));                    //Re-allocate space
+                            *buffer = saferealloc(*buffer, 2 * (*capacity) * sizeof(char));                     //Re-allocate space
                             *capacity *= 2;
                         }
                         memcpy(*buffer + len, ngramVector->ngram[round], space * sizeof(char));
@@ -264,7 +250,7 @@ void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngra
                     memcpy(ngram, *buffer, len);
                     ngram[len - 1] = '\0';
 
-                    if (!findInBloom(ngram)) {
+                    if (!findInBloom(ngram, bloomFilter)) {
                         if (*check > 0)
                             printf("|");
                         printf("%s", ngram);
@@ -281,70 +267,36 @@ void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngra
             if (j > 0) i--;
         }
 
-#ifndef BLOOM    //WITHOUT BLOOM FILTER
-        else if (node->is_final && node->visited <
-                                   trieRoot->lastQuery) {                        //An ngram is found and is not already 'printed'
-
-            node->visited = trieRoot->lastQuery;
+    else if (node->is_final) {
 
             for (; round <= i; round++) {
-                if ((space = (int) strlen(ngramVector->ngram[round])) >= *capacity - len - 1) {
-                    *buffer = saferealloc(*buffer, 2 * (*capacity) * sizeof(char));              //Re-allocate space
+                if((space=(int)strlen(ngramVector->ngram[round])) >= *capacity - len-1) {
+                    *buffer = saferealloc(*buffer, 2 * (*capacity)*sizeof(char));              //Re-allocate space
                     *capacity *= 2;
                 }
-                memcpy(*buffer + len, ngramVector->ngram[round], space * sizeof(char));
-                len += space + 1;
-                (*buffer)[len - 1] = ' ';
+                memcpy(*buffer + len, ngramVector->ngram[round], space*sizeof(char));
+                len += space+1;
+                (*buffer)[len-1] = ' ';
             }
-            (*buffer)[len] = '\0';
+            (*buffer)[len]='\0';
 
-            ngram = safemalloc(len * sizeof(char));
+            ngram = safemalloc(len*sizeof(char));
             memcpy(ngram, *buffer, len);
-            ngram[len - 1] = '\0';
+            ngram[len-1] = '\0';
 
-            if (*check > 0)
-                printf("|");
-            printf("%s", ngram);
+            if (!findInBloom(ngram, bloomFilter)) {
+                if (*check > 0)
+                    printf("|");
+                printf("%s", ngram);
 
-            (*check)++;
+                (*check)++;
 
-            topK_Hashtable_insert(hashtable, ngram, len - 1);
-            topK_Hashtable_Check_LoadFactor(hashtable, len - 1);
-        }
-
-#else			//WITH BLOOM FILTER
-        else if (node->is_final) {
-
-                for (; round <= i; round++) {
-                    if((space=(int)strlen(ngramVector->ngram[round])) >= *capacity - len-1) {
-                        *buffer = saferealloc(*buffer, 2 * (*capacity)*sizeof(char));              //Re-allocate space
-                        *capacity *= 2;
-                    }
-                    memcpy(*buffer + len, ngramVector->ngram[round], space*sizeof(char));
-                    len += space+1;
-                    (*buffer)[len-1] = ' ';
-                }
-                (*buffer)[len]='\0';
-
-                ngram = safemalloc(len*sizeof(char));
-                memcpy(ngram, *buffer, len);
-                ngram[len-1] = '\0';
-
-                if (!findInBloom(ngram)) {
-                    if (*check > 0)
-                        printf("|");
-                    printf("%s", ngram);
-
-                    (*check)++;
-
-                    topK_Hashtable_insert(hashtable, ngram, len-1);
-                    topK_Hashtable_Check_LoadFactor(hashtable, len-1);
-                }
-                else{
-                    free(ngram);
-                }
+                topK_Hashtable_insert(hashtable, ngram, len-1);
+                topK_Hashtable_Check_LoadFactor(hashtable, len-1);
             }
-#endif
-
+            else{
+                free(ngram);
+            }
+        }
     }
 }

@@ -14,6 +14,8 @@ struct jobScheduler {
 
 	int end;
 	int start;
+	int current;
+	int counter;
 	int qcapacity;
 	int thread_pool_size;
 
@@ -24,18 +26,16 @@ struct jobScheduler {
 	pthread_mutex_t queue_mutex;
 	//pthread_mutex_t* mutexes;
 
-	//Condition Variable
+	//Condition Variables
 	pthread_cond_t queue_empty;
 	pthread_cond_t wait;
 };
 
-
 void JobScheduler_Init();
-void JobScheduler_Reset();
-void JobScheduler_SubmitJob();
+void JobScheduler_SubmitJob(Job*);
 void JobScheduler_execute_all_jobs();
 void JobScheduler_wait_all_tasks_finish();
+void JobScheduler_Destroy();
 void *worker(void*);
-
 
 #endif
