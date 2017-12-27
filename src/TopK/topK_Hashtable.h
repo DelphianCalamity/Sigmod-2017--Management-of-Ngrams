@@ -20,6 +20,8 @@ struct big_bucket {
 	int max_size;
 	int records;
 	TopK_Bucket* topBuckets;
+
+	pthread_mutex_t mutex;
 };
 
 struct topK_hashtable_info {
@@ -29,7 +31,7 @@ struct topK_hashtable_info {
 	int Records;                    //Number of records in the hashtable
 	int Buckets;                	//size of hashtable - number of buckets
 	float load_factor;
-	Big_Bucket* Phashtable;      		//points to the hashtable
+	Big_Bucket* Phashtable;      	//points to the hashtable
 };
 
 TopK_Hashtable_Info_ptr hashtable;

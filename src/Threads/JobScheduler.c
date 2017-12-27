@@ -33,11 +33,11 @@ void JobScheduler_Init() {
 
 void JobScheduler_SubmitJob(Job *job) {
 
-	if (jobScheduler.current == jobScheduler.qcapacity) {								// If there is no space in queue, reallocate
+	if (jobScheduler.current == jobScheduler.qcapacity) {										// If there is no space in queue, reallocate
 		jobScheduler.qcapacity *= 2;
 		jobScheduler.queue = saferealloc(jobScheduler.queue, jobScheduler.qcapacity * sizeof(Job*));
 	}
-	jobScheduler.queue[jobScheduler.current] = job;                                     // Scheduler places the job in the queue
+	jobScheduler.queue[jobScheduler.current] = job;                                     		// Scheduler places the job in the queue
 	jobScheduler.current++;
 }
 
@@ -50,8 +50,10 @@ void JobScheduler_execute_all_jobs() {
 	jobScheduler.end = jobScheduler.current;
 
 	//could be replaced by broadcast
+//	pthread_cond_broadcast(&jobScheduler.queue_empty);
+
 	for (i=0; i<=jobScheduler.end; i++) {
-		pthread_cond_signal(&jobScheduler.queue_empty);                             // Wake up waiting workers
+		pthread_cond_signal(&jobScheduler.queue_empty);                             			// Wake up waiting workers
 	}
 
 	pthread_mutex_unlock(&jobScheduler.queue_mutex);

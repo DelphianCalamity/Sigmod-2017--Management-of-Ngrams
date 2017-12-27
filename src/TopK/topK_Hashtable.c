@@ -29,6 +29,8 @@ void topK_Hashtable_init_Big_bucket(Big_Bucket* bucket) {
 	bucket->records = 0;
 	bucket->max_size = TOPK_IN_SIZE;
     bucket->topBuckets = safecalloc(TOPK_IN_SIZE, sizeof(TopK_Bucket));
+
+	pthread_mutex_init(&bucket->mutex, NULL);
 }
 
 void topK_Hashtable_init_bucket(TopK_Bucket* bucket, char* ngram) {
@@ -66,8 +68,8 @@ void topK_Hashtable_print(TopK_Hashtable_Info_ptr hashtable) {
 
 double topK_Hashtable_hashkey(char* ngram, int len) {
 
+	int i;
 	double key = 0;
-	int i;//, len = strlen(ngram);
 
 	for(i=0; i < len; i++)
 		key += (int)ngram[i];
@@ -89,7 +91,9 @@ void topK_Hashtable_insert(TopK_Hashtable_Info_ptr hashtable, char* ngram, int l
 	if (DestinationBucket < hashtable->p)
 		DestinationBucket = topK_Hash_function(hashtable, key, hashtable->round + 1);        		//Hash function of the next round
 
+	pthread_mutex_lock(&(bucket+DestinationBucket)->mutex);	//LOCK
 	topK_Hashtable_insert_child(hashtable, bucket+DestinationBucket, ngram);
+	pthread_mutex_unlock(&(bucket+DestinationBucket)->mutex); //UNLOCK
 }
 
 
@@ -278,8 +282,10 @@ void topK_Hashtable_Destroy(TopK_Hashtable_Info_ptr hashtable) {
 	for(i=0; i<hashtable->Buckets; i++) {
 
 		big_bucket = &hashtable->Phashtable[i];
-		for(j=0; j < big_bucket->records; j++)
+		for(j=0; j < big_bucket->records; j++) {
 			free(big_bucket->topBuckets[j].ngram);
+			pthread_mutex_destroy(&big_bucket->mutex);
+		}
 		free(big_bucket->topBuckets);
 	}
 	free(hashtable->Phashtable);

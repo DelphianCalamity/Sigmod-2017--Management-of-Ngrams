@@ -152,12 +152,12 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 
 				queryBuffer.buffer[id][queryBuffer.sizes[id]-1] = '|';//'\0';
 
-//				topK_Hashtable_insert(hashtable, ngram, len-1);
-//				topK_Hashtable_Check_LoadFactor(hashtable, len-1);
+				topK_Hashtable_insert(hashtable, ngram, len-1);
+				//topK_Hashtable_Check_LoadFactor(hashtable, len-1);
 			}
-//			else{
+			else{
 				free(ngram);
-//			}
+			}
 		}
 	}
 }

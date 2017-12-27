@@ -36,7 +36,7 @@ void executeCommand(Job* job) {
 void processBurst() {
 
 	int i=0, id=0;
-
+	hashtable = topK_Hashtable_create(800, 5);
 	while (i < burst.numOfJobs) {
 
 		switch(burst.jobs[i].command) {
@@ -91,7 +91,10 @@ void processBurst() {
 		printf("%s\n", queryBuffer.buffer[i]);
 		free(queryBuffer.buffer[i]);
 	}
-
 	//topK
+
+	topK_print_TopK(hashtable, burst.k);				//print the TopK ngrams
+	//topK_Hashtable_print(hashtable);
+	topK_Hashtable_Destroy(hashtable);
 
 }
