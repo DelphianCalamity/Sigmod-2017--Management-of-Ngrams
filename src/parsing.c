@@ -22,7 +22,7 @@ void readInputFile(char *inputFile) {
 	ngram = initNgram();
 
     ssize_t len;
-	if((len=getline(&buffer, &size, fp)) != -1){				//Identify Trie's type (Static or Dynamic)
+	if ((len=getline(&buffer, &size, fp)) != -1){				//Identify Trie's type (Static or Dynamic)
 		if(buffer[0] == 'S')
 			TRIE_TYPE = STATIC;
 		else TRIE_TYPE = DYNAMIC;
@@ -35,7 +35,7 @@ void readInputFile(char *inputFile) {
 	}
 	deleteNgram(ngram);
 
-    if(buffer != NULL){
+    if (buffer != NULL){
         free(buffer);
 	}
 	fclose(fp);
@@ -45,9 +45,10 @@ void readInputFile(char *inputFile) {
 void readQueryFile(char *queryFile){
 
 	FILE *fp;
+	int i=0;
 	size_t size=0;
 	char *buffer=NULL;
-	char command, burstFlag=1;
+	char command;
 	NgramVector *ngram;
 
 	if ((fp = fopen(queryFile, "r")) == NULL) {                  // open query file
@@ -55,44 +56,50 @@ void readQueryFile(char *queryFile){
 		exit(2);
 	}
 
-	burst_init();
+	j=-1;
 	trie_buffer_Init();
+	burst_init();
 
     ssize_t len;
 	while ((len=getline(&buffer, &size, fp)) != -1) {
-
-        if (burstFlag)
-			burstFlag = 0;
 
 		if (buffer[0] == 'F') {
 
 			if (len > 2) {
 				buffer[len] = '\0';
-				burst.k = atoi(buffer+2);
+				burst[i].k = atoi(buffer+2);
 			}
-			else burst.k = 0;
+			else burst[i].k = 0;
 
-            burstFlag = 1;
+			pthread_join(burst_processor, NULL);
 
-			processBurst();
-
-			burst.numOfJobs = 0;
+			if (pthread_create(&burst_processor, NULL, processBurst, &i)){
+				perror("pthread_create");
+				exit(1);
+			}
+			/*** ***** ***/
+			i = (i+1)%2;
 		}
 
 		else {
             command = buffer[0];
 			ngram = initNgram();
 			createNgram(ngram, &buffer[2], len-2);
-			addCommand(command, ngram);
+			addCommand(command, ngram, i);
 		}
 	}
 
-	trie_buffer_Destroy();
-
-    if(buffer != NULL){
-        free(buffer);
+	if(buffer != NULL){
+		free(buffer);
 	}
 	fclose(fp);
+
+	pthread_join(burst_processor, NULL);
+
+	trie_buffer_Destroy();
+
+	free(burst[0].jobs);
+	free(burst[1].jobs);
 }
 
 

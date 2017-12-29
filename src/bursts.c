@@ -9,20 +9,28 @@
 
 
 void burst_init() {
-	burst.numOfJobs = 0;
-	burst.capacity = CMD_INIT;
-	burst.jobs = safemalloc(sizeof(Job) * CMD_INIT);
+	int i;
+	for (i=0; i<2; i++) {
+		burst[i].numOfJobs = 0;
+		burst[i].capacity = CMD_INIT;
+		burst[i].jobs = safemalloc(sizeof(Job) * CMD_INIT);
+	}
+
+	if (pthread_create(&burst_processor, NULL, processBurst, &j)){
+		perror("pthread_create");
+		exit(1);
+	}
 }
 
-void addCommand(char com, NgramVector *ngram) {
+void addCommand(char com, NgramVector *ngram, int i) {
 
-	if (burst.numOfJobs == burst.capacity) {
-		burst.capacity *= 2;
-		burst.jobs = saferealloc(burst.jobs, burst.capacity * sizeof(Job));
+	if (burst[i].numOfJobs == burst[i].capacity) {
+		burst[i].capacity *= 2;
+		burst[i].jobs = saferealloc(burst[i].jobs, burst[i].capacity * sizeof(Job));
 	}
-	burst.jobs[burst.numOfJobs].command = com;
-	burst.jobs[burst.numOfJobs].ngram = ngram;
-	burst.numOfJobs++;
+	burst[i].jobs[burst[i].numOfJobs].command = com;
+	burst[i].jobs[burst[i].numOfJobs].ngram = ngram;
+	burst[i].numOfJobs++;
 }
 
 void executeCommand(Job* job) {
@@ -33,34 +41,41 @@ void executeCommand(Job* job) {
 }
 
 
-void processBurst() {
+void *processBurst() {
 
 	int i=0, id=0;
-	hashtable = topK_Hashtable_create(800, 5);
-	while (i < burst.numOfJobs) {
 
-		switch(burst.jobs[i].command) {
+	if (j < 0) {
+		j = 0;
+		pthread_exit(NULL);
+	}
 
-			case 'D':   trieFakeDeleteNgram(burst.jobs[i].ngram);
-						i++;
-						break;
+	hashtable = topK_Hashtable_create(400, 5);
 
-			case 'A':   trieInsertSort(burst.jobs[i].ngram);
-						deleteWords(burst.jobs[i].ngram);
-						deleteNgram(burst.jobs[i].ngram);
-						i++;
-						break;
+	while (i < burst[j].numOfJobs) {
 
-			case 'Q':	while (i < burst.numOfJobs && burst.jobs[i].command == 'Q') {
+		switch(burst[j].jobs[i].command) {
 
-							burst.jobs[i].id = id++;
-							burst.jobs[i].Q_version = trieRoot->current_version;
-							JobScheduler_SubmitJob(&burst.jobs[i]);
-							i++;
-						}
+			case 'D':   trieFakeDeleteNgram(burst[j].jobs[i].ngram);
+				i++;
+				break;
 
-						trieRoot->current_version++;
-						break;
+			case 'A':   trieInsertSort(burst[j].jobs[i].ngram);
+				deleteWords(burst[j].jobs[i].ngram);
+				deleteNgram(burst[j].jobs[i].ngram);
+				i++;
+				break;
+
+			case 'Q':	while (i < burst[j].numOfJobs && burst[j].jobs[i].command == 'Q') {
+
+					burst[j].jobs[i].id = id++;
+					burst[j].jobs[i].Q_version = trieRoot->current_version;
+					JobScheduler_SubmitJob(&burst[j].jobs[i]);
+					i++;
+				}
+
+				trieRoot->current_version++;
+				break;
 		}
 	}
 
@@ -76,13 +91,13 @@ void processBurst() {
 
 
 	// End of Burst - Delete Ngrams                 -- to be optimized
-	for (i=0; i < burst.numOfJobs; i++) {
+	for (i=0; i < burst[j].numOfJobs; i++) {
 
-		if (burst.jobs[i].command == 'D') {
+		if (burst[j].jobs[i].command == 'D') {
 
-			trieDeleteNgram(burst.jobs[i].ngram);
-			deleteWords(burst.jobs[i].ngram);
-			deleteNgram(burst.jobs[i].ngram);
+			trieDeleteNgram(burst[j].jobs[i].ngram);
+			deleteWords(burst[j].jobs[i].ngram);
+			deleteNgram(burst[j].jobs[i].ngram);
 		}
 	}
 
@@ -93,8 +108,14 @@ void processBurst() {
 	}
 	//topK
 
-	topK_print_TopK(hashtable, burst.k);				//print the TopK ngrams
+	topK_print_TopK(hashtable, burst[j].k);				//print the TopK ngrams
 	//topK_Hashtable_print(hashtable);
 	topK_Hashtable_Destroy(hashtable);
+
+	burst[j].numOfJobs = 0;
+
+	j = (j+1)%2;
+
+	pthread_exit(NULL);
 
 }

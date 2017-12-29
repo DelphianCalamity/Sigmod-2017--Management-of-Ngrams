@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
 //	Hashtable_print(trieRoot->hashtable);
 
 	trieFree();
-	//JobScheduler_Destroy();
+	JobScheduler_Destroy();
 
     return 0;
 }

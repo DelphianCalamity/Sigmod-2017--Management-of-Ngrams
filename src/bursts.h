@@ -10,6 +10,9 @@ typedef struct burst Burst;
 typedef struct job Job;
 typedef struct qjob Qjob;
 
+int j;
+pthread_t burst_processor;
+
 struct burst {
 	int k;
 	int numOfJobs;
@@ -24,13 +27,12 @@ struct job {
 	NgramVector *ngram;
 };
 
-Burst burst;
+Burst burst[2];
 
 void burst_init();
-void processBurst();
+void *processBurst();
 void executeCommand(Job*);
-void executeBurstCommands();
-void addCommand(char, NgramVector*);
+void addCommand(char, NgramVector*, int);
 
 #endif
 

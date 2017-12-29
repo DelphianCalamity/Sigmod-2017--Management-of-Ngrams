@@ -456,7 +456,6 @@ void trie_buffer_Init() {
 
 void trie_buffer_Destroy() {
 
-	free(burst.jobs);
 	free(queryBuffer.buffer);
 	free(queryBuffer.capacities);
 	free(queryBuffer.sizes);
