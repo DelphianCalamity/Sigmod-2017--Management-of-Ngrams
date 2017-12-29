@@ -123,7 +123,7 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 
 			/**************************************/
 			for (; round <= i; round++) {
-				if((space=(int)strlen(ngramVector->ngram[round])) >= *capacity - len-1) {
+				while((space=(int)strlen(ngramVector->ngram[round])) >= *capacity - len-1) {
 					*capacity *= 2;
 					*buffer = saferealloc(*buffer, *capacity*sizeof(char));             	 		//Re-allocate space
 				}
