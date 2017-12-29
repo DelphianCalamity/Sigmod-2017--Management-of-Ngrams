@@ -106,14 +106,10 @@ void *worker(void *args) {
 
 void JobScheduler_Destroy() {
 
-	free(jobScheduler.queue);
-
 	pthread_mutex_destroy(&jobScheduler.queue_mutex);
 	pthread_cond_destroy(&jobScheduler.queue_empty);
 	pthread_cond_destroy(&jobScheduler.wait);
 
 	free(jobScheduler.queue);
 	free(jobScheduler.workers);
-	free(jobScheduler.workers);
-
 }

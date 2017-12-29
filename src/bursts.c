@@ -43,6 +43,10 @@ void executeCommand(Job* job) {
 
 void *processBurst() {
 
+	clock_t start, end;
+	double cpu_time_used;
+	start = clock();
+
 	int i=0, id=0;
 
 	if (j < 0) {
@@ -102,19 +106,24 @@ void *processBurst() {
 	}
 
 	// print burst ngrams
-	for (i=0; i < id; i++) {
-		printf("%s\n", queryBuffer.buffer[i]);
-		free(queryBuffer.buffer[i]);
-	}
+//	for (i=0; i < id; i++) {
+//		printf("%s\n", queryBuffer.buffer[i]);
+//		free(queryBuffer.buffer[i]);
+//	}
 	//topK
 
-	topK_print_TopK(hashtable, burst[j].k);				//print the TopK ngrams
+//	topK_print_TopK(hashtable, burst[j].k);				//print the TopK ngrams
 	//topK_Hashtable_print(hashtable);
 	topK_Hashtable_Destroy(hashtable);
 
 	burst[j].numOfJobs = 0;
 
 	j = (j+1)%2;
+
+
+	end = clock();
+	cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+	printf("Time = %f\n", cpu_time_used);
 
 	pthread_exit(NULL);
 
