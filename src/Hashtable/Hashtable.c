@@ -128,10 +128,11 @@ void Hashtable_move_child(Hashtable_Info_ptr hashtable, Bucketptr bucket, TrieNo
 
 	/*Store the new child and update children count*/
 	memcpy(&bucket->children[result.position], node, sizeof(TrieNode));
-	bucket->word = node->word;
 
 	if (result.found == 0)
 		bucket->emptySpace--;
+	else if (result.found == 2)
+		bucket->deletedChildren--;
 }
 
 
