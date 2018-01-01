@@ -107,12 +107,12 @@ void *processBurst() {
 
 	// print burst ngrams
 	for (i=0; i < id; i++) {
-//		printf("%s\n", queryBuffer.buffer[i]);
+		printf("%s\n", queryBuffer.buffer[i]);
 		free(queryBuffer.buffer[i]);
 	}
-//	//topK
-//
-//	topK_print_TopK(hashtable, burst[j].k);				//print the TopK ngrams
+	//topK
+
+	topK_print_TopK(hashtable, burst[j].k);				//print the TopK ngrams
 	//topK_Hashtable_print(hashtable);
 	topK_Hashtable_Destroy(hashtable);
 
