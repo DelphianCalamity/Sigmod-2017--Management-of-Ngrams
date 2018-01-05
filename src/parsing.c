@@ -9,10 +9,10 @@
 
 void readInputFile(char *inputFile) {
 
+	FILE *fp;
 	size_t size=0;
 	char *buffer=NULL;
 	NgramVector *ngram;
-	FILE *fp;
 
 	if ((fp = fopen(inputFile, "r")) == NULL){                  // open init file
 		getError(3);
@@ -35,7 +35,7 @@ void readInputFile(char *inputFile) {
 	}
 	deleteNgram(ngram);
 
-    if(buffer != NULL){
+    if (buffer != NULL){
         free(buffer);
 	}
 	fclose(fp);
@@ -47,7 +47,7 @@ void readQueryFile(char *queryFile){
 	FILE *fp;
 	size_t size=0;
 	char *buffer=NULL;
-	char command, burstFlag=1;
+	char command;
 	NgramVector *ngram;
 
 	if ((fp = fopen(queryFile, "r")) == NULL) {                  // open query file
@@ -61,9 +61,6 @@ void readQueryFile(char *queryFile){
     ssize_t len;
 	while ((len=getline(&buffer, &size, fp)) != -1) {
 
-        if (burstFlag)
-			burstFlag = 0;
-
 		if (buffer[0] == 'F') {
 
 			if (len > 2) {
@@ -71,8 +68,6 @@ void readQueryFile(char *queryFile){
 				burst.k = atoi(buffer+2);
 			}
 			else burst.k = 0;
-
-            burstFlag = 1;
 
 			processBurst();
 

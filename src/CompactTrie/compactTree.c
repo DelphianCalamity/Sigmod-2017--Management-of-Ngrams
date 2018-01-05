@@ -183,33 +183,34 @@ void trieCompactRoot(Stack *stack) {
 
 /****************************************************************************/
 
-void trieSearch_Static(NgramVector *ngramVector, int Q_version, int id) {
+void trieSearch_Static(NgramVector *ngramVector, int id, int dummy) {
 
-    int i;
-    int check = 0;
-    TrieNode *node;
-    char *bloomfilter = safecalloc(BLOOMSIZE, sizeof(char));
-    char *buffer = safemalloc(BUFFER_SIZE * sizeof(char));
-    int capacity = BUFFER_SIZE;
-    buffer[0] = '\0';
+		TrieNode *node;
+		int i, capacity;
+		char *bloomfilter = safecalloc(BLOOMSIZE, sizeof(char));
+		char* buffer = safemalloc(BUFFER_SIZE*sizeof(char));
 
-    for (i = 0;
-         i < ngramVector->words; i++) {                                                    //For all root's children
-        node = Hashtable_lookup_Bucket(trieRoot->hashtable, ngramVector->ngram[i]);
-        trieSearch_Ngram_Static(node, i, i, ngramVector, &buffer, &capacity, &check, bloomfilter);
-        buffer[0] = '\0';
-    }
+		queryBuffer.buffer[id] = safemalloc(BUFFER_SIZE*sizeof(char));
+		capacity = queryBuffer.capacities[id] = BUFFER_SIZE;
+		queryBuffer.sizes[id] = 0;
+		buffer[0] = '\0';
 
-    if (check <= 0) {
-        printf("-1");
-    }
-    printf("\n");
+		for (i=0; i < ngramVector->words; i++) {                                         				//For all root's children
+			node = Hashtable_lookup_Bucket(trieRoot->hashtable, ngramVector->ngram[i]);
+			trieSearch_Ngram_Static(node, i, i, ngramVector, &buffer, &capacity, id, 0, bloomfilter);
+			buffer[0] = '\0';
+		}
 
-	free(bloomfilter);
-    free(buffer);
-}
+		if (queryBuffer.sizes[id] == 0)
+			strcpy(queryBuffer.buffer[id], "-1");
 
-void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngramVector, char **buffer, int *capacity, int *check, char* bloomFilter) {
+		else queryBuffer.buffer[id][queryBuffer.sizes[id]-1] = '\0';
+
+		free(bloomfilter);
+		free(buffer);
+	}
+
+void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngramVector, char** buffer, int* capacity, int id, int dummy, char* bloomFilter) {
 
     char *ngram;
     BinaryResult br;
@@ -235,8 +236,9 @@ void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngra
 
                 if (node->offsets[j] < 0) {                                                                     //If word is final
 
+					/**************************************/
                     for (; round <= i; round++) {
-                        if ((space = (int) strlen(ngramVector->ngram[round])) >= *capacity - len - 1) {
+                        if ((space = strlen(ngramVector->ngram[round])) >= *capacity - len - 1) {
                             *buffer = saferealloc(*buffer, 2 * (*capacity) * sizeof(char));                     //Re-allocate space
                             *capacity *= 2;
                         }
@@ -245,21 +247,27 @@ void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngra
                         (*buffer)[len - 1] = ' ';
                     }
                     (*buffer)[len] = '\0';
+					/**************************************/
 
                     ngram = safemalloc(len * sizeof(char));
                     memcpy(ngram, *buffer, len);
                     ngram[len - 1] = '\0';
 
                     if (!findInBloom(ngram, bloomFilter)) {
-                        if (*check > 0)
-                            printf("|");
-                        printf("%s", ngram);
+						while (len > queryBuffer.capacities[id] - queryBuffer.sizes[id]) {
+							queryBuffer.capacities[id] *= 2;
+							queryBuffer.buffer[id] = saferealloc(queryBuffer.buffer[id], sizeof(char) * queryBuffer.capacities[id]);
+						}
 
-                        (*check)++;
+						memcpy(queryBuffer.buffer[id] + queryBuffer.sizes[id], ngram, len);
+						queryBuffer.sizes[id] += len;
 
-                        topK_Hashtable_insert(hashtable, ngram, len - 1);
-                        topK_Hashtable_Check_LoadFactor(hashtable, len - 1);
+						queryBuffer.buffer[id][queryBuffer.sizes[id]-1] = '|';//'\0';
+
+//                        topK_Hashtable_insert(hashtable, ngram, len - 1);
+//                        topK_Hashtable_Check_LoadFactor(hashtable, len - 1);
                     }
+					else free(ngram);
                 }
                 (node->offsets[j] < 0) ? x += (-node->offsets[j] + 1) : (x += node->offsets[j] + 1);
             }
@@ -285,18 +293,20 @@ void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngra
             ngram[len-1] = '\0';
 
             if (!findInBloom(ngram, bloomFilter)) {
-                if (*check > 0)
-                    printf("|");
-                printf("%s", ngram);
+				while (len > queryBuffer.capacities[id] - queryBuffer.sizes[id]) {
+					queryBuffer.capacities[id] *= 2;
+					queryBuffer.buffer[id] = saferealloc(queryBuffer.buffer[id], sizeof(char) * queryBuffer.capacities[id]);
+				}
 
-                (*check)++;
+				memcpy(queryBuffer.buffer[id] + queryBuffer.sizes[id], ngram, len);
+				queryBuffer.sizes[id] += len;
 
-                topK_Hashtable_insert(hashtable, ngram, len-1);
-                topK_Hashtable_Check_LoadFactor(hashtable, len-1);
+				queryBuffer.buffer[id][queryBuffer.sizes[id]-1] = '|';//'\0';
+
+//                        topK_Hashtable_insert(hashtable, ngram, len - 1);
+//                        topK_Hashtable_Check_LoadFactor(hashtable, len - 1);
             }
-            else{
-                free(ngram);
-            }
+            else free(ngram);
         }
     }
 }
