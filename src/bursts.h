@@ -29,6 +29,7 @@ Burst burst;
 
 void burst_init();
 void processBurst();
+void processBurstStatic();
 void executeCommand(Job*);
 void executeStaticCommand(Job*);
 void executeBurstCommands();

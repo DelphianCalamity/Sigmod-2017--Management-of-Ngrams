@@ -45,8 +45,12 @@ int main(int argc, char **argv) {
 	if (TRIE_TYPE == STATIC) {           	//If trie is static then compress it
 		trieCompactTree();
 		commandsPtr = &executeStaticCommand;
+		processBurstPtr = &processBurstStatic;
 	}
-	else SearchPtr = &trieSearch;
+	else {
+		commandsPtr = &executeCommand;
+		processBurstPtr = &processBurst;
+	}
 
 	readQueryFile(fquery);
 

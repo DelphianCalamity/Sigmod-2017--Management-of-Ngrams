@@ -28,7 +28,8 @@ void addCommand(char com, NgramVector *ngram) {
 
 void executeCommand(Job* job) {
 
-	(*SearchPtr)(job->ngram, job->Q_version, job->id);
+	trieSearch(job->ngram, job->Q_version, job->id);
+//	(*SearchPtr)(job->ngram, job->Q_version, job->id);
 	deleteWords(job->ngram);
 	deleteNgram(job->ngram);
 }
@@ -101,5 +102,12 @@ void processBurst() {
 	}
 
 	//topK
+
+}
+
+
+void processBurstStatic() {
+
+	//blah blah
 
 }

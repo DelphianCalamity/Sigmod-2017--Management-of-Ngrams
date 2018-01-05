@@ -4,6 +4,6 @@
 void trieCompactTree();
 void trieCompactRoot(Stack*);
 void trieSearch_Static(NgramVector* , int);
-void trieSearch_Ngram_Static(TrieNode*, int, int, NgramVector*, char**, int*, int*, char*);
+void trieSearch_Ngram_Static(TrieNode*, int, int, NgramVector*, char**, int*, int, char*);
 
 #endif

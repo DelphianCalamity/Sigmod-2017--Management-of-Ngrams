@@ -69,7 +69,7 @@ void readQueryFile(char *queryFile){
 			}
 			else burst.k = 0;
 
-			processBurst();
+			(*processBurstPtr)();
 
 			burst.numOfJobs = 0;
 		}
@@ -88,6 +88,17 @@ void readQueryFile(char *queryFile){
         free(buffer);
 	}
 	fclose(fp);
+
+	// wake all workers to be destroyed
+
+	pthread_mutex_lock(&jobScheduler.queue_mutex);
+	jobScheduler.kill = 1;
+	pthread_mutex_unlock(&jobScheduler.queue_mutex);
+	pthread_cond_broadcast(&jobScheduler.queue_empty);
+
+	int i;
+	for (i=0; i < jobScheduler.thread_pool_size; i++)
+		pthread_join(jobScheduler.workers[i], NULL);
 }
 
 

@@ -51,6 +51,10 @@ unit_testing.o : ./UnitTesting/unit_testing.c $(HDRS1)
 unitTest.o : ./UnitTesting/unitTest.c $(HDRS1)
 	$(CC) ./UnitTesting/unitTest.c -c $(FLAGS)
 
+runss:	${PROG}
+		./${PROG} -i small_static/small_static.init -q small_static/small_static.work
+runsd:	${PROG}
+		./${PROG} -i small_dynamic/small_dynamic.init -q small_dynamic/small_dynamic.work
 runms:	${PROG}
 		./${PROG} -i medium_static/medium_static.init -q medium_static/medium_static.work
 runmd:	${PROG}

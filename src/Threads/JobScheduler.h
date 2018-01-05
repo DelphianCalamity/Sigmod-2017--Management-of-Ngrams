@@ -4,8 +4,8 @@
 #include "../bursts.h"
 #include <pthread.h>
 
-#define QINIT 20;
-#define THREADPOOL 20;
+#define QINIT 15;
+#define THREADPOOL 12;
 
 typedef struct job Job;
 typedef struct jobScheduler JobScheduler;
@@ -18,13 +18,14 @@ struct jobScheduler {
 	int counter;
 	int qcapacity;
 	int thread_pool_size;
+	char kill;
+
 
 	Job** queue;					// Jobs queue
 	pthread_t* workers;				// Thread Pool
 
-	//Mutexes
+	//Mutex
 	pthread_mutex_t queue_mutex;
-	//pthread_mutex_t* mutexes;
 
 	//Condition Variables
 	pthread_cond_t queue_empty;

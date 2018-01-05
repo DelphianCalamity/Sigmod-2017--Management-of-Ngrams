@@ -41,6 +41,8 @@ void trieCompactRoot(Stack *stack) {
 
         if (tempSize == 1) {
 
+			prePrevious = previous = NULL;
+
             parentWord = parent->word;                                                            //Initializing word-buffer, offset-buffer variables
             parentLength = (int) strlen(parent->word) + 1;
             wCapacity = parentLength;
@@ -196,7 +198,7 @@ void trieSearch_Static(NgramVector *ngramVector, int id) {
 
 		for (i=0; i < ngramVector->words; i++) {                                         				//For all root's children
 			node = Hashtable_lookup_Bucket(trieRoot->hashtable, ngramVector->ngram[i]);
-			trieSearch_Ngram_Static(node, i, i, ngramVector, &buffer, &capacity, id, 0, bloomfilter);
+			trieSearch_Ngram_Static(node, i, i, ngramVector, &buffer, &capacity, id, bloomfilter);
 			buffer[0] = '\0';
 		}
 
@@ -209,7 +211,7 @@ void trieSearch_Static(NgramVector *ngramVector, int id) {
 		free(buffer);
 	}
 
-void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngramVector, char** buffer, int* capacity, int id, int dummy, char* bloomFilter) {
+void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngramVector, char** buffer, int* capacity, int id, char* bloomFilter) {
 
     char *ngram;
     BinaryResult br;

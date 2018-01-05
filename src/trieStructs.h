@@ -59,7 +59,8 @@ struct queryBuffer {
 char TRIE_TYPE;
 TrieRoot *trieRoot;                                 	//Global Variable
 JobScheduler jobScheduler;
-void (*SearchPtr)(NgramVector*, int, int);
+//void (*SearchPtr)(NgramVector*, int, int);
+void (*processBurstPtr)();
 void (*commandsPtr)(Job* );
 QueryBuffer queryBuffer;
 
