@@ -6,6 +6,7 @@
 #include "trieStructs.h"
 #include "errorMessages.h"
 #include "TopK/topK_Hashtable.h"
+#include "CompactTrie/compactTree.h"
 
 
 void burst_init() {
@@ -28,6 +29,13 @@ void addCommand(char com, NgramVector *ngram) {
 void executeCommand(Job* job) {
 
 	(*SearchPtr)(job->ngram, job->Q_version, job->id);
+	deleteWords(job->ngram);
+	deleteNgram(job->ngram);
+}
+
+void executeStaticCommand(Job* job) {
+
+	trieSearch_Static(job->ngram, job->id);
 	deleteWords(job->ngram);
 	deleteNgram(job->ngram);
 }

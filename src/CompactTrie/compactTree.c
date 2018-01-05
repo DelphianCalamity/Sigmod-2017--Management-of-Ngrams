@@ -29,10 +29,10 @@ void trieCompactTree() {
 
 void trieCompactRoot(Stack *stack) {
 
-    char *wBuffer;
+    char *parentWord;
     short *oBuffer;
     TrieNode *parent, *node, *previous, *prePrevious;
-    int i, wLen, wSpace, wCapacity, oLen, oCapacity, tempSize;
+    int i, parentLength, wSpace, wCapacity, oLen, oCapacity, tempSize;
 
     while (notEmpty(stack)) {
 
@@ -40,16 +40,15 @@ void trieCompactRoot(Stack *stack) {
         tempSize = parent->maxChildren - parent->emptySpace;
 
         if (tempSize == 1) {
-            prePrevious = previous = NULL;
 
-            wBuffer = parent->word;                                                            //Initializing word-buffer, offset-buffer variables
-            wLen = strlen(parent->word) + 1;
-            wCapacity = wLen;
+            parentWord = parent->word;                                                            //Initializing word-buffer, offset-buffer variables
+            parentLength = (int) strlen(parent->word) + 1;
+            wCapacity = parentLength;
             oCapacity = 5;
             oBuffer = safemalloc(oCapacity * sizeof(short));
             if (parent->is_final)
-                oBuffer[0] = -(wLen - 1);
-            else oBuffer[0] = wLen - 1;
+                oBuffer[0] = -(parentLength - 1);
+            else oBuffer[0] = parentLength - 1;
             oLen = 1;
         }
         while (tempSize == 1) {                                                                //While parents have only one child
@@ -59,17 +58,17 @@ void trieCompactRoot(Stack *stack) {
             parent = &parent->children[0];
 
             wSpace = strlen(parent->word) + 1;
-            while (wSpace > wCapacity - wLen) {
+            while (wSpace > wCapacity - parentLength) {
                 wCapacity *= 2;
-                wBuffer = saferealloc(wBuffer, wCapacity * sizeof(char));                       //Re-allocate space for word-Buffer
+                parentWord = saferealloc(parentWord, wCapacity * sizeof(char));                       //Re-allocate space for word-Buffer
             }
             if (oCapacity == oLen) {
                 oCapacity *= 2;
                 oBuffer = saferealloc(oBuffer, oCapacity * sizeof(short));                      //Re-allocate space for offset-Buffer
             }
 
-            memcpy(wBuffer + wLen, parent->word, wSpace * sizeof(char));
-            wLen += wSpace;                                                                     //Copy current node's word at wBuffer
+            memcpy(parentWord + parentLength, parent->word, wSpace * sizeof(char));
+            parentLength += wSpace;                                                                     //Copy current node's word at parentWord
 
             wSpace--;
             if (parent->is_final)
@@ -84,7 +83,7 @@ void trieCompactRoot(Stack *stack) {
         }
 
         if (node != parent) {                                                                   //Copy last compacted node's rest info to the branch's first node
-            node->word = wBuffer;
+            node->word = parentWord;
             node->children = parent->children;
             node->maxChildren = parent->maxChildren;
             node->emptySpace = parent->emptySpace;
@@ -95,7 +94,7 @@ void trieCompactRoot(Stack *stack) {
             /*** PRINT***/
 //			int x;
 //			for (i=0,x=0; i<oLen; i++) {
-//				printf("%s", &wBuffer[x]);
+//				printf("%s", &parentWord[x]);
 //				//x = oBuffer[i];
 //				(oBuffer[i] < 0) ? x+=(-oBuffer[i]+1) : (x+=oBuffer[i]+1);
 //			}
@@ -183,7 +182,7 @@ void trieCompactRoot(Stack *stack) {
 
 /****************************************************************************/
 
-void trieSearch_Static(NgramVector *ngramVector, int id, int dummy) {
+void trieSearch_Static(NgramVector *ngramVector, int id) {
 
 		TrieNode *node;
 		int i, capacity;

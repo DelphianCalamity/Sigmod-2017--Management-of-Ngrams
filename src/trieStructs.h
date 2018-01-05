@@ -6,6 +6,7 @@
 #include "Hashtable/Hashtable.h"
 #include "Threads/JobScheduler.h"
 
+
 #define MINSIZE 10
 #define FACTOR 0.3
 #define BUFFER_SIZE 100
@@ -19,6 +20,7 @@ typedef struct jobScheduler JobScheduler;
 typedef struct trieNode TrieNode;
 typedef struct trieRoot TrieRoot;
 typedef struct binaryResult BinaryResult;
+typedef struct job Job;
 typedef struct queryBuffer QueryBuffer;
 
 struct trieNode{
@@ -58,6 +60,7 @@ char TRIE_TYPE;
 TrieRoot *trieRoot;                                 	//Global Variable
 JobScheduler jobScheduler;
 void (*SearchPtr)(NgramVector*, int, int);
+void (*commandsPtr)(Job* );
 QueryBuffer queryBuffer;
 
 void trieRootInit();

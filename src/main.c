@@ -1,14 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include "bursts.h"
 #include "parsing.h"
 #include "errorMessages.h"
-#include "trieStructs.h"
-#include "BloomFilter/bloomFilter.h"
 #include "CompactTrie/compactTree.h"
-#include "Threads/JobScheduler.h"
+
 
 int main(int argc, char **argv) {
 
@@ -47,7 +44,7 @@ int main(int argc, char **argv) {
 
 	if (TRIE_TYPE == STATIC) {           	//If trie is static then compress it
 		trieCompactTree();
-		SearchPtr = &trieSearch_Static;		//Pointer to function
+		commandsPtr = &executeStaticCommand;
 	}
 	else SearchPtr = &trieSearch;
 
