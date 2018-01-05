@@ -3,6 +3,7 @@
 
 #include "ngram.h"
 #include "trieStructs.h"
+#include "Threads/JobScheduler.h"
 
 #define CMD_INIT 20
 
@@ -29,6 +30,7 @@ Burst burst;
 void burst_init();
 void processBurst();
 void executeCommand(Job*);
+void executeStaticCommand(Job*);
 void executeBurstCommands();
 void addCommand(char, NgramVector*);
 
