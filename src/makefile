@@ -51,6 +51,15 @@ unit_testing.o : ./UnitTesting/unit_testing.c $(HDRS1)
 unitTest.o : ./UnitTesting/unitTest.c $(HDRS1)
 	$(CC) ./UnitTesting/unitTest.c -c $(FLAGS)
 
+runms:	${PROG}
+		./${PROG} -i medium_static/medium_static.init -q medium_static/medium_static.work
+runmd:	${PROG}
+		./${PROG} -i medium_dynamic/medium_dynamic.init -q medium_dynamic/medium_dynamic.work
+runls:	${PROG}
+		./${PROG} -i large_static/large_static.init -q large_static/large_static.work
+runld:	${PROG}
+		./${PROG} -i large_dynamic/large_dynamic.init -q large_dynamic/large_dynamic.work
+
 clean :
 	rm -f core $(PROG) $(OBJS) $(PROG1) $(OBJS1)
 TAGS : $(SRCS) $(HDRS)

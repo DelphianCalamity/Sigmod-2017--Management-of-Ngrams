@@ -5,7 +5,7 @@
 #include <pthread.h>
 
 #define QINIT 15;
-#define THREADPOOL 12;
+#define THREADPOOL 5;
 
 typedef struct job Job;
 typedef struct jobScheduler JobScheduler;
@@ -19,7 +19,6 @@ struct jobScheduler {
 	int qcapacity;
 	int thread_pool_size;
 	char kill;
-
 
 	Job** queue;					// Jobs queue
 	pthread_t* workers;				// Thread Pool

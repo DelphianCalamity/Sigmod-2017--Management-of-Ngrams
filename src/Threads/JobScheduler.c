@@ -87,7 +87,7 @@ void *worker(void *args) {
 
 		pthread_mutex_lock(&jobScheduler.queue_mutex);
 
-		while (jobScheduler.kill == 0 && jobScheduler.end == jobScheduler.start) {              // while no job in queue
+		while (jobScheduler.kill == 0 && jobScheduler.end == jobScheduler.start) {                                      // while no job in queue
 			pthread_cond_wait(&jobScheduler.queue_empty, &jobScheduler.queue_mutex);
 		}
 
@@ -96,11 +96,11 @@ void *worker(void *args) {
 			pthread_exit(NULL);
 		}
 
-		job = jobScheduler.queue[jobScheduler.start];                           				// reads the job
+		job = jobScheduler.queue[jobScheduler.start];                           				                        // reads the job
 		jobScheduler.start++;
 		pthread_mutex_unlock(&jobScheduler.queue_mutex);
 
-		(*commandsPtr)(job);
+		executeCommand(job);
 
 		pthread_mutex_lock(&jobScheduler.queue_mutex);
 		jobScheduler.counter++;
@@ -118,6 +118,4 @@ void JobScheduler_Destroy() {
 
 	free(jobScheduler.queue);
 	free(jobScheduler.workers);
-
-
 }
