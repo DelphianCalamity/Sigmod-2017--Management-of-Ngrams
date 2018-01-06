@@ -85,7 +85,7 @@ void trieSearch(NgramVector *ngramVector, int Q_version, int id) {
 	buffer[0] = '\0';
 
 	for (i=0; i < ngramVector->words; i++) {                                         				//For all root's children
-		node = Hashtable_lookup_Bucket(trieRoot->hashtable, ngramVector->ngram[i]);
+		node = Hashtable_lookup_Bucket(trieRoot->hashtable, ngramVector->ngram[i], ngramVector->lengths[i]);
 		trieSearch_Ngram(node, i, i, ngramVector, &buffer, &capacity, id, Q_version, bloomfilter);
 		buffer[0] = '\0';
 	}
@@ -123,7 +123,7 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 
 			/**************************************/
 			for (; round <= i; round++) {
-				while((space=strlen(ngramVector->ngram[round])) >= *capacity - len-1) {
+				while((space=ngramVector->lengths[round]) >= *capacity - len-1) {
 					*capacity *= 2;
 					*buffer = saferealloc(*buffer, *capacity*sizeof(char));             	 		//Re-allocate space
 				}
@@ -195,7 +195,7 @@ int trieInsertSort(NgramVector *ngramVector) {
 
 	if (ngramVector->words > 0) {											//Insert in Root - hashtable
 
-		parent = Hashtable_insert(trieRoot->hashtable, &result, ngramVector->ngram[0]);
+		parent = Hashtable_insert(trieRoot->hashtable, &result, ngramVector->ngram[0], ngramVector->lengths[0]);
 
 		if (result.found != 1)
 			ngramVector->ngram[0] = NULL;
@@ -282,7 +282,7 @@ void trieDeleteNgram(NgramVector *ngram) {
 		return;
 
 	initStack(&s);
-	node = Hashtable_lookup(&br, trieRoot->hashtable, ngram->ngram[0]);               	 //For root
+	node = Hashtable_lookup(&br, trieRoot->hashtable, ngram->ngram[0], ngram->lengths[0]);               	 //For root
 	if (node == NULL) {
 		deleteStack(&s);
 		return;
@@ -391,7 +391,7 @@ void trieFakeDeleteNgram(NgramVector *ngram) {
 	if (ngram->words == 0)
 		return;
 
-	node = Hashtable_lookup(&br, trieRoot->hashtable, ngram->ngram[0]);               	 //For root
+	node = Hashtable_lookup(&br, trieRoot->hashtable, ngram->ngram[0], ngram->lengths[0]);               	 //For root
 	if (node == NULL)
 		return;
 

@@ -31,17 +31,17 @@ void Hashtable_init_bucket(Bucket*);
 void Hashtable_Bucket_print(Hashtable_Info_ptr, Bucketptr);
 void Hashtable_print(Hashtable_Info_ptr);
 
-uint32_t Hashtable_hashkey(char*);
+uint32_t Hashtable_hashkey(char*, int);
 int Hash_function(Hashtable_Info_ptr, uint32_t, int);
 
-TrieNode* Hashtable_insert(Hashtable_Info_ptr, BinaryResult*, char*);
+TrieNode* Hashtable_insert(Hashtable_Info_ptr, BinaryResult*, char*, int);
 void Hashtable_Check_LoadFactor(Hashtable_Info_ptr);
 TrieNode* Hashtable_insert_child(Hashtable_Info_ptr, BinaryResult*, Bucketptr, char*);
 void Hashtable_move_child(Hashtable_Info_ptr, Bucketptr, TrieNode*);
 void Hashtable_split(Hashtable_Info_ptr);
 
-TrieNode* Hashtable_lookup(BinaryResult*, Hashtable_Info_ptr, char*);
-TrieNode* Hashtable_lookup_Bucket(Hashtable_Info_ptr, char*);
+TrieNode* Hashtable_lookup(BinaryResult*, Hashtable_Info_ptr, char*, int);
+TrieNode* Hashtable_lookup_Bucket(Hashtable_Info_ptr, char*, int);
 
 void Hashtable_Destroy(Hashtable_Info_ptr hashtable);
 

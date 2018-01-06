@@ -44,7 +44,7 @@ void Hashtable_Bucket_print(Hashtable_Info_ptr hash, Bucketptr bucket) {
 	uint32_t key;
 	for (i = 0; i < bucket->maxChildren-bucket->emptySpace; i++) {
 		if (bucket->children[i].deleted == 0) {
-			key = Hashtable_hashkey((bucket->children[i].word));
+			key = Hashtable_hashkey((bucket->children[i].word), strlen(bucket->children[i].word));
 			printf("%s, %d, %d\n", (bucket->children[i].word), Hash_function(hash, key, hash->round), Hash_function(hash, key, hash->round + 1));
 		}
 	}
@@ -66,8 +66,8 @@ void Hashtable_print(Hashtable_Info_ptr hashtable) {
 }
 
 /********************************************************/
-uint32_t Hashtable_hashkey(char* word) {
-	return murmurhash(word, (uint32_t) strlen(word), 0);
+uint32_t Hashtable_hashkey(char* word, int len) {
+	return murmurhash(word, (uint32_t) len, 0);
 }
 
 int Hash_function(Hashtable_Info_ptr hashtable, uint32_t key, int round) {       	// f(x) = k%(2^i)m
@@ -78,15 +78,14 @@ int Hash_function(Hashtable_Info_ptr hashtable, uint32_t key, int round) {      
 /********************************************************/
 
 
-TrieNode* Hashtable_insert(Hashtable_Info_ptr hashtable, BinaryResult* br, char* word) {
+TrieNode* Hashtable_insert(Hashtable_Info_ptr hashtable, BinaryResult* br, char* word, int len) {
 
 	Bucketptr bucket = hashtable->Phashtable;
-	uint32_t key = Hashtable_hashkey(word);
+	uint32_t key = Hashtable_hashkey(word, len);
 	int DestinationBucket = Hash_function(hashtable, key, hashtable->round);            		//Hash function of the current round
 	if (DestinationBucket < hashtable->p) {
 		DestinationBucket = Hash_function(hashtable, key, hashtable->round + 1);	            //Hash function of the next round
 	}
-
 
 	return Hashtable_insert_child(hashtable, br, bucket+DestinationBucket, word);
 }
@@ -150,7 +149,7 @@ void Hashtable_split(Hashtable_Info_ptr hashtable) {
 
 		node = &bucket->children[i];
 		if (!node->deleted) {
-			key = Hashtable_hashkey(node->word);
+			key = Hashtable_hashkey(node->word, strlen(node->word));
 			DestinationBucket = Hash_function(hashtable, key, hashtable->round + 1);   							//REHASH
 
 			if (DestinationBucket != hashtable->p) {
@@ -190,11 +189,11 @@ void Hashtable_split(Hashtable_Info_ptr hashtable) {
 
 /********************************************************/
 
-TrieNode* Hashtable_lookup(BinaryResult* result, Hashtable_Info_ptr hashtable, char* word) {
+TrieNode* Hashtable_lookup(BinaryResult* result, Hashtable_Info_ptr hashtable, char* word, int len) {
 
 	uint32_t key;
     Bucketptr bucket = hashtable->Phashtable;
-	key = Hashtable_hashkey(word);
+	key = Hashtable_hashkey(word, len);
 
     int i = Hash_function(hashtable, key, hashtable->round);
     if (i < hashtable->p)
@@ -209,11 +208,11 @@ TrieNode* Hashtable_lookup(BinaryResult* result, Hashtable_Info_ptr hashtable, c
 
 }
 
-TrieNode* Hashtable_lookup_Bucket(Hashtable_Info_ptr hashtable, char* word) {
+TrieNode* Hashtable_lookup_Bucket(Hashtable_Info_ptr hashtable, char* word, int len) {
 
 	uint32_t key;
 	Bucketptr bucket = hashtable->Phashtable;
-	key = Hashtable_hashkey(word);
+	key = Hashtable_hashkey(word, len);
 
 	int i = Hash_function(hashtable, key, hashtable->round);
 	if (i < hashtable->p)

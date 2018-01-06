@@ -131,7 +131,7 @@ void trieSearch_Static(NgramVector *ngramVector, int id) {
 		buffer[0] = '\0';
 
 		for (i=0; i < ngramVector->words; i++) {                                         						//For all root's children
-			node = Hashtable_lookup_Bucket(trieRoot->hashtable, ngramVector->ngram[i]);
+			node = Hashtable_lookup_Bucket(trieRoot->hashtable, ngramVector->ngram[i], ngramVector->lengths[i]);
 			trieSearch_Ngram_Static(node, i, i, ngramVector, &buffer, &capacity, id, bloomfilter);
 			buffer[0] = '\0';
 		}
@@ -173,7 +173,7 @@ void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngra
 
 					/**************************************/
 					for (; round <= i; round++) {
-						while((space=strlen(ngramVector->ngram[round])) >= *capacity - len-1) {
+						while((space=ngramVector->lengths[round]) >= *capacity - len-1) {
 							*capacity *= 2;
 							*buffer = saferealloc(*buffer, *capacity*sizeof(char));             	 		//Re-allocate space
 						}
@@ -213,7 +213,7 @@ void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngra
 
 			/**************************************/
 			for (; round <= i; round++) {
-				while((space=strlen(ngramVector->ngram[round])) >= *capacity - len-1) {
+				while((space=ngramVector->lengths[round]) >= *capacity - len-1) {
 					*capacity *= 2;
 					*buffer = saferealloc(*buffer, *capacity*sizeof(char));             	 		//Re-allocate space
 				}

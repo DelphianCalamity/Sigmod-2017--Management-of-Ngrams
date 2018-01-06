@@ -11,6 +11,7 @@ NgramVector * initNgram(void){										// creates and initializes the ngram str
 	ngramVector = safemalloc(sizeof(NgramVector));
 
 	ngramVector->ngram = safemalloc(INIT_SIZE*sizeof(char *));
+	ngramVector->lengths = safemalloc(INIT_SIZE*sizeof(int));
 	ngramVector->capacity = INIT_SIZE;
 	ngramVector->words = 0;
 
@@ -30,10 +31,11 @@ void createNgram(NgramVector *ngramVector, char *buffer, ssize_t size){			// cre
                 if (ngramVector->words == ngramVector->capacity){
 					ngramVector->capacity *= 2;
 					ngramVector->ngram = saferealloc(ngramVector->ngram, ngramVector->capacity*sizeof(char*));
-
+					ngramVector->lengths = saferealloc(ngramVector->lengths, ngramVector->capacity*sizeof(int));
                 }
 
 				ngramVector->ngram[ngramVector->words] = safemalloc((e-s+1)*sizeof(char));
+				ngramVector->lengths[ngramVector->words] = e-s;
 				memcpy(ngramVector->ngram[ngramVector->words], &buffer[s], e-s);
 				ngramVector->ngram[ngramVector->words][e-s]='\0';
 				ngramVector->words++;
@@ -47,6 +49,7 @@ void createNgram(NgramVector *ngramVector, char *buffer, ssize_t size){			// cre
 void deleteNgram(NgramVector *ngramVector){							        // deletes the ngram struct, does not touch the words of the ngram
 	//deleteWords(ngramVector);
 	free(ngramVector->ngram);
+	free(ngramVector->lengths);
 	free(ngramVector);
 }
 

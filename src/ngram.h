@@ -7,6 +7,7 @@
 
 typedef struct ngramVector{
 	char **ngram;
+	int *lengths;
 	int capacity;
 	int words;
 } NgramVector;
