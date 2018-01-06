@@ -15,6 +15,7 @@ void JobScheduler_Init() {
 	jobScheduler.counter = 0;
 	jobScheduler.qcapacity = QINIT;
 	jobScheduler.thread_pool_size = THREADPOOL;
+	jobScheduler.kill = 0;
 
 	jobScheduler.queue = safemalloc(jobScheduler.qcapacity * sizeof(Job*));                        			    //Queue
 	pthread_mutex_init(&jobScheduler.queue_mutex, NULL);
@@ -86,15 +87,20 @@ void *worker(void *args) {
 
 		pthread_mutex_lock(&jobScheduler.queue_mutex);
 
-		while (jobScheduler.end == jobScheduler.start) {                                        // while no job in queue
+		while (jobScheduler.kill == 0 && jobScheduler.end == jobScheduler.start) {              // while no job in queue
 			pthread_cond_wait(&jobScheduler.queue_empty, &jobScheduler.queue_mutex);
+		}
+
+		if (jobScheduler.kill == 1) {
+			pthread_mutex_unlock(&jobScheduler.queue_mutex);
+			pthread_exit(NULL);
 		}
 
 		job = jobScheduler.queue[jobScheduler.start];                           				// reads the job
 		jobScheduler.start++;
 		pthread_mutex_unlock(&jobScheduler.queue_mutex);
 
-		executeCommand(job);
+		(*commandsPtr)(job);
 
 		pthread_mutex_lock(&jobScheduler.queue_mutex);
 		jobScheduler.counter++;
@@ -112,4 +118,6 @@ void JobScheduler_Destroy() {
 
 	free(jobScheduler.queue);
 	free(jobScheduler.workers);
+
+
 }

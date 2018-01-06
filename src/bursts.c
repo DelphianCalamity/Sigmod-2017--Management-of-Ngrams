@@ -6,7 +6,7 @@
 #include "trieStructs.h"
 #include "errorMessages.h"
 #include "TopK/topK_Hashtable.h"
-
+#include "CompactTrie/compactTree.h"
 
 void burst_init() {
 	int i;
@@ -33,19 +33,23 @@ void addCommand(char com, NgramVector *ngram, int i) {
 	burst[i].numOfJobs++;
 }
 
+
 void executeCommand(Job* job) {
 
-	(*SearchPtr)(job->ngram, job->Q_version, job->id);
+	trieSearch(job->ngram, job->Q_version, job->id);
+//	(*SearchPtr)(job->ngram, job->Q_version, job->id);
 	deleteWords(job->ngram);
 	deleteNgram(job->ngram);
 }
 
+void executeStaticCommand(Job* job) {
+
+	trieSearch_Static(job->ngram, job->id);
+	deleteWords(job->ngram);
+	deleteNgram(job->ngram);
+}
 
 void *processBurst() {
-
-//	clock_t start, end;
-//	double cpu_time_used;
-//	start = clock();
 
 	int i=0, id=0;
 
@@ -120,11 +124,58 @@ void *processBurst() {
 
 	j = (j+1)%2;
 
+	pthread_exit(NULL);
 
-//	end = clock();
-//	cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-//	printf("Time = %f\n", cpu_time_used);
+}
+
+
+void *processBurstStatic() {
+
+	int i=0, id=0;
+
+	if (j < 0) {
+		j = 0;
+		pthread_exit(NULL);
+	}
+
+	hashtable = topK_Hashtable_create(400, 5);
+
+	while (i < burst[j].numOfJobs) {
+
+		burst[j].jobs[i].id = id++;
+		JobScheduler_SubmitJob(&burst[j].jobs[i]);
+		i++;
+	}
+
+	if (queryBuffer.capacity < id) {
+		queryBuffer.capacity = id;
+		queryBuffer.sizes = saferealloc(queryBuffer.sizes, sizeof(int) * id);
+		queryBuffer.buffer = saferealloc(queryBuffer.buffer, sizeof(char*) * id);
+		queryBuffer.capacities = saferealloc(queryBuffer.capacities, sizeof(int) * id);
+	}
+
+	JobScheduler_execute_all_jobs();
+	JobScheduler_wait_all_tasks_finish();
+
+	// print burst ngrams
+	for (i=0; i < id; i++) {
+		printf("%s\n", queryBuffer.buffer[i]);
+		free(queryBuffer.buffer[i]);
+	}
+
+	//topK
+
+	topK_print_TopK(hashtable, burst[j].k);				//print the TopK ngrams
+	//topK_Hashtable_print(hashtable);
+	topK_Hashtable_Destroy(hashtable);
+
+	burst[j].numOfJobs = 0;
+
+	j = (j+1)%2;
 
 	pthread_exit(NULL);
+
+	//topK
+
 
 }

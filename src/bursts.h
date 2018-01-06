@@ -31,7 +31,9 @@ Burst burst[2];
 
 void burst_init();
 void *processBurst();
+void *processBurstStatic();
 void executeCommand(Job*);
+void executeStaticCommand(Job* job);
 void addCommand(char, NgramVector*, int);
 
 #endif

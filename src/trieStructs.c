@@ -14,7 +14,7 @@
 /*Initialization of trie root*/
 void trieRootInit() {
 	trieRoot = safemalloc(sizeof(TrieRoot));
-	trieRoot->hashtable = Hashtable_create(800, 0.75);
+	trieRoot->hashtable = Hashtable_create(15000, 0.75);
 	trieRoot->current_version = 0;
 }
 
