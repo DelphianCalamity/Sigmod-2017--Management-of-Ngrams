@@ -87,7 +87,7 @@ void *worker(void *args) {
 
 		pthread_mutex_lock(&jobScheduler.queue_mutex);
 
-		while (jobScheduler.kill == 0 && jobScheduler.end == jobScheduler.start) {                                        // while no job in queue
+		while (jobScheduler.kill == 0 && jobScheduler.end == jobScheduler.start) {              // while no job in queue
 			pthread_cond_wait(&jobScheduler.queue_empty, &jobScheduler.queue_mutex);
 		}
 
@@ -100,7 +100,6 @@ void *worker(void *args) {
 		jobScheduler.start++;
 		pthread_mutex_unlock(&jobScheduler.queue_mutex);
 
-//		executeCommand(job);
 		(*commandsPtr)(job);
 
 		pthread_mutex_lock(&jobScheduler.queue_mutex);

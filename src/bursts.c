@@ -108,6 +108,32 @@ void processBurst() {
 
 void processBurstStatic() {
 
-	//blah blah
+	int i=0, id=0;
+
+	while (i < burst.numOfJobs) {
+
+		burst.jobs[i].id = id++;
+		JobScheduler_SubmitJob(&burst.jobs[i]);
+		i++;
+	}
+
+	if (queryBuffer.capacity < id) {
+		queryBuffer.capacity = id;
+		queryBuffer.sizes = saferealloc(queryBuffer.sizes, sizeof(int) * id);
+		queryBuffer.buffer = saferealloc(queryBuffer.buffer, sizeof(char*) * id);
+		queryBuffer.capacities = saferealloc(queryBuffer.capacities, sizeof(int) * id);
+	}
+
+	JobScheduler_execute_all_jobs();
+	JobScheduler_wait_all_tasks_finish();
+
+	// print burst ngrams
+	for (i=0; i < id; i++) {
+		printf("%s\n", queryBuffer.buffer[i]);
+		free(queryBuffer.buffer[i]);
+	}
+
+	//topK
+
 
 }

@@ -196,7 +196,7 @@ void trieSearch_Static(NgramVector *ngramVector, int id) {
 		queryBuffer.sizes[id] = 0;
 		buffer[0] = '\0';
 
-		for (i=0; i < ngramVector->words; i++) {                                         				//For all root's children
+		for (i=0; i < ngramVector->words; i++) {                                         						//For all root's children
 			node = Hashtable_lookup_Bucket(trieRoot->hashtable, ngramVector->ngram[i]);
 			trieSearch_Ngram_Static(node, i, i, ngramVector, &buffer, &capacity, id, bloomfilter);
 			buffer[0] = '\0';
@@ -238,16 +238,16 @@ void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngra
                 if (node->offsets[j] < 0) {                                                                     //If word is final
 
 					/**************************************/
-                    for (; round <= i; round++) {
-                        if ((space = strlen(ngramVector->ngram[round])) >= *capacity - len - 1) {
-                            *buffer = saferealloc(*buffer, 2 * (*capacity) * sizeof(char));                     //Re-allocate space
-                            *capacity *= 2;
-                        }
-                        memcpy(*buffer + len, ngramVector->ngram[round], space * sizeof(char));
-                        len += space + 1;
-                        (*buffer)[len - 1] = ' ';
-                    }
-                    (*buffer)[len] = '\0';
+					for (; round <= i; round++) {
+						while((space=strlen(ngramVector->ngram[round])) >= *capacity - len-1) {
+							*capacity *= 2;
+							*buffer = saferealloc(*buffer, *capacity*sizeof(char));             	 		//Re-allocate space
+						}
+						memcpy(*buffer + len, ngramVector->ngram[round], space*sizeof(char));
+						len += space+1;
+						(*buffer)[len-1] = ' ';
+					}
+					(*buffer)[len]='\0';
 					/**************************************/
 
                     ngram = safemalloc(len * sizeof(char));
@@ -268,7 +268,7 @@ void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngra
 //                        topK_Hashtable_insert(hashtable, ngram, len - 1);
 //                        topK_Hashtable_Check_LoadFactor(hashtable, len - 1);
                     }
-					else free(ngram);
+					/*else */free(ngram);
                 }
                 (node->offsets[j] < 0) ? x += (-node->offsets[j] + 1) : (x += node->offsets[j] + 1);
             }
@@ -278,16 +278,18 @@ void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngra
 
     else if (node->is_final) {
 
-            for (; round <= i; round++) {
-                if((space=(int)strlen(ngramVector->ngram[round])) >= *capacity - len-1) {
-                    *buffer = saferealloc(*buffer, 2 * (*capacity)*sizeof(char));              //Re-allocate space
-                    *capacity *= 2;
-                }
-                memcpy(*buffer + len, ngramVector->ngram[round], space*sizeof(char));
-                len += space+1;
-                (*buffer)[len-1] = ' ';
-            }
-            (*buffer)[len]='\0';
+			/**************************************/
+			for (; round <= i; round++) {
+				while((space=strlen(ngramVector->ngram[round])) >= *capacity - len-1) {
+					*capacity *= 2;
+					*buffer = saferealloc(*buffer, *capacity*sizeof(char));             	 		//Re-allocate space
+				}
+				memcpy(*buffer + len, ngramVector->ngram[round], space*sizeof(char));
+				len += space+1;
+				(*buffer)[len-1] = ' ';
+			}
+			(*buffer)[len]='\0';
+			/**************************************/
 
             ngram = safemalloc(len*sizeof(char));
             memcpy(ngram, *buffer, len);
@@ -307,7 +309,7 @@ void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngra
 //                        topK_Hashtable_insert(hashtable, ngram, len - 1);
 //                        topK_Hashtable_Check_LoadFactor(hashtable, len - 1);
             }
-            else free(ngram);
+			/*else */ free(ngram);
         }
     }
 }

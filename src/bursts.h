@@ -9,7 +9,6 @@
 
 typedef struct burst Burst;
 typedef struct job Job;
-typedef struct qjob Qjob;
 
 struct burst {
 	int k;
