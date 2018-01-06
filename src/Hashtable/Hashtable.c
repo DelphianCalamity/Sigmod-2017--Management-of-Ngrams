@@ -131,8 +131,6 @@ void Hashtable_move_child(Hashtable_Info_ptr hashtable, Bucketptr bucket, TrieNo
 
 	if (result.found == 0)
 		bucket->emptySpace--;
-	else if (result.found == 2)
-		bucket->deletedChildren--;
 }
 
 
@@ -147,7 +145,7 @@ void Hashtable_split(Hashtable_Info_ptr hashtable) {
 	Hashtable_init_bucket(hashtable->Phashtable + hashtable->Buckets);
     hashtable->Buckets++;
 
-	size = bucket->maxChildren-bucket->emptySpace;
+	size = bucket->maxChildren - bucket->emptySpace;
 	for (i=0; i<size; i++) {
 
 		node = &bucket->children[i];
@@ -156,7 +154,6 @@ void Hashtable_split(Hashtable_Info_ptr hashtable) {
 			DestinationBucket = Hash_function(hashtable, key, hashtable->round + 1);   							//REHASH
 
 			if (DestinationBucket != hashtable->p) {
-
 				Hashtable_move_child(hashtable, (hashtable->Phashtable + DestinationBucket), node);
 
 				char* temp = node->word;																		//Copy the deleted node's word , cause an alive node points there too. (problem when delete frees word)
@@ -168,6 +165,7 @@ void Hashtable_split(Hashtable_Info_ptr hashtable) {
 			}
 		}
 	}
+
 	i = bucket->maxChildren-bucket->emptySpace-1;
 
 	while (i >= 0 && bucket->children[i].deleted) {				// free all deleted children after the last active one
@@ -179,13 +177,14 @@ void Hashtable_split(Hashtable_Info_ptr hashtable) {
 	}
 
 	/*Creating space from deleted nodes*/
-	if ((double) bucket->deletedChildren / (bucket->maxChildren - bucket->emptySpace) > FACTOR)
+	if ((double) bucket->deletedChildren / (bucket->maxChildren - bucket->emptySpace) > FACTOR) {
 		trieCompactSpace(bucket);
+	}
 
-    if ((hashtable->p + 1) == (pow(2, hashtable->round) * hashtable->m)) {          //If the buckets have been doubled during this round
-        hashtable->round++;                 //Increase the round
-        hashtable->p = 0;
-    } else hashtable->p++;                  //Increase p
+	if ((hashtable->p + 1) == (pow(2, hashtable->round) * hashtable->m)) {          //If the buckets have been doubled during this round
+		hashtable->round++;                 //Increase the round
+		hashtable->p = 0;
+	} else hashtable->p++;                  //Increase p
 }
 
 
