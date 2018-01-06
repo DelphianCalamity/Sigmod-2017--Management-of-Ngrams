@@ -150,7 +150,7 @@ void Hashtable_split(Hashtable_Info_ptr hashtable) {
 
 		node = &bucket->children[i];
 		if (!node->deleted) {
-			key = Hashtable_hashkey(node->word);
+			key = murmurhash(node->word, strlen(node->word), 0);
 			DestinationBucket = Hash_function(hashtable, key, hashtable->round + 1);   							//REHASH
 
 			if (DestinationBucket != hashtable->p) {

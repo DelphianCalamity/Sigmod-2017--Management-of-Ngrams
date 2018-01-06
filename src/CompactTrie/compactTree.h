@@ -7,3 +7,4 @@ void trieSearch_Static(NgramVector* , int);
 void trieSearch_Ngram_Static(TrieNode*, int, int, NgramVector*, char**, int*, int, char*);
 
 #endif
+
