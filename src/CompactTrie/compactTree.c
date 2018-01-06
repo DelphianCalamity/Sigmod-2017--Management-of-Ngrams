@@ -111,8 +111,8 @@ void trieCompactRoot(Stack *stack) {
         }
 
         if (node->emptySpace != node->maxChildren) {                                        //If node is not a leaf - has more than one children - push them in stack
-			numOfchildren = node->maxChildren - node->emptySpace;
-			for (i = 0; i < numOfchildren; i++)
+			tempSize = node->maxChildren - node->emptySpace;
+			for (i = 0; i < tempSize; i++)
                 push(stack, &(node->children[i]));
         }
     }

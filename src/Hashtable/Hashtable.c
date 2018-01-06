@@ -4,6 +4,7 @@
 #include "Hashtable.h"
 #include "../trieStructs.h"
 #include "../errorMessages.h"
+#include "../BloomFilter/murmur.h"
 #include <math.h>
 
 /* *** FUNCTIONS *** */
@@ -40,7 +41,7 @@ void Hashtable_init_bucket(Bucket* bucket) {
 void Hashtable_Bucket_print(Hashtable_Info_ptr hash, Bucketptr bucket) {
 
 	int i;
-	double key;
+	uint32_t key;
 	for (i = 0; i < bucket->maxChildren-bucket->emptySpace; i++) {
 		if (bucket->children[i].deleted == 0) {
 			key = Hashtable_hashkey((bucket->children[i].word));
@@ -65,19 +66,14 @@ void Hashtable_print(Hashtable_Info_ptr hashtable) {
 }
 
 /********************************************************/
-double Hashtable_hashkey(char* word) {
-
-	int i;
-	double key = 0;
-
-	for(i=0; word[i] != '\0'; i++)
-		key += (int)word[i];
-	return key;
+uint32_t Hashtable_hashkey(char* word) {
+	return murmurhash(word, (uint32_t) strlen(word), 0);
 }
 
-int Hash_function(Hashtable_Info_ptr hashtable, double key, int round) {       	// f(x) = k%(2^i)m
-	int x = pow(2, round) * hashtable->m;										//Initial number of buckets * 2^round*m
-	return (int) key % x;
+int Hash_function(Hashtable_Info_ptr hashtable, uint32_t key, int round) {       	// f(x) = k%(2^i)m
+	int x;
+	(round == 0) ? (x = hashtable->m) : (x = (2 << (round-1)) * hashtable->m);										//Initial number of buckets * 2^round*m
+	return (int) (key % x);
 }
 /********************************************************/
 
@@ -85,10 +81,12 @@ int Hash_function(Hashtable_Info_ptr hashtable, double key, int round) {       	
 TrieNode* Hashtable_insert(Hashtable_Info_ptr hashtable, BinaryResult* br, char* word) {
 
 	Bucketptr bucket = hashtable->Phashtable;
-	double key = Hashtable_hashkey(word);
+	uint32_t key = Hashtable_hashkey(word);
 	int DestinationBucket = Hash_function(hashtable, key, hashtable->round);            		//Hash function of the current round
-	if (DestinationBucket < hashtable->p)
-		DestinationBucket = Hash_function(hashtable, key, hashtable->round + 1);        		//Hash function of the next round
+	if (DestinationBucket < hashtable->p) {
+		DestinationBucket = Hash_function(hashtable, key, hashtable->round + 1);	            //Hash function of the next round
+	}
+
 
 	return Hashtable_insert_child(hashtable, br, bucket+DestinationBucket, word);
 }
@@ -113,7 +111,9 @@ TrieNode* Hashtable_insert_child(Hashtable_Info_ptr hashtable, BinaryResult* res
 	if (result->found != 1) {                                          //If found != 1 the node must be inserted - otherwise it is already there
 		trieNodeInit(word, &bucket->children[result->position]);
 		if (result->found == 0)		                                   //If found == 2 the node replaced a deleted node
+		{
 			bucket->emptySpace--;
+		}
 
 		hashtable->Records++;
 	}
@@ -138,7 +138,7 @@ void Hashtable_move_child(Hashtable_Info_ptr hashtable, Bucketptr bucket, TrieNo
 void Hashtable_split(Hashtable_Info_ptr hashtable) {
 
 	TrieNode* node;
-	double key;
+	uint32_t key;
 	int i, DestinationBucket, size;
     Bucketptr bucket = &(hashtable->Phashtable[hashtable->p]);
 
@@ -192,7 +192,7 @@ void Hashtable_split(Hashtable_Info_ptr hashtable) {
 
 TrieNode* Hashtable_lookup(BinaryResult* result, Hashtable_Info_ptr hashtable, char* word) {
 
-	double key;
+	uint32_t key;
     Bucketptr bucket = hashtable->Phashtable;
 	key = Hashtable_hashkey(word);
 
@@ -211,7 +211,7 @@ TrieNode* Hashtable_lookup(BinaryResult* result, Hashtable_Info_ptr hashtable, c
 
 TrieNode* Hashtable_lookup_Bucket(Hashtable_Info_ptr hashtable, char* word) {
 
-	double key;
+	uint32_t key;
 	Bucketptr bucket = hashtable->Phashtable;
 	key = Hashtable_hashkey(word);
 

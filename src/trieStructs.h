@@ -8,7 +8,7 @@
 
 
 #define MINSIZE 10
-#define FACTOR 0.3
+#define FACTOR 2
 #define BUFFER_SIZE 100
 
 #define DYNAMIC 1

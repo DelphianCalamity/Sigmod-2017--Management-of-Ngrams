@@ -2,6 +2,7 @@
 #define	HASHTABLE_H
 
 #include "../trieStructs.h"
+#include <stdint.h>
 
 #define IN_SIZE 100
 
@@ -30,8 +31,8 @@ void Hashtable_init_bucket(Bucket*);
 void Hashtable_Bucket_print(Hashtable_Info_ptr, Bucketptr);
 void Hashtable_print(Hashtable_Info_ptr);
 
-double Hashtable_hashkey(char*);
-int Hash_function(Hashtable_Info_ptr, double, int);
+uint32_t Hashtable_hashkey(char*);
+int Hash_function(Hashtable_Info_ptr, uint32_t, int);
 
 TrieNode* Hashtable_insert(Hashtable_Info_ptr, BinaryResult*, char*);
 void Hashtable_Check_LoadFactor(Hashtable_Info_ptr);
