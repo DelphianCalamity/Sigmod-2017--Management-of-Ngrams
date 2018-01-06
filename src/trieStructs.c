@@ -1,15 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "stack.h"
-#include "ngram.h"
-#include "bursts.h"
 #include <string.h>
-#include <stdbool.h>
-#include "trieStructs.h"
 #include "errorMessages.h"
 #include "BloomFilter/bloomFilter.h"
-#include "Hashtable/Hashtable.h"
-#include "TopK/topK_Hashtable.h"
 
 /*Initialization of trie root*/
 void trieRootInit() {
@@ -445,7 +439,7 @@ void trieRecursiveFree(TrieNode *node) {
 }
 
 
-
+/**********************************************************************/
 void trie_buffer_Init() {
 
 	queryBuffer.capacity = CMD_INIT;
