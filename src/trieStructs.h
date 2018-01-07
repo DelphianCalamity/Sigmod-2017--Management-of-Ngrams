@@ -68,7 +68,7 @@ void trieNodeInit(char *, TrieNode *);
 void trieBinarySearch(BinaryResult*, TrieNode *, char *);
 void trieSearch(NgramVector *, int, int);
 void trieSearch_Ngram(TrieNode*, int, int, NgramVector *, char**, int*, int, int, char*);
-void trieCompactSpace(TrieNode*);
+void trieDeletedPurge(TrieNode*);
 int trieInsertSort(NgramVector *);
 void trieMakeSpace(BinaryResult*, TrieNode*, char*);
 void trieDeleteNgram(NgramVector*);

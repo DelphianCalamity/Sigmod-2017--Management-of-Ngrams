@@ -1,14 +1,16 @@
+typedef struct job Job;
+
 #ifndef __BURSTS_H__
 #define __BURSTS_H__
 
 #include "ngram.h"
 #include "trieStructs.h"
-#include "Threads/JobScheduler.h"
 
 #define CMD_INIT 20
 
+
 typedef struct burst Burst;
-typedef struct job Job;
+
 
 struct burst {
 	int k;
@@ -31,7 +33,6 @@ void processBurst();
 void processBurstStatic();
 void executeCommand(Job*);
 void executeStaticCommand(Job*);
-void executeBurstCommands();
 void addCommand(char, NgramVector*);
 
 #endif

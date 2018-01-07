@@ -1,10 +1,8 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 #include "bloomFilter.h"
 #include "murmur.h"
-#include "../errorMessages.h"
 
 
 bool findInBloom(char *ngram, char *bloomfilter){

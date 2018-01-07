@@ -158,7 +158,7 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 
 /****************************************************************************/
 
-void trieCompactSpace(TrieNode *parent) {
+void trieDeletedPurge(TrieNode *parent) {
 
 	int j, end;
 
@@ -336,7 +336,7 @@ void trieDeleteNgram(NgramVector *ngram) {
 
 		/*Creating space from deleted nodes*/
 		if ((double) node->deletedChildren / (node->maxChildren - node->emptySpace) > FACTOR)
-			trieCompactSpace(node);
+			trieDeletedPurge(node);
 
 		if (node->emptySpace + node->deletedChildren < node->maxChildren) {           // there still are active children
 			deleteStack(&s);
@@ -369,7 +369,7 @@ void trieDeleteNgram(NgramVector *ngram) {
 
 	/*Creating space from deleted nodes*/
 	if ((double) node->deletedChildren / (node->maxChildren - node->emptySpace) > FACTOR)
-		trieCompactSpace(node);
+		trieDeletedPurge(node);
 
 	trieRoot->hashtable->Records--;
 

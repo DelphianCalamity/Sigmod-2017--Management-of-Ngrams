@@ -45,7 +45,6 @@ void createNgram(NgramVector *ngramVector, char *buffer, ssize_t size){			// cre
 
 
 void deleteNgram(NgramVector *ngramVector){							        // deletes the ngram struct, does not touch the words of the ngram
-	//deleteWords(ngramVector);
 	free(ngramVector->ngram);
 	free(ngramVector);
 }

@@ -18,12 +18,12 @@ void getError(int code) {
         case 4:
             perror("Error in popping stack");
             break;
+        default:break;
     }
-    return;
 }
 
 void* safemalloc(int size) {
-    void* pointer = malloc(size);
+    void* pointer = malloc((size_t)size);
     if (pointer == NULL) {
         getError(1);
         exit(1);
@@ -32,7 +32,7 @@ void* safemalloc(int size) {
 }
 
 void* safecalloc(int num, int size) {
-    void* pointer = calloc(num, size);
+    void* pointer = calloc((size_t)num, (size_t)size);
     if (pointer == NULL) {
         getError(1);
         exit(1);
@@ -41,7 +41,7 @@ void* safecalloc(int num, int size) {
 }
 
 void* saferealloc(void* ptr, int size) {
-    void* pointer = realloc(ptr, size);
+    void* pointer = realloc(ptr,(size_t)size);
     if (pointer == NULL) {
         getError(2);
         exit(1);

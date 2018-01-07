@@ -12,4 +12,4 @@ int checkSearch(NgramVector*);
 void testCreatTestCase();
 void testDelete();
 
-#endif //UNIT_TESTING_H
+#endif

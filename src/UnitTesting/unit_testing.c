@@ -4,6 +4,8 @@
 #include <assert.h>
 #include "../ngram.h"
 #include "../errorMessages.h"
+#include "../BloomFilter/murmur.h"
+#include "../BloomFilter/bloomFilter.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -50,8 +52,13 @@ void confirmExistence(NgramVector* ngram){
 
     int i;
     BinaryResult br;
-    TrieNode* node = trieRoot->root;
+    TrieNode* node = trieRoot->hashtable->Phashtable;
 
+	//Find first word's hash
+
+	//Find correct bucket
+
+	//Search
     for (i = 0; i < ngram->words; i++){                //Confirm each word's existence in Trie
         trieBinarySearch(&br, node, ngram->ngram[i]);
         assert(br.found==1);
@@ -63,10 +70,12 @@ void confirmExistence(NgramVector* ngram){
 
 void testInsert() {
 
+	/*Initialise a test trie*/
     trieRootInit();
 
     char* str;
     NgramVector* ngram;
+
 
     str = "this is a dog";
     ngram = testCreateNgram(str, strlen(str)+1);
@@ -138,25 +147,28 @@ void testInsert() {
 
 
 void testSearch(){
+	char* str, *bloomfilter;
+	NgramVector* ngram;
+	int check;
 
+	/*initialize a test trie*/
     trieRootInit();
-
-    char* str;
-    NgramVector* ngram;
-
     testCreatTestCase();
 
+
+	/*Create test ngram*/
     str = "the car is red and blue and this is a test";
-    ngram = testCreateNgram(str, strlen(str)+1);
+	ngram = testCreateNgram(str, strlen(str)+1);
 
-    int check;
-
+	/*Test search with test-ngram*/
     check = checkSearch(ngram);
     assert(check==3);
 
+	/*Delete test ngram*/
     deleteWords(ngram);
     deleteNgram(ngram);
 
+	/*Delete test trie */
     trieFree();
 
     printf("End Of Search testing..\n");
@@ -248,17 +260,20 @@ void testDelete() {
 
 int checkSearch(NgramVector* ngram){
 
-    TrieNode *root = trieRoot->root;
-    int i, check=0;
+	int i, x = trieRoot->hashtable->m, *bloomfilter;
+	char * buffer = safemalloc(100*sizeof(char));
+
+
+
+	/*Initialise a bloomfilter*/
+	bloomfilter = safemalloc(100);
+
+    TrieNode *root = & trieRoot->hashtable->Phashtable[(murmurhash(ngram->ngram[0], strlen(ngram->ngram[0]), 0))%x];
+    int check=0;
     for (i = 0; i < ngram->words; i++)                                         //For all root's children
-        trieSearch_Ngram(root, i, i, ngram, &check);
+        trieSearch_Ngram(root, 0, 0, ngram, buffer, 100,  0, bloomfilter);
 
-    if (check > 0)
-        trieRoot->lastQuery++;
-    else printf("-1");
-    printf("\n");
-
-   return check;
+	return 0;
 }
 
 void testCreatTestCase(){

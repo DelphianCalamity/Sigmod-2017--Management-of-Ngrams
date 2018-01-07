@@ -6,4 +6,4 @@ void* safemalloc(int);
 void* safecalloc(int num, int size);
 void* saferealloc(void* ptr, int size);
 
-#endif //_ERRORMESSAGES_H
+#endif

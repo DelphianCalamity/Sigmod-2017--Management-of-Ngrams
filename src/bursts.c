@@ -1,11 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "bursts.h"
-#include "ngram.h"
-#include "trieStructs.h"
 #include "errorMessages.h"
-#include "TopK/topK_Hashtable.h"
 #include "CompactTrie/compactTree.h"
 
 
@@ -26,15 +22,14 @@ void addCommand(char com, NgramVector *ngram) {
 	burst.numOfJobs++;
 }
 
-void executeCommand(Job* job) {
+void executeCommand(Job *job) {
 
 	trieSearch(job->ngram, job->Q_version, job->id);
-//	(*SearchPtr)(job->ngram, job->Q_version, job->id);
 	deleteWords(job->ngram);
 	deleteNgram(job->ngram);
 }
 
-void executeStaticCommand(Job* job) {
+void executeStaticCommand(Job *job) {
 
 	trieSearch_Static(job->ngram, job->id);
 	deleteWords(job->ngram);
@@ -44,39 +39,42 @@ void executeStaticCommand(Job* job) {
 
 void processBurst() {
 
-	int i=0, id=0;
+	int i = 0, id = 0;
 
 	while (i < burst.numOfJobs) {
 
-		switch(burst.jobs[i].command) {
+		switch (burst.jobs[i].command) {
 
-			case 'D':   trieFakeDeleteNgram(burst.jobs[i].ngram);
-						i++;
-						break;
+			case 'D':
+				trieFakeDeleteNgram(burst.jobs[i].ngram);
+				i++;
+				break;
 
-			case 'A':   trieInsertSort(burst.jobs[i].ngram);
-						deleteWords(burst.jobs[i].ngram);
-						deleteNgram(burst.jobs[i].ngram);
-						i++;
-						break;
+			case 'A':
+				trieInsertSort(burst.jobs[i].ngram);
+				deleteWords(burst.jobs[i].ngram);
+				deleteNgram(burst.jobs[i].ngram);
+				i++;
+				break;
 
-			case 'Q':	while (i < burst.numOfJobs && burst.jobs[i].command == 'Q') {
-
-							burst.jobs[i].id = id++;
-							burst.jobs[i].Q_version = trieRoot->current_version;
-							JobScheduler_SubmitJob(&burst.jobs[i]);
-							i++;
-						}
-
-						trieRoot->current_version++;
-						break;
+			case 'Q':
+				while (i < burst.numOfJobs && burst.jobs[i].command == 'Q') {
+					burst.jobs[i].id = id++;
+					burst.jobs[i].Q_version = trieRoot->current_version;
+					JobScheduler_SubmitJob(&burst.jobs[i]);
+					i++;
+				}
+				trieRoot->current_version++;
+				break;
+			default:
+				break;
 		}
 	}
 
 	if (queryBuffer.capacity < id) {
 		queryBuffer.capacity = id;
 		queryBuffer.sizes = saferealloc(queryBuffer.sizes, sizeof(int) * id);
-		queryBuffer.buffer = saferealloc(queryBuffer.buffer, sizeof(char*) * id);
+		queryBuffer.buffer = saferealloc(queryBuffer.buffer, sizeof(char *) * id);
 		queryBuffer.capacities = saferealloc(queryBuffer.capacities, sizeof(int) * id);
 	}
 
@@ -84,8 +82,8 @@ void processBurst() {
 	JobScheduler_wait_all_tasks_finish();
 
 
-	// End of Burst - Delete Ngrams                 -- to be optimized
-	for (i=0; i < burst.numOfJobs; i++) {
+	/*End of Burst - Delete Ngrams*/
+	for (i = 0; i < burst.numOfJobs; i++) {
 
 		if (burst.jobs[i].command == 'D') {
 
@@ -95,8 +93,8 @@ void processBurst() {
 		}
 	}
 
-	// print burst ngrams
-	for (i=0; i < id; i++) {
+	/*print burst ngrams*/
+	for (i = 0; i < id; i++) {
 		printf("%s\n", queryBuffer.buffer[i]);
 		free(queryBuffer.buffer[i]);
 	}
@@ -108,7 +106,7 @@ void processBurst() {
 
 void processBurstStatic() {
 
-	int i=0, id=0;
+	int i = 0, id = 0;
 
 	while (i < burst.numOfJobs) {
 
@@ -120,7 +118,7 @@ void processBurstStatic() {
 	if (queryBuffer.capacity < id) {
 		queryBuffer.capacity = id;
 		queryBuffer.sizes = saferealloc(queryBuffer.sizes, sizeof(int) * id);
-		queryBuffer.buffer = saferealloc(queryBuffer.buffer, sizeof(char*) * id);
+		queryBuffer.buffer = saferealloc(queryBuffer.buffer, sizeof(char *) * id);
 		queryBuffer.capacities = saferealloc(queryBuffer.capacities, sizeof(int) * id);
 	}
 
@@ -128,7 +126,7 @@ void processBurstStatic() {
 	JobScheduler_wait_all_tasks_finish();
 
 	// print burst ngrams
-	for (i=0; i < id; i++) {
+	for (i = 0; i < id; i++) {
 		printf("%s\n", queryBuffer.buffer[i]);
 		free(queryBuffer.buffer[i]);
 	}

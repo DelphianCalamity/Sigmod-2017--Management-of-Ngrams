@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "Hashtable.h"
-#include "../trieStructs.h"
 #include "../errorMessages.h"
 #include "../BloomFilter/murmur.h"
 #include <math.h>
@@ -178,7 +177,7 @@ void Hashtable_split(Hashtable_Info_ptr hashtable) {
 
 	/*Creating space from deleted nodes*/
 	if ((double) bucket->deletedChildren / (bucket->maxChildren - bucket->emptySpace) > FACTOR) {
-		trieCompactSpace(bucket);
+		trieDeletedPurge(bucket);
 	}
 
 	if ((hashtable->p + 1) == (pow(2, hashtable->round) * hashtable->m)) {          //If the buckets have been doubled during this round

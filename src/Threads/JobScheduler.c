@@ -2,13 +2,42 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include "JobScheduler.h"
-#include "../bursts.h"
 #include "../errorMessages.h"
-#include "../trieStructs.h"
+
+
+void *worker() {
+	Job *job;
+
+	while (1) {
+
+		pthread_mutex_lock(&jobScheduler.queue_mutex);
+
+		while (jobScheduler.kill == 0 && jobScheduler.end == jobScheduler.start) {              // while no job in queue
+			pthread_cond_wait(&jobScheduler.queue_empty, &jobScheduler.queue_mutex);
+		}
+
+		if (jobScheduler.kill == 1) {
+			pthread_mutex_unlock(&jobScheduler.queue_mutex);
+			pthread_exit(NULL);
+		}
+
+		job = jobScheduler.queue[jobScheduler.start];                           				// reads the job
+		jobScheduler.start++;
+		pthread_mutex_unlock(&jobScheduler.queue_mutex);
+
+		(*commandsPtr)(job);
+
+		pthread_mutex_lock(&jobScheduler.queue_mutex);
+		jobScheduler.counter++;
+		pthread_cond_signal(&jobScheduler.wait);
+		pthread_mutex_unlock(&jobScheduler.queue_mutex);
+	}
+}
 
 void JobScheduler_Init() {
 
 	int i;
+
 	jobScheduler.end = 0;
 	jobScheduler.start = 0;
 	jobScheduler.current = 0;
@@ -31,6 +60,8 @@ void JobScheduler_Init() {
 		}
 	}
 }
+
+
 
 void JobScheduler_SubmitJob(Job *job) {
 
@@ -79,35 +110,6 @@ void JobScheduler_wait_all_tasks_finish() {
 
 
 
-void *worker(void *args) {
-
-	Job *job;
-
-	while (1) {
-
-		pthread_mutex_lock(&jobScheduler.queue_mutex);
-
-		while (jobScheduler.kill == 0 && jobScheduler.end == jobScheduler.start) {              // while no job in queue
-			pthread_cond_wait(&jobScheduler.queue_empty, &jobScheduler.queue_mutex);
-		}
-
-		if (jobScheduler.kill == 1) {
-			pthread_mutex_unlock(&jobScheduler.queue_mutex);
-			pthread_exit(NULL);
-		}
-
-		job = jobScheduler.queue[jobScheduler.start];                           				// reads the job
-		jobScheduler.start++;
-		pthread_mutex_unlock(&jobScheduler.queue_mutex);
-
-		(*commandsPtr)(job);
-
-		pthread_mutex_lock(&jobScheduler.queue_mutex);
-		jobScheduler.counter++;
-		pthread_cond_signal(&jobScheduler.wait);
-		pthread_mutex_unlock(&jobScheduler.queue_mutex);
-	}
-}
 
 
 void JobScheduler_Destroy() {
@@ -118,6 +120,4 @@ void JobScheduler_Destroy() {
 
 	free(jobScheduler.queue);
 	free(jobScheduler.workers);
-
-
 }

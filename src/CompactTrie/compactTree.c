@@ -1,4 +1,4 @@
-#include <stdio.h>
+//#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "../stack.h"
@@ -117,8 +117,6 @@ void trieCompactRoot(Stack *stack) {
 					push(stack, &(parent->children[i]));
 			}
 		}
-
-
 	}
 }
 
@@ -174,9 +172,7 @@ void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngra
 
 				if (strcmp(&node->word[x], ngramVector->ngram[i]) != 0)                                         //If not equal - abort
 					return;
-
 				if (node->offsets[j] < 0) {                                                                     //If word is final
-
 					/**************************************/
 					for (; round <= i; round++) {
 						while ((space = strlen(ngramVector->ngram[round])) >= *capacity - len - 1) {
@@ -199,7 +195,6 @@ void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngra
 							queryBuffer.capacities[id] *= 2;
 							queryBuffer.buffer[id] = saferealloc(queryBuffer.buffer[id], sizeof(char) * queryBuffer.capacities[id]);
 						}
-
 						memcpy(queryBuffer.buffer[id] + queryBuffer.sizes[id], ngram, len);
 						queryBuffer.sizes[id] += len;
 

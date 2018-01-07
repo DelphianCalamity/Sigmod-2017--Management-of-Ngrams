@@ -1,11 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "bursts.h"
 #include "errorMessages.h"
-#include "ngram.h"
 #include "parsing.h"
-#include "trieStructs.h"
 
 void readInputFile(char *inputFile) {
 
@@ -22,7 +19,7 @@ void readInputFile(char *inputFile) {
 	ngram = initNgram();
 
     ssize_t len;
-	if((len=getline(&buffer, &size, fp)) != -1){				//Identify Trie's type (Static or Dynamic)
+	if((getline(&buffer, &size, fp)) != -1){				//Identify Trie's type (Static or Dynamic)
 		if(buffer[0] == 'S')
 			TRIE_TYPE = STATIC;
 		else TRIE_TYPE = DYNAMIC;
