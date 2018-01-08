@@ -1,6 +1,6 @@
 CC = gcc
-SRCS = bursts.c errorMessages.c main.c ngram.c parsing.c stack.c trieStructs.c Hashtable.c compactTree.c bloomFilter.c topK_Hashtable.c murmur.c JobScheduler.c
-HDRS = bursts.h errorMessages.h ngram.h parsing.h stack.h trieStructs.h ./Hashtable/Hashtable.h ./CompactTrie/compactTree.h ./BloomFilter/bloomFilter.h ./TopK/topK_Hashtable.h ./BloomFilter/murmur.h ./Threads/JobScheduler.h
+SRCS = bursts.c errorMessages.c main.c ngram.c parsing.c stack.c List.c trieStructs.c Hashtable.c compactTree.c bloomFilter.c topK_Hashtable.c murmur.c JobScheduler.c
+HDRS = bursts.h errorMessages.h ngram.h parsing.h stack.h List.h trieStructs.h ./Hashtable/Hashtable.h ./CompactTrie/compactTree.h ./BloomFilter/bloomFilter.h ./TopK/topK_Hashtable.h ./BloomFilter/murmur.h ./Threads/JobScheduler.h
 PROG = ngrams
 FLAGS = -Wall -g -O3
 OBJS = $(SRCS:.c=.o)
@@ -33,6 +33,8 @@ trieStructs.o : trieStructs.c $(HDRS)
 	$(CC) trieStructs.c -c $(FLAGS)
 stack.o : stack.c $(HDRS)
 	$(CC) stack.c -c $(FLAGS)
+List.o : List.c $(HDRS)
+	$(CC) List.c -c $(FLAGS)
 Hashtable.o : ./Hashtable/Hashtable.c $(HDRS)
 	$(CC) ./Hashtable/Hashtable.c -c $(FLAGS)
 compactTree.o : ./CompactTrie/compactTree.c $(HDRS)

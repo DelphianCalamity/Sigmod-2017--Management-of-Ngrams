@@ -89,6 +89,8 @@ void readQueryFile(char *queryFile){
 	}
 	fclose(fp);
 
+	free(queryBuffer.topkIds);
+
 	// wake all workers to be destroyed
 
 	pthread_mutex_lock(&jobScheduler.queue_mutex);

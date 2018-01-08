@@ -20,7 +20,6 @@ struct jobScheduler {
 	int thread_pool_size;
 	char kill;
 
-
 	Job** queue;					// Jobs queue
 	pthread_t* workers;				// Thread Pool
 

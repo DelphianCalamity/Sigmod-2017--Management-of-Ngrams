@@ -82,6 +82,7 @@ void JobScheduler_wait_all_tasks_finish() {
 void *worker(void *args) {
 
 	Job *job;
+	Nodeptr node;
 
 	while (1) {
 
@@ -98,11 +99,16 @@ void *worker(void *args) {
 
 		job = jobScheduler.queue[jobScheduler.start];                           				// reads the job
 		jobScheduler.start++;
+
+		node = List_Move_Start_At_End(queryBuffer.topkIds);
+		job->topkid = node->n;
 		pthread_mutex_unlock(&jobScheduler.queue_mutex);
 
 		(*commandsPtr)(job);
 
 		pthread_mutex_lock(&jobScheduler.queue_mutex);
+		List_Move_At_Start(queryBuffer.topkIds, node);
+
 		jobScheduler.counter++;
 		pthread_cond_signal(&jobScheduler.wait);
 		pthread_mutex_unlock(&jobScheduler.queue_mutex);
@@ -118,6 +124,5 @@ void JobScheduler_Destroy() {
 
 	free(jobScheduler.queue);
 	free(jobScheduler.workers);
-
 
 }

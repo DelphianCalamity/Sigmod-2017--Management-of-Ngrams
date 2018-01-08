@@ -31,8 +31,8 @@ void topK_Hashtable_init_Big_bucket(Big_Bucket* bucket) {
     bucket->topBuckets = safecalloc(TOPK_IN_SIZE, sizeof(TopK_Bucket));
 }
 
-void topK_Hashtable_init_bucket(TopK_Bucket* bucket, char* ngram) {
-	bucket->appearances = 1;
+void topK_Hashtable_init_bucket(TopK_Bucket* bucket, char* ngram, int appearances) {
+	bucket->appearances = appearances;
 	bucket->ngram = ngram;
 }
 
@@ -81,7 +81,7 @@ int topK_Hash_function(TopK_Hashtable_Info_ptr hashtable, double key, int round)
 /********************************************************/
 
 
-void topK_Hashtable_insert(TopK_Hashtable_Info_ptr hashtable, char* ngram, int len) {
+void topK_Hashtable_insert(TopK_Hashtable_Info_ptr hashtable, char* ngram, int len, int appearances) {
 
 	Big_Bucket* bucket = hashtable->Phashtable;
 	double key = topK_Hashtable_hashkey(ngram, len);
@@ -89,39 +89,39 @@ void topK_Hashtable_insert(TopK_Hashtable_Info_ptr hashtable, char* ngram, int l
 	if (DestinationBucket < hashtable->p)
 		DestinationBucket = topK_Hash_function(hashtable, key, hashtable->round + 1);        		//Hash function of the next round
 
-	topK_Hashtable_insert_child(hashtable, bucket+DestinationBucket, ngram);
+	topK_Hashtable_insert_child(hashtable, bucket+DestinationBucket, ngram, appearances);
 }
 
 
-void topK_Hashtable_Check_LoadFactor(TopK_Hashtable_Info_ptr hashtable, int len) {
+void topK_Hashtable_Check_LoadFactor(TopK_Hashtable_Info_ptr hashtable) {
 
 	/* If > Load_Factor Split */
 	float fraction = (float) hashtable->Records / (hashtable->Buckets * TOPK_IN_SIZE);           	//Without counting the overflow buckets
 	if (fraction > hashtable->load_factor) {
 		if (hashtable->p == 0)                                      								//First split of the round ---> Double the Hashtable by using realloc
 			hashtable->Phashtable = saferealloc(hashtable->Phashtable, sizeof(Big_Bucket) * hashtable->Buckets * 2);
-		topK_Hashtable_split(hashtable, len);
+		topK_Hashtable_split(hashtable);
 	}
 }
 
-void topK_Hashtable_insert_child(TopK_Hashtable_Info_ptr hashtable, Big_Bucket* big_bucket, char* ngram) {
+void topK_Hashtable_insert_child(TopK_Hashtable_Info_ptr hashtable, Big_Bucket* big_bucket, char* ngram, int tempAppearances) {
 
 	TopK_Bucket temp;
 	int i, appearances, position;
 	TopK_Bucket* buckets = big_bucket->topBuckets;
 
 	if (big_bucket->records == 0) {
-		topK_Hashtable_init_bucket(buckets, ngram);
+		topK_Hashtable_init_bucket(buckets, ngram, tempAppearances);
 		big_bucket->records++;
 		hashtable->Records++;
 		return;
 	}
-	for(i=0; i<big_bucket->records; i++) {
+	for (i=0; i<big_bucket->records; i++) {
 
 		//If such ngram is found - update its appearances
 		if (strcmp(buckets[i].ngram, ngram) == 0) {
 			position = i;
-			buckets[i].appearances++;
+			buckets[i].appearances += tempAppearances;
 			appearances = buckets[i].appearances;
 
 			//Determine bucket's new position
@@ -143,18 +143,18 @@ void topK_Hashtable_insert_child(TopK_Hashtable_Info_ptr hashtable, Big_Bucket* 
 	}
 
 	//If ngram is not found - insert it in the right position
-	if(big_bucket->records == big_bucket->max_size) {
+	if (big_bucket->records == big_bucket->max_size) {
 		big_bucket->topBuckets = saferealloc(big_bucket->topBuckets, (big_bucket->max_size* 2) * sizeof(TopK_Bucket));
 		buckets = big_bucket->topBuckets;
 		big_bucket->max_size *= 2;
 	}
 
 	i = position = big_bucket->records;
-	while (i > 0 &&  buckets[i-1].appearances == 1 && strcmp(ngram, buckets[i-1].ngram) < 0) 		//If it has priority
+	while (i > 0 && tempAppearances == buckets[i - 1].appearances && strcmp(ngram, buckets[i - 1].ngram) < 0) 		//If it has priority
 		i--;
 
 	memmove(buckets + i + 1, buckets + i, (position-i) * sizeof(TopK_Bucket));
-	topK_Hashtable_init_bucket(buckets+i, ngram);
+	topK_Hashtable_init_bucket(buckets+i, ngram, tempAppearances);
 
 	big_bucket->records++;
 	hashtable->Records++;
@@ -166,7 +166,7 @@ void topK_Hashtable_move_bucket(TopK_Hashtable_Info_ptr hashtable, Big_Bucket* b
 	int i, position, appearances;
 	TopK_Bucket* buckets;
 
-	if(big_bucket->records == big_bucket->max_size){
+	if (big_bucket->records == big_bucket->max_size){
 		big_bucket->topBuckets = saferealloc(big_bucket->topBuckets, (big_bucket->max_size* 2) * sizeof(TopK_Bucket));
 		big_bucket->max_size *= 2;
 	}
@@ -190,7 +190,7 @@ void topK_Hashtable_move_bucket(TopK_Hashtable_Info_ptr hashtable, Big_Bucket* b
 
 
 /********************************************************/
-void topK_Hashtable_split(TopK_Hashtable_Info_ptr hashtable, int len) {
+void topK_Hashtable_split(TopK_Hashtable_Info_ptr hashtable) {
 
 	double key;
 	TopK_Bucket* bucket;
@@ -204,7 +204,7 @@ void topK_Hashtable_split(TopK_Hashtable_Info_ptr hashtable, int len) {
 
 		bucket = &big_bucket->topBuckets[i];
 
-		key = topK_Hashtable_hashkey(bucket->ngram, len);
+		key = topK_Hashtable_hashkey(bucket->ngram, strlen(bucket->ngram));
 		DestinationBucket = topK_Hash_function(hashtable, key, hashtable->round + 1);   							//REHASH
 
 		if (DestinationBucket != hashtable->p) {
@@ -269,19 +269,52 @@ void topK_print_TopK(TopK_Hashtable_Info_ptr hashtable, int k) {
 }
 
 
+void topK_Hashtable_merge(TopK_Hashtable_Info_ptr from, TopK_Hashtable_Info_ptr to) {
+
+	int i,j;
+	Big_Bucket* bigBucket;
+	TopK_Bucket* topKBucket;
+
+	for (i=0; i < from->Buckets; i++) {
+
+		bigBucket = &from->Phashtable[i];
+
+		for (j=0; j < bigBucket->records; j++) {
+
+			topKBucket = &bigBucket->topBuckets[j];
+			topK_Hashtable_insert(to, topKBucket->ngram, strlen(topKBucket->ngram), topKBucket->appearances);
+		}
+	}
+}
+
 /********************************************************/
+void topK_Hashtable_Partial_Destroy(TopK_Hashtable_Info_ptr hashtable) {
+
+	int i;
+	Big_Bucket* big_bucket;
+
+	for (i=0; i<hashtable->Buckets; i++) {
+
+		big_bucket = &hashtable->Phashtable[i];
+		free(big_bucket->topBuckets);
+	}
+	free(hashtable->Phashtable);
+    free(hashtable);
+}
+
 void topK_Hashtable_Destroy(TopK_Hashtable_Info_ptr hashtable) {
 
 	int i,j;
 	Big_Bucket* big_bucket;
 
-	for(i=0; i<hashtable->Buckets; i++) {
+	for (i=0; i<hashtable->Buckets; i++) {
 
 		big_bucket = &hashtable->Phashtable[i];
-		for(j=0; j < big_bucket->records; j++)
+
+		for (j=0; j < big_bucket->records; j++)
 			free(big_bucket->topBuckets[j].ngram);
 		free(big_bucket->topBuckets);
 	}
 	free(hashtable->Phashtable);
-    free(hashtable);
+	free(hashtable);
 }

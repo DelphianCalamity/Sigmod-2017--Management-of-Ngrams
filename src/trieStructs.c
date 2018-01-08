@@ -4,6 +4,8 @@
 #include <string.h>
 #include "errorMessages.h"
 #include "BloomFilter/bloomFilter.h"
+#include "TopK/topK_Hashtable.h"
+#include "Threads/JobScheduler.h"
 
 /*Initialization of trie root*/
 void trieRootInit() {
@@ -66,7 +68,7 @@ void trieBinarySearch(BinaryResult *br, TrieNode *parent, char *word) {
 
 /****************************************************************************/
 
-void trieSearch(NgramVector *ngramVector, int Q_version, int id) {
+void trieSearch(NgramVector *ngramVector, int Q_version, int id, int topkid) {
 
 	TrieNode *node;
 	int i, capacity;
@@ -80,7 +82,7 @@ void trieSearch(NgramVector *ngramVector, int Q_version, int id) {
 
 	for (i=0; i < ngramVector->words; i++) {                                         				//For all root's children
 		node = Hashtable_lookup_Bucket(trieRoot->hashtable, ngramVector->ngram[i]);
-		trieSearch_Ngram(node, i, i, ngramVector, &buffer, &capacity, id, Q_version, bloomfilter);
+		trieSearch_Ngram(node, i, i, ngramVector, &buffer, &capacity, id, Q_version, bloomfilter, topkid);
 		buffer[0] = '\0';
 	}
 
@@ -94,7 +96,7 @@ void trieSearch(NgramVector *ngramVector, int Q_version, int id) {
 	free(buffer);
 }
 
-void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector, char** buffer, int* capacity, int id, int Q_version, char* bloomFilter) {
+void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector, char** buffer, int* capacity, int id, int Q_version, char* bloomFilter, int topkid) {
 
 	char *ngram;
 	BinaryResult br;
@@ -146,12 +148,10 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 
 				queryBuffer.buffer[id][queryBuffer.sizes[id]-1] = '|';//'\0';
 
-//				topK_Hashtable_insert(hashtable, ngram, len-1);
-//				topK_Hashtable_Check_LoadFactor(hashtable, len-1);
+				topK_Hashtable_insert(queryBuffer.topK_hashtables[topkid], ngram, len-1, 1);
+				topK_Hashtable_Check_LoadFactor(queryBuffer.topK_hashtables[topkid]);
 			}
-//			else{
-				free(ngram);
-//			}
+			else free(ngram);
 		}
 	}
 }
@@ -446,6 +446,8 @@ void trie_buffer_Init() {
 	queryBuffer.buffer = safemalloc(CMD_INIT * sizeof(char*));
 	queryBuffer.capacities = safemalloc(CMD_INIT * sizeof(int));
 	queryBuffer.sizes = safemalloc(CMD_INIT * sizeof(int));
+
+	queryBuffer.topkIds = List_create();
 }
 
 void trie_buffer_Destroy() {

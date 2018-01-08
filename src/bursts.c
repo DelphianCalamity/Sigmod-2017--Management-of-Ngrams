@@ -7,7 +7,7 @@
 #include "errorMessages.h"
 #include "TopK/topK_Hashtable.h"
 #include "CompactTrie/compactTree.h"
-
+#include "List.h"
 
 void burst_init() {
 	burst.numOfJobs = 0;
@@ -28,15 +28,14 @@ void addCommand(char com, NgramVector *ngram) {
 
 void executeCommand(Job* job) {
 
-	trieSearch(job->ngram, job->Q_version, job->id);
-//	(*SearchPtr)(job->ngram, job->Q_version, job->id);
+	trieSearch(job->ngram, job->Q_version, job->id, job->topkid);
 	deleteWords(job->ngram);
 	deleteNgram(job->ngram);
 }
 
 void executeStaticCommand(Job* job) {
 
-	trieSearch_Static(job->ngram, job->id);
+	trieSearch_Static(job->ngram, job->id, job->topkid);
 	deleteWords(job->ngram);
 	deleteNgram(job->ngram);
 }
@@ -80,9 +79,18 @@ void processBurst() {
 		queryBuffer.capacities = saferealloc(queryBuffer.capacities, sizeof(int) * id);
 	}
 
+	/********************************************************************/
+	(id > jobScheduler.thread_pool_size) ? (queryBuffer.topk_id = jobScheduler.thread_pool_size) : (queryBuffer.topk_id = id);			// size of topk hashtables : minimum(threads, number of queries)
+
+	queryBuffer.topK_hashtables = safemalloc(queryBuffer.topk_id * sizeof(TopK_Hashtable_Info*));
+	for (i=0; i<queryBuffer.topk_id; i++) {
+		queryBuffer.topK_hashtables[i] = topK_Hashtable_create(10, 5);
+		List_Insert_End(queryBuffer.topkIds, i);
+	}
+	/********************************************************************/
+
 	JobScheduler_execute_all_jobs();
 	JobScheduler_wait_all_tasks_finish();
-
 
 	// End of Burst - Delete Ngrams                 -- to be optimized
 	for (i=0; i < burst.numOfJobs; i++) {
@@ -101,8 +109,22 @@ void processBurst() {
 		free(queryBuffer.buffer[i]);
 	}
 
-	//topK
+	//TopK merging
+	for (i=0; i < queryBuffer.topk_id; i++) {
+		if (i > 0) {
+			topK_Hashtable_merge(queryBuffer.topK_hashtables[i], queryBuffer.topK_hashtables[0]);
+			topK_Hashtable_Partial_Destroy(queryBuffer.topK_hashtables[i]);
+		}
+	}
 
+	if (queryBuffer.topk_id > 0) {
+		topK_print_TopK(queryBuffer.topK_hashtables[0], burst.k);
+		//	topK_Hashtable_print(queryBuffer.topK_hashtables[0]);
+		topK_Hashtable_Destroy(queryBuffer.topK_hashtables[0]);
+	}
+
+	List_destroy(queryBuffer.topkIds);
+	free(queryBuffer.topK_hashtables);
 }
 
 
@@ -124,6 +146,16 @@ void processBurstStatic() {
 		queryBuffer.capacities = saferealloc(queryBuffer.capacities, sizeof(int) * id);
 	}
 
+	/********************************************************************/
+	(id > jobScheduler.thread_pool_size) ? (queryBuffer.topk_id = jobScheduler.thread_pool_size) : (queryBuffer.topk_id = id);			// size of topk hashtables : minimum(threads, number of queries)
+
+	queryBuffer.topK_hashtables = safemalloc(queryBuffer.topk_id * sizeof(TopK_Hashtable_Info*));
+	for (i=0; i<queryBuffer.topk_id; i++) {
+		queryBuffer.topK_hashtables[i] = topK_Hashtable_create(10, 5);
+		List_Insert_End(queryBuffer.topkIds, i);
+	}
+	/********************************************************************/
+
 	JobScheduler_execute_all_jobs();
 	JobScheduler_wait_all_tasks_finish();
 
@@ -133,7 +165,21 @@ void processBurstStatic() {
 		free(queryBuffer.buffer[i]);
 	}
 
-	//topK
+	//TopK merging
+	for (i=0; i < queryBuffer.topk_id; i++) {
+		if (i > 0) {
+			topK_Hashtable_merge(queryBuffer.topK_hashtables[i], queryBuffer.topK_hashtables[0]);
+			topK_Hashtable_Partial_Destroy(queryBuffer.topK_hashtables[i]);
+		}
+	}
 
+	if (queryBuffer.topk_id > 0) {
+		topK_print_TopK(queryBuffer.topK_hashtables[0], burst.k);
+		//	topK_Hashtable_print(queryBuffer.topK_hashtables[0]);
+		topK_Hashtable_Destroy(queryBuffer.topK_hashtables[0]);
+	}
+
+	List_destroy(queryBuffer.topkIds);
+	free(queryBuffer.topK_hashtables);
 
 }

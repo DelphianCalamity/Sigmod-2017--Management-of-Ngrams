@@ -5,7 +5,7 @@
 #include "stack.h"
 #include "Hashtable/Hashtable.h"
 #include "Threads/JobScheduler.h"
-
+#include "List.h"
 
 #define MINSIZE 10
 #define FACTOR 2
@@ -14,7 +14,8 @@
 #define DYNAMIC 1
 #define STATIC 0
 
-typedef struct hashtable_info* Hashtable_Info_ptr;		//Forward Declaration
+typedef struct hashtable_info* Hashtable_Info_ptr;		//Forward Declarations
+typedef struct topK_hashtable_info TopK_Hashtable_Info;
 typedef struct jobScheduler JobScheduler;
 
 typedef struct trieNode TrieNode;
@@ -54,6 +55,10 @@ struct queryBuffer {
 	char** buffer;
 	int* capacities;
 	int *sizes;
+
+	int topk_id;
+	Listptr topkIds;
+	TopK_Hashtable_Info** topK_hashtables;
 };
 
 char TRIE_TYPE;
@@ -66,8 +71,8 @@ QueryBuffer queryBuffer;
 void trieRootInit();
 void trieNodeInit(char *, TrieNode *);
 void trieBinarySearch(BinaryResult*, TrieNode *, char *);
-void trieSearch(NgramVector *, int, int);
-void trieSearch_Ngram(TrieNode*, int, int, NgramVector *, char**, int*, int, int, char*);
+void trieSearch(NgramVector *, int, int, int);
+void trieSearch_Ngram(TrieNode*, int, int, NgramVector *, char**, int*, int, int, char*, int);
 void trieCompactSpace(TrieNode*);
 int trieInsertSort(NgramVector *);
 void trieMakeSpace(BinaryResult*, TrieNode*, char*);

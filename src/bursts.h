@@ -19,6 +19,7 @@ struct burst {
 
 struct job {
 	int id;
+	int topkid;
 	char command;           // Q, A or D, depends on the command
 	int Q_version;
 	NgramVector *ngram;
