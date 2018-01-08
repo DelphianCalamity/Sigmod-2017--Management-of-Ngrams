@@ -3,7 +3,7 @@
 #include "bursts.h"
 #include "errorMessages.h"
 #include "CompactTrie/compactTree.h"
-
+#include "TopK/topK_Hashtable.h"
 
 void burst_init() {
 	burst.numOfJobs = 0;
@@ -41,6 +41,8 @@ void processBurst() {
 
 	int i = 0, id = 0;
 
+	hashtable = topK_Hashtable_create(800, 5);
+
 	while (i < burst.numOfJobs) {
 
 		switch (burst.jobs[i].command) {
@@ -66,6 +68,7 @@ void processBurst() {
 				}
 				trieRoot->current_version++;
 				break;
+
 			default:
 				break;
 		}
@@ -100,6 +103,9 @@ void processBurst() {
 	}
 
 	//topK
+	topK_print_TopK(hashtable, burst.k);				//print the TopK ngrams
+	//topK_Hashtable_print(hashtable);
+	topK_Hashtable_Destroy(hashtable);
 
 }
 
@@ -107,6 +113,8 @@ void processBurst() {
 void processBurstStatic() {
 
 	int i = 0, id = 0;
+
+	hashtable = topK_Hashtable_create(800, 5);
 
 	while (i < burst.numOfJobs) {
 
@@ -132,6 +140,9 @@ void processBurstStatic() {
 	}
 
 	//topK
+	topK_print_TopK(hashtable, burst.k);				//print the TopK ngrams
+	//topK_Hashtable_print(hashtable);
+	topK_Hashtable_Destroy(hashtable);
 
 
 }

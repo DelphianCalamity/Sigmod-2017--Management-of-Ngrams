@@ -4,6 +4,7 @@
 #include <string.h>
 #include "errorMessages.h"
 #include "BloomFilter/bloomFilter.h"
+#include "TopK/topK_Hashtable.h"
 
 /*Initialization of trie root*/
 void trieRootInit() {
@@ -146,12 +147,10 @@ void trieSearch_Ngram(TrieNode *node, int round, int i, NgramVector *ngramVector
 
 				queryBuffer.buffer[id][queryBuffer.sizes[id]-1] = '|';//'\0';
 
-//				topK_Hashtable_insert(hashtable, ngram, len-1);
-//				topK_Hashtable_Check_LoadFactor(hashtable, len-1);
+				topK_Hashtable_insert(hashtable, ngram, len-1);
+//				topK_Hashtable_Check_LoadFactor(hashtable);
 			}
-//			else{
-				free(ngram);
-//			}
+			else free(ngram);
 		}
 	}
 }

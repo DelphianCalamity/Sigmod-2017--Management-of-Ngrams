@@ -110,8 +110,6 @@ void JobScheduler_wait_all_tasks_finish() {
 
 
 
-
-
 void JobScheduler_Destroy() {
 
 	pthread_mutex_destroy(&jobScheduler.queue_mutex);

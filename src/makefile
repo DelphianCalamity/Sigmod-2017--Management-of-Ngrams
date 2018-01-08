@@ -11,7 +11,7 @@ SRCS1 = unit_testing.c unitTest.c
 HDRS1 = ./UnitTesting/unit_testing.h
 OBJS1 = $(SRCS1:.c=.o)
 
-all: $(PROG) $(PROG1)
+#all: $(PROG) $(PROG1)
 
 $(PROG) :  $(OBJS)
 	$(CC) $(OBJS) main.o -o $(PROG) -lm -lpthread
