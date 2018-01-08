@@ -37,7 +37,6 @@ void addCommand(char com, NgramVector *ngram, int i) {
 void executeCommand(Job* job) {
 
 	trieSearch(job->ngram, job->Q_version, job->id);
-//	(*SearchPtr)(job->ngram, job->Q_version, job->id);
 	deleteWords(job->ngram);
 	deleteNgram(job->ngram);
 }
@@ -58,7 +57,7 @@ void *processBurst() {
 		pthread_exit(NULL);
 	}
 
-	hashtable = topK_Hashtable_create(400, 5);
+	hashtable = topK_Hashtable_create(800, 5);
 
 	while (i < burst[j].numOfJobs) {
 
@@ -164,7 +163,6 @@ void *processBurstStatic() {
 	}
 
 	//topK
-
 	topK_print_TopK(hashtable, burst[j].k);				//print the TopK ngrams
 	//topK_Hashtable_print(hashtable);
 	topK_Hashtable_Destroy(hashtable);
@@ -174,8 +172,4 @@ void *processBurstStatic() {
 	j = (j+1)%2;
 
 	pthread_exit(NULL);
-
-	//topK
-
-
 }
