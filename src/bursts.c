@@ -84,7 +84,7 @@ void processBurst() {
 
 	queryBuffer.topK_hashtables = safemalloc(queryBuffer.topk_id * sizeof(TopK_Hashtable_Info*));
 	for (i=0; i<queryBuffer.topk_id; i++) {
-		queryBuffer.topK_hashtables[i] = topK_Hashtable_create(10, 5);
+		queryBuffer.topK_hashtables[i] = topK_Hashtable_create(400, 0.75);
 		List_Insert_End(queryBuffer.topkIds, i);
 	}
 	/********************************************************************/
