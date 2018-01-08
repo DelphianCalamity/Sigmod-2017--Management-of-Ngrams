@@ -6,9 +6,11 @@ int main(int argc, char **argv) {
 
 	testInsert();
 
-	testSearch();
+	TestCompactTree();
 
-	testDelete();
+//	testSearch();
+
+//	testDelete();
 
 	return 0;
 }

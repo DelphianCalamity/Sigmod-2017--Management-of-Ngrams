@@ -11,5 +11,6 @@ void confirmExistence(NgramVector*);
 int checkSearch(NgramVector*);
 void testCreatTestCase();
 void testDelete();
+void TestCompactTree();
 
 #endif

@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "unit_testing.h"
 #include "../BloomFilter/bloomFilter.h"
 #include "../BloomFilter/murmur.h"
@@ -270,7 +271,7 @@ void testDelete() {
 	char *str;
 	NgramVector *ngram;
 
-	testCreatTestCase();
+	testCreateTestCase();
 
 	str = "this is a dog";
 	ngram = testCreateNgram(str, strlen(str) + 1);
@@ -373,7 +374,7 @@ NgramVector *testCreateNgram(char *buffer, ssize_t size) {
 }
 
 void ConfirmCompactExistence(NgramVector *ngram, char * firstWord){
-	int i;
+	int i, length;
 	BinaryResult br;
 	TrieNode *node;
 
@@ -389,6 +390,15 @@ void ConfirmCompactExistence(NgramVector *ngram, char * firstWord){
 		assert(br.found == 1);
 		/*Move to next node */
 		node = &node->children[br.position];
+        if (node->offsets!=NULL){
+            length = 0;
+            while (i < node->offsetsSize){
+                assert(strcmp(ngram->ngram[i], (node->word)+length) == 0);
+                length += abs(node->offsets[i])+1;
+                i++;
+            }
+            i--;
+        }
 	}
 }
 
@@ -396,6 +406,7 @@ void TestCompactTree(){
 	trieRootInit();
 	testCreateTestCase();
 	trieCompactTree();
-	ConfirmCompactExistence(testCreateNgram("thisis a dog", strlen("thisis a dog")), "this");
-
+	ConfirmCompactExistence(testCreateNgram("this is a dog", strlen("this is a dog")), "this");
+    printf("Compact Tree test exited successfully\n");
+    trieFree();
 }
