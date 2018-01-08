@@ -61,10 +61,6 @@ void readQueryFile(char *queryFile){
 	burst_init();
 
     ssize_t len;
-//	clock_t start, end;
-//	double cpu_time_used;
-
-//	start = clock();
 	while ((len=getline(&buffer, &size, fp)) != -1) {
 
 		if (buffer[0] == 'F') {
@@ -84,11 +80,6 @@ void readQueryFile(char *queryFile){
 			/*** ***** ***/
 			i = (i+1)%2;
 
-//			end = clock();
-//			cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-//			printf("Parsing_Time = %f\n", cpu_time_used);
-
-//			start = clock();
 		}
 
 		else {

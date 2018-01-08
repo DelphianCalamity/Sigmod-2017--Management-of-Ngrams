@@ -100,7 +100,7 @@ void *worker(void *args) {
 		jobScheduler.start++;
 		pthread_mutex_unlock(&jobScheduler.queue_mutex);
 
-		executeCommand(job);
+		(*commandsPtr)(job);
 
 		pthread_mutex_lock(&jobScheduler.queue_mutex);
 		jobScheduler.counter++;
