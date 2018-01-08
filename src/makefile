@@ -1,22 +1,23 @@
 CC = gcc
-SRCS = bursts.c errorMessages.c main.c ngram.c parsing.c stack.c trieStructs.c Hashtable.c compactTree.c bloomFilter.c topK_Hashtable.c murmur.c JobScheduler.c
+MAINSRC = main.c
+SRCS = bursts.c errorMessages.c ngram.c parsing.c stack.c trieStructs.c Hashtable.c compactTree.c bloomFilter.c topK_Hashtable.c murmur.c JobScheduler.c
 HDRS = bursts.h errorMessages.h ngram.h parsing.h stack.h trieStructs.h ./Hashtable/Hashtable.h ./CompactTrie/compactTree.h ./BloomFilter/bloomFilter.h ./TopK/topK_Hashtable.h ./BloomFilter/murmur.h ./Threads/JobScheduler.h
 PROG = ngrams
 FLAGS = -Wall -g -O3
 OBJS = $(SRCS:.c=.o)
 
 PROG1 = unitTest
-SRCS1 = unit_testing.c unitTest.c errorMessages.c ngram.c stack.c trieStructs.c
-HDRS1 = ./UnitTesting/unit_testing.h errorMessages.h ngram.h stack.h trieStructs.h
+SRCS1 = unit_testing.c unitTest.c
+HDRS1 = ./UnitTesting/unit_testing.h
 OBJS1 = $(SRCS1:.c=.o)
 
 #all: $(PROG) $(PROG1)
 
 $(PROG) :  $(OBJS)
-	$(CC) $(OBJS) -o $(PROG) -lm -lpthread
+	$(CC) $(OBJS) main.o -o $(PROG) -lm -lpthread
 
-$(PROG1) :  $(OBJS1)
-	$(CC) $(OBJS1) -o $(PROG1)
+$(PROG1) :  $(OBJS1) $(OBJS)
+	$(CC) $(OBJS1) $(OBJS) -o $(PROG1) -lm -lpthread
 
 
 main.o : main.c $(HDRS)
@@ -46,9 +47,9 @@ murmur.o : ./BloomFilter/murmur.c $(HDRS)
 JobScheduler.o: ./Threads/JobScheduler.c $(HDRS)
 	$(CC) ./Threads/JobScheduler.c -c $(FLAGS)
 
-unit_testing.o : ./UnitTesting/unit_testing.c $(HDRS1)
+unit_testing.o : ./UnitTesting/unit_testing.c $(HDRS1) $(HDRS)
 	$(CC) ./UnitTesting/unit_testing.c -c $(FLAGS)
-unitTest.o : ./UnitTesting/unitTest.c $(HDRS1)
+unitTest.o : ./UnitTesting/unitTest.c $(HDRS1) $(HDRS)
 	$(CC) ./UnitTesting/unitTest.c -c $(FLAGS)
 
 runss:	${PROG}
