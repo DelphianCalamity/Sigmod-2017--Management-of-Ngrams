@@ -8,118 +8,110 @@
 #include "../Hashtable/Hashtable.h"
 #include "../TopK/topK_Hashtable.h"
 
-
 void trieCompactTree() {
 
-    int i, j, numOfchildren;
-    Stack stack;
-    TrieNode *hashtable = trieRoot->hashtable->Phashtable, *node;
+	int i, j, numOfchildren;
+	Stack stack;
+	TrieNode *hashtable = trieRoot->hashtable->Phashtable, *node;
 
-    initStack(&stack);
-    for (i = 0; i < trieRoot->hashtable->Buckets; i++) {
-        node = hashtable + i;
+	initStack(&stack);
+	for (i = 0; i < trieRoot->hashtable->Buckets; i++) {
+		node = hashtable + i;
 		numOfchildren = node->maxChildren - node->emptySpace;
-        for (j = 0; j < numOfchildren; j++) {
+		for (j = 0; j < numOfchildren; j++) {
 			if (!node->children[j].deleted) {
 				push(&stack, &(node->children[j]));
 				trieCompactRoot(&stack);
 			}
-        }
-    }
-    deleteStack(&stack);
+		}
+	}
+	deleteStack(&stack);
 }
 
 void trieCompactRoot(Stack *stack) {
 
 	char *parentWord;
-	short *offsets;
-	TrieNode *parent, *child, *tempChildren;
-	int i, parentLength, childLength, wordCapacity, oLen, offsetCapacity, numberOfChildren;
+	short *oBuffer;
+	TrieNode *parent, *node, *previous, *prePrevious;
+	int i, parentLength, wSpace, wCapacity, oLen, oCapacity, tempSize;
 
 	while (notEmpty(stack)) {
 
-		parent = pop(stack);
-		numberOfChildren = parent->maxChildren - parent->emptySpace;
+		node = parent = pop(stack);
+		tempSize = parent->maxChildren - parent->emptySpace;
 
-		if (numberOfChildren == 1) {
-			/*Keep parent's information*/
-			parentWord = parent->word;
-			parentLength = (int) strlen(parentWord) + 1;
-			wordCapacity = parentLength;
+		if (tempSize == 1) {
 
-			/*Initialize offsets*/
-			offsetCapacity = 5;
-			offsets = (safemalloc(offsetCapacity * sizeof(short)));
+			prePrevious = previous = NULL;
 
-			/*Add parent's information to offsets array*/
+			parentWord = parent->word;                                                            //Initializing word-buffer, offset-buffer variables
+			parentLength = strlen(parent->word) + 1;
+			wCapacity = parentLength;
+			oCapacity = 5;
+			oBuffer = safemalloc(oCapacity * sizeof(short));
 			if (parent->is_final)
-				offsets[0] = (short) -(parentLength - 1);
-			else
-				offsets[0] = (short) (parentLength - 1);
+				oBuffer[0] = -(parentLength - 1);
+			else oBuffer[0] = parentLength - 1;
 			oLen = 1;
+		}
+		while (tempSize == 1) {                                                                //While parents have only one child
 
-			/*Proceed to child and all subsequent solo children */
-			while (numberOfChildren == 1) {
+			prePrevious = previous;
+			previous = parent->children;
+			parent = &parent->children[0];
 
-				/*Get the parent's only child*/
-				child = &parent->children[0];
-				childLength = (int) strlen(child->word) + 1;
-
-				/*Allocate, if needed, adequate space for the parent and the child word*/
-				while (childLength > (wordCapacity - parentLength)) {
-					wordCapacity *= 2;
-					parentWord = saferealloc(parentWord, wordCapacity * sizeof(char));
-				}
-
-				/*Allocate, if needed, adequate space for the new offset*/
-				if (offsetCapacity == parent->offsetsSize) {
-					offsetCapacity *= 2;
-					offsets = saferealloc(offsets, offsetCapacity * sizeof(short));
-				}
-
-				/*Concatenate parent word and child word*/
-				memcpy(parentWord + parentLength, child->word, childLength * sizeof(char));
-				parentLength += childLength;
-
-				/*Add child's lengths to the offset table*/
-				if (child->is_final)
-					offsets[oLen] = (short) (-(childLength - 1));
-				else
-					offsets[oLen] = (short) (childLength - 1);
-				oLen++;
-
-				/*Free child's word, it is no longer needed*/
-				free(child->word);
-
-				tempChildren = parent->children;
-
-				/*Fix parent with new information*/
-				parent->word = parentWord;
-				parent->children = child->children;
-
-				numberOfChildren = child->maxChildren - child->emptySpace;
-				/*If the the child node, has more than 1 children, or no children at all,
-				 * we have to update all the information of the parent*/
-				if (numberOfChildren != 1) {
-					/*Reduce extra space at the offsets array to what is used*/
-					offsets = saferealloc(offsets, oLen * sizeof(short));
-					parent->offsets = offsets;
-					parent->offsetsSize = oLen;
-					parent->is_final = child->is_final;
-					parent->maxChildren = child->maxChildren;
-					parent->emptySpace = child->emptySpace;
-					/*Reduce extra space at the word array to what is used*/
-					parent->word = saferealloc(parent->word, parentLength * sizeof(char));
-				}
-				free(tempChildren);
+			wSpace = strlen(parent->word) + 1;
+			while (wSpace > wCapacity - parentLength) {
+				wCapacity *= 2;
+				parentWord = saferealloc(parentWord, wCapacity * sizeof(char));                       //Re-allocate space for word-Buffer
 			}
+			if (oCapacity == oLen) {
+				oCapacity *= 2;
+				oBuffer = saferealloc(oBuffer, oCapacity * sizeof(short));                      //Re-allocate space for offset-Buffer
+			}
+
+			memcpy(parentWord + parentLength, parent->word, wSpace * sizeof(char));
+			parentLength += wSpace;                                                                     //Copy current node's word at parentWord
+
+			wSpace--;
+			if (parent->is_final)
+				oBuffer[oLen] = -wSpace;
+			else oBuffer[oLen] = wSpace;
+			oLen++;
+
+			free(parent->word);                                                                 //Free allocated space
+			tempSize = parent->maxChildren - parent->emptySpace;
+			if (prePrevious != NULL)
+				free(prePrevious);
 		}
 
-		/*If node is not a leaf - has more than one children - push them in stack*/
-		if (parent->emptySpace != parent->maxChildren) {
-			numberOfChildren = parent->maxChildren - parent->emptySpace;
-			for (i = 0; i < numberOfChildren; i++)
-				push(stack, &(parent->children[i]));
+		if (node != parent) {                                                                   //Copy last compacted node's rest info to the branch's first node
+			node->word = parentWord;
+			node->children = parent->children;
+			node->maxChildren = parent->maxChildren;
+			node->emptySpace = parent->emptySpace;
+			free(previous);
+			node->offsets = oBuffer;
+			node->offsetsSize = oLen;
+
+			/*** PRINT***/
+//			int x;
+//			for (i=0,x=0; i<oLen; i++) {
+//				printf("%s", &parentWord[x]);
+//				//x = oBuffer[i];
+//				(oBuffer[i] < 0) ? x+=(-oBuffer[i]+1) : (x+=oBuffer[i]+1);
+//			}
+//			printf("--- ");
+//			for (i=0; i<oLen; i++)
+//				printf("%d ",oBuffer[i]);
+//			printf("\n");
+			/*** PRINT***/
+		}
+
+		if (node->emptySpace != node->maxChildren) {                                        //If node is not a leaf - has more than one children - push them in stack
+			tempSize = node->maxChildren - node->emptySpace;
+			for (i = 0; i < tempSize; i++)
+				push(stack, &(node->children[i]));
 		}
 	}
 }
