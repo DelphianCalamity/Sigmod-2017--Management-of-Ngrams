@@ -1,4 +1,4 @@
-//#include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "../stack.h"
@@ -16,7 +16,7 @@ void trieCompactTree() {
 	for (i = 0; i < trieRoot->hashtable->Buckets; i++) {
 		node = hashtable + i;
 		for (j = 0; j < node->maxChildren - node->emptySpace; j++) {
-			if (!(node->children[j].deleted)) {
+			if (!node->deleted) {
 				push(&stack, &(node->children[j]));
 				trieCompactRoot(&stack);
 			}
@@ -36,8 +36,8 @@ void trieCompactRoot(Stack *stack) {
 
 		parent = pop(stack);
 		numberOfChildren = parent->maxChildren - parent->emptySpace;
-		if (numberOfChildren == 1) {
 
+		if (numberOfChildren == 1) {
 			/*Keep parent's information*/
 			parentWord = parent->word;
 			parentLength = (int) strlen(parentWord) + 1;
@@ -57,9 +57,8 @@ void trieCompactRoot(Stack *stack) {
 			/*Proceed to child and all subsequent solo children */
 			while (numberOfChildren == 1) {
 
-
 				/*Get the parent's only child*/
-				child = &(parent->children[0]);
+				child = &parent->children[0];
 				childLength = (int) strlen(child->word) + 1;
 
 				/*Allocate, if needed, adequate space for the parent and the child word*/
@@ -80,9 +79,9 @@ void trieCompactRoot(Stack *stack) {
 
 				/*Add child's lengths to the offset table*/
 				if (child->is_final)
-					offsets[oLen] = (short) (-(childLength - 1));
+					offsets[parent->offsetsSize] = (short) (-(childLength - 1));
 				else
-					offsets[oLen] = (short) (childLength - 1);
+					offsets[parent->offsetsSize] = (short) (childLength - 1);
 				oLen++;
 
 				/*Free child's word, it is no longer needed*/
@@ -110,12 +109,13 @@ void trieCompactRoot(Stack *stack) {
 				}
 				free(tempChildren);
 			}
+		}
 
-			/*If node is not a leaf - has more than one child - push them in stack*/
-			if (parent->emptySpace != parent->maxChildren) {
-				for (i = 0; i < parent->maxChildren - parent->emptySpace; i++)
-					push(stack, &(parent->children[i]));
-			}
+		/*If node is not a leaf - has more than one children - push them in stack*/
+		if (parent->emptySpace != parent->maxChildren) {
+			numberOfChildren = parent->maxChildren - parent->emptySpace
+			for (i = 0; i < numberOfChildren; i++)
+				push(stack, &(parent->children[i]));
 		}
 	}
 }
@@ -172,7 +172,9 @@ void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngra
 
 				if (strcmp(&node->word[x], ngramVector->ngram[i]) != 0)                                         //If not equal - abort
 					return;
+
 				if (node->offsets[j] < 0) {                                                                     //If word is final
+
 					/**************************************/
 					for (; round <= i; round++) {
 						while ((space = strlen(ngramVector->ngram[round])) >= *capacity - len - 1) {
@@ -195,6 +197,7 @@ void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngra
 							queryBuffer.capacities[id] *= 2;
 							queryBuffer.buffer[id] = saferealloc(queryBuffer.buffer[id], sizeof(char) * queryBuffer.capacities[id]);
 						}
+
 						memcpy(queryBuffer.buffer[id] + queryBuffer.sizes[id], ngram, len);
 						queryBuffer.sizes[id] += len;
 
@@ -209,7 +212,8 @@ void trieSearch_Ngram_Static(TrieNode *node, int round, int i, NgramVector *ngra
 			}
 
 			if (j > 0) i--;
-		} else if (node->is_final) {
+		}
+		else if (node->is_final) {
 
 			/**************************************/
 			for (; round <= i; round++) {
