@@ -137,7 +137,7 @@ void *processBurstStatic() {
 		pthread_exit(NULL);
 	}
 
-	hashtable = topK_Hashtable_create(400, 5);
+	hashtable = topK_Hashtable_create(800, 5);
 
 	while (i < burst[j].numOfJobs) {
 
